@@ -5,22 +5,27 @@ import { StyleSheet, Text, View, Button, Alert, Image, TextInput } from 'react-n
 export default function App() {
   return (
     <View style={styles.container}>
-      <View style={{backgroundColor:'#80829e', width:'100%', height: '40px'}}>
-        <Image style={{ width: '40px', height: '40px' }} source={require('./image/react-native-logo.79778b9e.png')} />
+      <View style={{ backgroundColor: '#3e86fa', width: '100%', height: '40px' }}>
       </View>
-      <Text style={styles.text}>Login</Text>
+      <Image style={{ width: '100px', height: '100px', paddingBottom: 20 }} source={require('./image/react-native-logo.79778b9e.png')} />
+      <Text style={styles.logo}>Login</Text>
       <StatusBar style="auto" />
-      <View style={{flexDirection: 'row'}}>
-        <Text style={styles.text}>Username</Text>
-        <TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: '50%' }} onChangeText={text => { }} />
-      </View>
-      <View style={{flexDirection: 'row'}}>
-        <Text style={styles.text}>Password</Text>
-        <TextInput style={{ height: 40, borderColor: 'gray', borderWidth: 1, width: '50%' }} onChangeText={text => { }} />
-      </View>
-      <Button title="Login" onPress={() => Alert.alert('Simple Button pressed')} />
-    </View>
+      {input("User Name")}
+      {input("Password")}
+      <Button style={{ color: "#3e86fa" }} title="Login" onPress={() => Alert.alert('Simple Button pressed')} />
+    </View>   
   );
+}
+
+function input(label){
+    return (
+      <View style={{ flexDirection: 'row', alignItems: 'flex-end|center', width: '70%', paddingBottom: 20 }}>
+        <View style={{ width: '30%' }}>
+          <Text style={styles.text} >{label}</Text>
+        </View>
+        <TextInput style={{color: 'white', height: 40, borderColor: 'gray', borderWidth: 1, width:'70%', height: 20 }} onChangeText={text => { }} />
+      </View>
+    );
 }
 
 const styles = StyleSheet.create({
@@ -31,7 +36,11 @@ const styles = StyleSheet.create({
     backgroundColor: '#01072e',
   },
   text: {
-    color: '#fff' ,
-    width: 100
+    color: '#fff',
+    fontWeight: 600
   },
+  logo:{
+    color: '#fff',
+    fontSize: 30
+  }
 });
