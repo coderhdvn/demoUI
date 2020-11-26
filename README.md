@@ -1,13 +1,13 @@
 # demoUI
 react native
 
-#install
+# install
 node, npm, expo
 
 > cd demoUI 
 
 > npm install
 
-#run
+# run
 
 > npm run web
