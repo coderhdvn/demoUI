@@ -1,0 +1,12 @@
+{
+  "name": "UIdemo",
+  "displayName": "UIdemo",
+  "expo": {
+    "name": "UIdemo",
+    "slug": "UIdemo",
+    "version": "1.0.0",
+    "assetBundlePatterns": [
+      "**/*"
+    ]
+  }
+}
