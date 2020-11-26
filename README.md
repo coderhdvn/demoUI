@@ -4,7 +4,8 @@ react native
 #install
 node, npm, expo
 
-> cd demoUI
+> cd demoUI 
+
 > npm install
 
 #run
