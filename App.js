@@ -5,37 +5,48 @@
  * @format
  * @flow strict-local
  */
-
+import 'react-native-gesture-handler';
 import React from 'react';
 import {
-  SafeAreaView,
   StyleSheet,
-  ScrollView,
-  View,
-  Image,
+  Button,
   Text,
-  StatusBar,
-  TextInput,
 } from 'react-native';
 
-import {
-  Header,
-  LearnMoreLinks,
-  Colors,
-  DebugInstructions,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-import Button from './components/button';
+import { NavigationContainer } from '@react-navigation/native';
+import { createStackNavigator } from '@react-navigation/stack';
 import Menu from './components/flatlist';
-import Menu_Header from './components/flatlist_header';
+const Stack = createStackNavigator();
+
+const HomeScreen: ()=> React$Node = ({ navigation }) => {
+  return (
+    <Button
+      title="Go to Jane's profile"
+      onPress={() =>
+        navigation.navigate('Profile', { name: 'Jane' })
+      }
+    />
+  );
+};
+
+const ProfileScreen = ({ navigation, route }) => {
+  return  <Menu></Menu>
+};
 
 const App: () => React$Node = () => {
+
   return (
-    <SafeAreaView>
-      <View style={styles.container}>
-        <Menu_Header style={styles.menu}></Menu_Header>
-      </View>
-    </SafeAreaView>
+    <NavigationContainer>
+      <Stack.Navigator>
+        <Stack.Screen
+          name="Home"
+          component={HomeScreen}
+          options={{ title: 'Welcome' }}
+        />
+        <Stack.Screen name="Profile" component={ProfileScreen} />
+      </Stack.Navigator>
+    </NavigationContainer>
+    
   );
 };
 

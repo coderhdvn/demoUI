@@ -22,7 +22,7 @@ const Item = ({ item, onPress, style }) => (
   </TouchableOpacity>
 );
 
-const App = () => {
+const Flat_List = () => {
   const [selectedId, setSelectedId] = useState(null);
 
   const renderItem = ({ item }) => {
@@ -64,4 +64,4 @@ const styles = StyleSheet.create({
   },
 });
 
-export default App;
+export default Flat_List;
