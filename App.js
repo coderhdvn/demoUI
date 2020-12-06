@@ -27,7 +27,6 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Button from './components/button';
 import Menu from './components/flatlist';
-import Menu_Header from './components/flatlist_header';
 
 const App: () => React$Node = () => {
   return (
