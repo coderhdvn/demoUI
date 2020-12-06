@@ -16,7 +16,6 @@ import {
   Text,
   StatusBar,
   TextInput,
-  Button,
 } from 'react-native';
 
 import {
@@ -26,6 +25,9 @@ import {
   DebugInstructions,
   ReloadInstructions,
 } from 'react-native/Libraries/NewAppScreen';
+import Button from './components/button';
+import Menu from './components/flatlist';
+import Menu_Header from './components/flatlist_header';
 
 const App: () => React$Node = () => {
   return (
@@ -41,7 +43,8 @@ const App: () => React$Node = () => {
           <Text>Password</Text>
           <TextInput style={styles.input}></TextInput>
         </View>
-        <Button title="OK"></Button>
+        <Button text="OK"></Button>
+        <Menu/>
       </View>
     </SafeAreaView>
   );
