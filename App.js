@@ -27,29 +27,22 @@ import {
 } from 'react-native/Libraries/NewAppScreen';
 import Button from './components/button';
 import Menu from './components/flatlist';
+import Menu_Header from './components/flatlist_header';
 
 const App: () => React$Node = () => {
   return (
     <SafeAreaView>
       <View style={styles.container}>
-        <Image style={{height: 100, width: 100}} source={require("./logo.png")}/>
-        <Text style={styles.title}>ĐĂNG NHẬP</Text>
-        <View>
-          <Text>Username</Text>
-          <TextInput style={styles.input}></TextInput>
-        </View>
-        <View>
-          <Text>Password</Text>
-          <TextInput style={styles.input}></TextInput>
-        </View>
-        <Button text="OK"></Button>
-        <Menu/>
+        <Menu_Header style={styles.menu}></Menu_Header>
       </View>
     </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  menu :{
+    width: "100%"
+  },
   container:{
     height: "100%", 
     backgroundColor: "#dddddd",
