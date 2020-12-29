@@ -1,15 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image,  Alert, Modal, TouchableHighlight} from 'react-native';
-
+import Button from '../components/button'
 export default class ResetPWD extends React.Component {
   state={
     email:"",
+    show: false,
+    verify: false,
+    bg: true,
   }
   render(){
     return (
       <View style={styles.container}>
         <Image style={styles.logo} source={require('../images/img_398183.png')} />  
-        <View style={styles.inputView} >
+        <View 
+        style={styles.inputView} 
+        visible={this.state.bg} >
           <TextInput  
             style={styles.inputText}
             placeholder="Email đã đăng ký..." 
@@ -17,7 +22,59 @@ export default class ResetPWD extends React.Component {
             onChangeText={text => this.setState({email:text})}/>
         </View>
         <Text style={styles.warning}>Email không hợp lệ !!!</Text>
-        <TouchableOpacity style={styles.signupBtn}>
+
+        <Modal
+        transparent={true}
+        visible={this.state.show}>
+          <View style={styles.popup}>
+            <Text style={styles.titlePopUp}>Nhập mã xác nhận</Text>
+            <TextInput 
+              style={styles.inputPopUp}
+              editable
+              onChangeText={text => {
+                if (text.length==6) {
+                  this.setState({verify: true})
+                  this.setState({show: false})
+
+                }
+              }}
+              maxLength={6}
+              keyboardType = 'numeric'
+              placeholderTextColor = "#DCD4D4"
+              placeholder="000000"></TextInput>
+          </View>
+        </Modal>
+
+        <Modal
+        transparent={true}
+        visible={this.state.verify}>
+          <View style={styles.popup}>
+            <View style={styles.inputView} >
+              <TextInput  
+                style={styles.inputText}
+                placeholder="Mật khẩu mới..." 
+                placeholderTextColor="#C9D9DA"
+                onChangeText={text => this.setState({email:text})}/>
+            </View>
+            <Text style={styles.warning}>Tên đăng nhập không tồn tại !!!</Text>
+
+            <View style={styles.inputView} >
+              <TextInput  
+                secureTextEntry
+                style={styles.inputText}
+                placeholder="Nhập lại mật khẩu..." 
+                placeholderTextColor="#C9D9DA"
+                onChangeText={text => this.setState({password:text})}/>
+            </View>
+            <TouchableOpacity style={styles.signupBtn}>
+              <Text color="black">Đăng nhập</Text>
+            </TouchableOpacity>
+        </View>
+        </Modal>
+        <TouchableOpacity style={styles.signupBtn} onPress={() => {
+          this.setState({show: true})
+          this.setState({bg: false})
+          }}>
           <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>
         
@@ -81,5 +138,17 @@ const styles = StyleSheet.create({
     textAlign: "left",
     justifyContent: "flex-start",
     fontSize: 12
+  },
+  popup: {
+    backgroundColor: "#fff",
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
+  inputPopUp: {
+    fontSize: 30
+  },
+  titlePopUp: {
+    fontSize: 20,
   }
 });
