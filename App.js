@@ -16,16 +16,45 @@ import {
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import Menu from './components/flatlist';
+import Login  from './page/login'
+import ResetPWD from './page/resetpwd'
+import Signup from './page/signup'
+import NotificationPage from './page/notification';
+import { View } from 'native-base';
+
 const Stack = createStackNavigator();
 
 const HomeScreen: ()=> React$Node = ({ navigation }) => {
   return (
-    <Button
-      title="Go to Jane's profile"
+    <View>
+      <Button title="Go to Jane's profile"
       onPress={() =>
         navigation.navigate('Profile', { name: 'Jane' })
       }
-    />
+      />
+      <Button title="Login page"
+      onPress={() =>
+        navigation.navigate('Login')
+      }
+      />
+      <Button title="reset password" 
+      onPress={() =>
+        navigation.navigate('reset password')
+      }
+      />
+      <Button title="Sign up" 
+      onPress={() =>
+        navigation.navigate('sign up')
+      }
+      />
+      <Button title="Notification" 
+      onPress={() =>
+        navigation.navigate('notification')
+      }
+      />
+    </View>
+    
+    
   );
 };
 
@@ -37,13 +66,17 @@ const App: () => React$Node = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator>
+      <Stack.Navigator  screenOptions={{headerShown: false}}>
         <Stack.Screen
           name="Home"
           component={HomeScreen}
           options={{ title: 'Welcome' }}
         />
         <Stack.Screen name="Profile" component={ProfileScreen} />
+        <Stack.Screen name="Login" component={Login} />
+        <Stack.Screen name="reset password" component={ResetPWD} />
+        <Stack.Screen name="sign up" component={Signup} />
+        <Stack.Screen name="notification" component={NotificationPage} />
       </Stack.Navigator>
     </NavigationContainer>
     
