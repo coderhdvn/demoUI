@@ -56,7 +56,6 @@ export default class ResetPWD extends React.Component {
                 placeholderTextColor="#C9D9DA"
                 onChangeText={text => this.setState({email:text})}/>
             </View>
-            <Text style={styles.warning}>Tên đăng nhập không tồn tại !!!</Text>
 
             <View style={styles.inputView} >
               <TextInput  
@@ -66,6 +65,8 @@ export default class ResetPWD extends React.Component {
                 placeholderTextColor="#C9D9DA"
                 onChangeText={text => this.setState({password:text})}/>
             </View>
+            <Text style={styles.warning}>Mật khẩu mới không khớp !!!</Text>
+
             <TouchableOpacity style={styles.signupBtn}>
               <Text color="black">Đăng nhập</Text>
             </TouchableOpacity>

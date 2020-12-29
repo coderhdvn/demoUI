@@ -5,9 +5,7 @@ export default class Welcome extends React.Component {
   render(){
     return (
       <SafeAreaView style={styles.container}>
-        <Image style={styles.logo} source={require('../images/logo1.png')} />  
-        
-        
+        <Image style={styles.logo} source={require('../images/logo1.png')} />    
       </SafeAreaView>
     );
   }
