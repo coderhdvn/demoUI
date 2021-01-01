@@ -49,6 +49,8 @@ export default class ResetPWD extends React.Component {
         transparent={true}
         visible={this.state.verify}>
           <View style={styles.popup}>
+          <Image style={styles.logo} source={require('../images/img_398183.png')} />  
+
             <View style={styles.inputView} >
               <TextInput  
                 style={styles.inputText}

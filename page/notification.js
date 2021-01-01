@@ -23,7 +23,7 @@ export default class NotificationPage extends React.Component {
         return (
             <View style={styles.container}>
                 <View style={styles.header}>
-                    <Text style={{ color:"#FFF", fontSize:30, width: "100%", textAlign: "center", fontWeight: "300"}}>History</Text>
+                    <Text style={{ color:"#FFF", fontSize:25, width: "100%", textAlign: "center", fontWeight: "300"}}>LỊCH SỬ</Text>
                 </View>
                 <View style={{backgroundColor:"#edf1f2"}}>
                    <Item/>
@@ -41,5 +41,5 @@ const styles = StyleSheet.create({
     container: {flex:1},
     header: {  height: '10%', width: '100%', justifyContent:"center",backgroundColor:"#0aa5ff" },
     item: { height:100, padding:20, flexDirection: "row", marginTop:10,
-      borderLeftColor:"#0aa5ff", borderLeftWidth:10 , backgroundColor:"#FFF"}
+      borderLeftColor:"#0aa5ff", borderLeftWidth:10 , backgroundColor:"#FFF" , padding: 12}
 })

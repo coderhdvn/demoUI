@@ -16,16 +16,19 @@ import {
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
+//import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+
 import Menu from './components/flatlist';
 import Login  from './page/login'
 import ResetPWD from './page/resetpwd'
 import Signup from './page/signup'
 import NotificationPage from './page/notification';
 import ScanPage from './page/ScanPage'
-import { View } from 'native-base';
 import Welcome from './page/welcome'
+import DetailInfo from './page/detailProduct';
 
 const Stack = createStackNavigator();
+//const Tab = createBottomTabNavigator();
 
 const HomeScreen: ()=> React$Node = ({ navigation }) => {
   return (
@@ -66,6 +69,11 @@ const HomeScreen: ()=> React$Node = ({ navigation }) => {
         navigation.navigate('welcome')
       }
       />
+      <Button title="Detail Info" 
+      onPress={() =>
+        navigation.navigate('detail')
+      }
+      />
     </SafeAreaView>
     
     
@@ -93,6 +101,8 @@ const App: () => React$Node = () => {
         <Stack.Screen name="notification" component={NotificationPage} />
         <Stack.Screen name="scan" component={ScanPage} />
         <Stack.Screen name="welcome" component={Welcome} />
+        <Stack.Screen name="detail" component={DetailInfo} />
+
       </Stack.Navigator>
     </NavigationContainer>
     
