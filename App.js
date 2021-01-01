@@ -20,6 +20,7 @@ import Login  from './page/login'
 import ResetPWD from './page/resetpwd'
 import Signup from './page/signup'
 import NotificationPage from './page/notification';
+import ScanPage from './page/ScanPage'
 import { View } from 'native-base';
 
 const Stack = createStackNavigator();
@@ -52,6 +53,11 @@ const HomeScreen: ()=> React$Node = ({ navigation }) => {
         navigation.navigate('notification')
       }
       />
+      <Button title="Scan" 
+      onPress={() =>
+        navigation.navigate('scan')
+      }
+      />
     </View>
     
     
@@ -77,6 +83,7 @@ const App: () => React$Node = () => {
         <Stack.Screen name="reset password" component={ResetPWD} />
         <Stack.Screen name="sign up" component={Signup} />
         <Stack.Screen name="notification" component={NotificationPage} />
+        <Stack.Screen name="scan" component={ScanPage} />
       </Stack.Navigator>
     </NavigationContainer>
     
