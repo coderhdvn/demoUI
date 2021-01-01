@@ -80,7 +80,7 @@ const App: () => React$Node = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator  screenOptions={{headerShown: false}}>
+      <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
         <Stack.Screen
           name="Home"
           component={HomeScreen}

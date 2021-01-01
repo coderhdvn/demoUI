@@ -10,6 +10,8 @@ target 'ReactNative' do
 
   pod 'react-native-camera', :path => '../node_modules/react-native-camera'
 
+  pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
+
   target 'ReactNativeTests' do
     inherit! :complete
     # Pods for testing
