@@ -11,6 +11,7 @@ import {
   StyleSheet,
   Button,
   Text,
+  SafeAreaView
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -22,12 +23,13 @@ import Signup from './page/signup'
 import NotificationPage from './page/notification';
 import ScanPage from './page/ScanPage'
 import { View } from 'native-base';
+import Welcome from './page/welcome'
 
 const Stack = createStackNavigator();
 
 const HomeScreen: ()=> React$Node = ({ navigation }) => {
   return (
-    <View>
+    <SafeAreaView>
       <Button title="Go to Jane's profile"
       onPress={() =>
         navigation.navigate('Profile', { name: 'Jane' })
@@ -53,12 +55,18 @@ const HomeScreen: ()=> React$Node = ({ navigation }) => {
         navigation.navigate('notification')
       }
       />
+
       <Button title="Scan" 
       onPress={() =>
         navigation.navigate('scan')
       }
       />
-    </View>
+      <Button title="Welcome" 
+      onPress={() =>
+        navigation.navigate('welcome')
+      }
+      />
+    </SafeAreaView>
     
     
   );
@@ -84,6 +92,7 @@ const App: () => React$Node = () => {
         <Stack.Screen name="sign up" component={Signup} />
         <Stack.Screen name="notification" component={NotificationPage} />
         <Stack.Screen name="scan" component={ScanPage} />
+        <Stack.Screen name="welcome" component={Welcome} />
       </Stack.Navigator>
     </NavigationContainer>
     
