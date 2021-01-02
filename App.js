@@ -11,12 +11,13 @@ import {
   StyleSheet,
   Button,
   Text,
-  SafeAreaView
+  SafeAreaView,
+  View
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
-//import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 
 import Menu from './components/flatlist';
 import Login  from './page/login'
@@ -25,10 +26,12 @@ import Signup from './page/signup'
 import NotificationPage from './page/notification';
 import ScanPage from './page/ScanPage'
 import Welcome from './page/welcome'
+import Profile from "./page/profile";
 import DetailInfo from './page/detailProduct';
+import { Footer, Icon } from 'native-base';
 
 const Stack = createStackNavigator();
-//const Tab = createBottomTabNavigator();
+const Tab = createBottomTabNavigator();
 
 const HomeScreen: ()=> React$Node = ({ navigation }) => {
   return (
@@ -88,22 +91,31 @@ const App: () => React$Node = () => {
 
   return (
     <NavigationContainer>
-      <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
-        <Stack.Screen
-          name="Home"
-          component={HomeScreen}
-          options={{ title: 'Welcome' }}
-        />
+      {/* <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
+        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Welcome' }} />
         <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="Login" component={Login} />
         <Stack.Screen name="reset password" component={ResetPWD} />
-        <Stack.Screen name="sign up" component={Signup} />
         <Stack.Screen name="notification" component={NotificationPage} />
         <Stack.Screen name="scan" component={ScanPage} />
-        <Stack.Screen name="welcome" component={Welcome} />
         <Stack.Screen name="detail" component={DetailInfo} />
 
-      </Stack.Navigator>
+      </Stack.Navigator> */}
+
+      <Tab.Navigator tabBarOptions={{
+        labelStyle: {
+          fontSize: 15
+        },
+        tabBarIcon: () => {
+        }
+    
+        
+      }}>
+          <Tab.Screen name="Login" component={Login}  />
+          <Tab.Screen name="home" component={Welcome} options={{ title: 'Welcome'}} />
+          <Tab.Screen name="Profile" component={Profile} />
+      </Tab.Navigator>
+
+      {/* <Footer></Footer> */}
     </NavigationContainer>
     
   );
