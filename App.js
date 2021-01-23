@@ -28,7 +28,7 @@ import ScanPage from './page/ScanPage'
 import Welcome from './page/welcome'
 import Profile from "./page/profile";
 import DetailInfo from './page/detailProduct';
-import { Footer, Icon } from 'native-base';
+import Icon from 'react-native-elements';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -104,15 +104,11 @@ const App: () => React$Node = () => {
       <Tab.Navigator tabBarOptions={{
         labelStyle: {
           fontSize: 15
-        },
-        tabBarIcon: () => {
-        }
-    
-        
+        }        
       }}>
-          <Tab.Screen name="Login" component={Login}  />
-          <Tab.Screen name="home" component={Welcome} options={{ title: 'Welcome'}} />
-          <Tab.Screen name="Profile" component={Profile} />
+          <Tab.Screen name="Login" component={Login} />
+          <Tab.Screen name="Scan" component={ScanPage} />
+          <Tab.Screen name="Detail" component={DetailInfo} />
       </Tab.Navigator>
 
       {/* <Footer></Footer> */}
