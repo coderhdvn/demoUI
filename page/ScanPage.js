@@ -68,12 +68,15 @@ class QrCodeCamera extends Component {
           <ScrollView horizontal={true} style={styles.listIcons}>
             <View>
               <Image style={styles.logo} source={require('../images/pic1.jpg')} />  
+              <Text style={styles.text}>Tạo Code</Text>
             </View>
             <View>
               <Image style={styles.logo} source={require('../images/pic2.jpg')} />  
+              <Text style={styles.text}>Đã lưu</Text>
             </View>
             <View>
               <Image style={styles.logo} source={require('../images/pic3.jpg')} />  
+              <Text style={styles.text}>Lịch sử</Text>
             </View>
           </ScrollView>
         </View>
