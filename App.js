@@ -12,7 +12,8 @@ import {
   Button,
   Text,
   SafeAreaView,
-  View
+  View,
+  Image
 } from 'react-native';
 
 import { NavigationContainer } from '@react-navigation/native';
@@ -101,10 +102,16 @@ const App: () => React$Node = () => {
 
       </Stack.Navigator> */}
 
-      <Tab.Navigator tabBarOptions={{
+      <Tab.Navigator 
+       screenOptions={({ route }) => ({
+        tabBarIcon: ({ focused, color, size }) => {
+          return <Image style={{width:20, height: 20}} source={require('./images/logo1.png')} />;
+        },
+      })}
+      tabBarOptions={{
         labelStyle: {
-          fontSize: 15
-        }        
+          fontSize: 15,
+        }   
       }}>
           <Tab.Screen name="Login" component={Login} />
           <Tab.Screen name="Scan" component={ScanPage} />
