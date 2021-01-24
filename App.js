@@ -30,6 +30,7 @@ import Welcome from './page/welcome'
 import Profile from "./page/profile";
 import DetailInfo from './page/detailProduct';
 import {Icon} from 'react-native-elements';
+import { color } from 'react-native-reanimated';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -88,44 +89,49 @@ const ProfileScreen = ({ navigation, route }) => {
   return  <Menu></Menu>
 };
 
-const App: () => React$Node = () => {
+class App extends  React.Component {
 
-  return (
-    <NavigationContainer>
-      {/* <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Welcome' }} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="reset password" component={ResetPWD} />
-        <Stack.Screen name="notification" component={NotificationPage} />
-        <Stack.Screen name="scan" component={ScanPage} />
-        <Stack.Screen name="detail" component={DetailInfo} />
+  state={
+    profileColor:'black',
+    scanColor:'black',
+    detailColor:'black',
+  }
 
-      </Stack.Navigator> */}
+  render(){
+    return (
+      <NavigationContainer>
+        {/* <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
+          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Welcome' }} />
+          <Stack.Screen name="Profile" component={ProfileScreen} />
+          <Stack.Screen name="reset password" component={ResetPWD} />
+          <Stack.Screen name="notification" component={NotificationPage} />
+          <Stack.Screen name="scan" component={ScanPage} />
+          <Stack.Screen name="detail" component={DetailInfo} />
 
-      <Tab.Navigator 
-       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          if (route.name == "Login")
-            return <Icon name='home' />;
-          if (route.name == "Scan")
-            return <Icon name='camera' />;
-          return <Icon name='list' />;
-        },
-      })}
-      tabBarOptions={{
-        labelStyle: {
-          fontSize: 15,
-        }   
-      }}>
-          <Tab.Screen name="Login" component={Login} />
-          <Tab.Screen name="Scan" component={ScanPage} />
-          <Tab.Screen name="Detail" component={DetailInfo} />
-      </Tab.Navigator>
+        </Stack.Navigator> */}
 
-      {/* <Footer></Footer> */}
-    </NavigationContainer>
-    
+        <Tab.Navigator 
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            if (route.name == "Profile")
+              return <Icon name='home' color={color} size={size*1.5}/>;
+            if (route.name == "Scan")
+              return <Icon name='camera' reverse color={color} size={size*1.3} solid={true}/>;
+            return <Icon name='list' color={color} size={size*1.5}/>;
+          },
+        })}
+        tabBarOptions={{
+          labelStyle: {
+            fontSize: 15,
+          }   
+        }}>
+            <Tab.Screen name="Profile" component={ProfileScreen} options={{title: ''}}/>
+            <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
+            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
+        </Tab.Navigator>
+      </NavigationContainer>  
   );
+}
 };
 
 const styles = StyleSheet.create({
