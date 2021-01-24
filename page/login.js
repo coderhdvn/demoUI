@@ -1,3 +1,4 @@
+import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 
@@ -6,6 +7,7 @@ export default class Login extends React.Component {
     email:"",
     password:""
   }
+
   render(){
     return (
       <View style={styles.container}>
@@ -32,7 +34,7 @@ export default class Login extends React.Component {
         <TouchableOpacity>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn}>
+        <TouchableOpacity style={styles.loginBtn} onPress={()=>{this.props.navigation.navigate("signup")}}>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.signupBtn}>
