@@ -29,7 +29,7 @@ import ScanPage from './page/ScanPage'
 import Welcome from './page/welcome'
 import Profile from "./page/profile";
 import DetailInfo from './page/detailProduct';
-import Icon from 'react-native-elements';
+import {Icon} from 'react-native-elements';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -105,7 +105,11 @@ const App: () => React$Node = () => {
       <Tab.Navigator 
        screenOptions={({ route }) => ({
         tabBarIcon: ({ focused, color, size }) => {
-          return <Image style={{width:20, height: 20}} source={require('./images/logo1.png')} />;
+          if (route.name == "Login")
+            return <Icon name='home' />;
+          if (route.name == "Scan")
+            return <Icon name='camera' />;
+          return <Icon name='list' />;
         },
       })}
       tabBarOptions={{
