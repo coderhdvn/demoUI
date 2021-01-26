@@ -29,7 +29,8 @@ import ScanPage from './page/ScanPage'
 import Welcome from './page/welcome'
 import Profile from "./page/profile";
 import DetailInfo from './page/detailProduct';
-import {Icon} from 'react-native-elements';
+import Icon from 'react-native-elements';
+import StackNav from './page/stackNavigator';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -92,27 +93,7 @@ const App: () => React$Node = () => {
 
   return (
     <NavigationContainer>
-      {/* <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
-        <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Welcome' }} />
-        <Stack.Screen name="Profile" component={ProfileScreen} />
-        <Stack.Screen name="reset password" component={ResetPWD} />
-        <Stack.Screen name="notification" component={NotificationPage} />
-        <Stack.Screen name="scan" component={ScanPage} />
-        <Stack.Screen name="detail" component={DetailInfo} />
-
-      </Stack.Navigator> */}
-
-      <Tab.Navigator 
-       screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          if (route.name == "Login")
-            return <Icon name='home' />;
-          if (route.name == "Scan")
-            return <Icon name='camera' />;
-          return <Icon name='list' />;
-        },
-      })}
-      tabBarOptions={{
+      <Tab.Navigator tabBarOptions={{
         labelStyle: {
           fontSize: 15,
         }   
@@ -121,8 +102,6 @@ const App: () => React$Node = () => {
           <Tab.Screen name="Scan" component={ScanPage} />
           <Tab.Screen name="Detail" component={DetailInfo} />
       </Tab.Navigator>
-
-      {/* <Footer></Footer> */}
     </NavigationContainer>
     
   );

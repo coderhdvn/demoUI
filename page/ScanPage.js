@@ -66,9 +66,18 @@ class QrCodeCamera extends Component {
         />
       <View > 
           <ScrollView horizontal={true} style={styles.listIcons}>
-            <Image style={styles.logo} source={require('../images/pic1.jpg')} />  
-            <Image style={styles.logo} source={require('../images/pic2.jpg')} />  
-            <Image style={styles.logo} source={require('../images/pic3.jpg')} />  
+            <View>
+              <Image style={styles.logo} source={require('../images/pic1.jpg')} />  
+              <Text style={styles.text}>Tạo Code</Text>
+            </View>
+            <View>
+              <Image style={styles.logo} source={require('../images/pic2.jpg')} />  
+              <Text style={styles.text}>Đã lưu</Text>
+            </View>
+            <View>
+              <Image style={styles.logo} source={require('../images/pic3.jpg')} />  
+              <Text style={styles.text}>Lịch sử</Text>
+            </View>
           </ScrollView>
         </View>
       </View>
@@ -149,6 +158,13 @@ const styles = {
     width: scanBarWidth,
     height: scanBarHeight,
     backgroundColor: scanBarColor
+  },
+
+  text : {
+    color:"white",
+    fontSize: 16,
+    textAlign: "center",
+    justifyContent: "center",
   }
 };
 
