@@ -12,6 +12,8 @@ target 'ReactNative' do
 
   pod 'RNPermissions', :path => '../node_modules/react-native-permissions'
 
+  pod 'RNCAsyncStorage', :path => '../node_modules/@react-native-async-storage/async-storage'
+
   target 'ReactNativeTests' do
     inherit! :complete
     # Pods for testing
