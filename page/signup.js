@@ -77,7 +77,7 @@ export default class Signup extends React.Component {
              console.log("USERNAME", this.state.username)
              console.log("EMAIL", this.state.email)
              console.log("PASSWORD", this.state.password)
-             // Call API here: /api/v1/user/signup
+             // Call API here: /api/v1/user/signup (POST)
           }}>
           <Text style={styles.signupText}>Đăng ký</Text>
         </TouchableOpacity>

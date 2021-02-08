@@ -21,7 +21,7 @@ class Account extends React.Component {
             <Stack.Navigator screenOptions={{ headerShown: false }} mode="modal">
                 <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }} />
                 <Stack.Screen name="Sign Up" component={Signup} />
-                <Stack.Screen name="reset password" component={ResetPWD} />
+                <Stack.Screen name="Reset Password" component={ResetPWD} />
                 <Stack.Screen name="notification" component={NotificationPage} />
                 <Stack.Screen name="scan" component={ScanPage} />
                 <Stack.Screen name="detail" component={DetailInfo} />

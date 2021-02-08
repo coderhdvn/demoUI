@@ -4,7 +4,7 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'reac
 
 export default class Login extends React.Component {
   state = {
-    username:"",
+    email:"",
     password:""
   }
 
@@ -17,7 +17,7 @@ export default class Login extends React.Component {
             style={styles.inputText}
             placeholder="Tên đăng nhập..." 
             placeholderTextColor="#C9D9DA"
-            onChangeText={text => this.setState({username:text})}/>
+            onChangeText={text => this.setState({email:text})}/>
         </View>
         <Text style={styles.warning}>Tên đăng nhập không tồn tại !!!</Text>
 
@@ -31,13 +31,15 @@ export default class Login extends React.Component {
         </View>
         <Text style={styles.warning}>Mật khẩu không đúng !!!</Text>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={()=>{
+            this.props.navigation.navigate("Reset Password")
+          }}>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.loginBtn} onPress={()=>{
-          console.log("USERNAME", this.state.username)
+          console.log("EMAIL", this.state.email)
           console.log("PASSWORD", this.state.password)
-          // Call API here: /api/v1/user/login
+          // Call API here: /api/v1/user/login (POST)
           // setToken to Local Storage
           }}>
           <Text style={styles.loginText}>Đăng nhập</Text>
