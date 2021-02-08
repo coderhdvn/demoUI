@@ -30,20 +30,5 @@ class Account extends React.Component {
         </NavigationContainer>
       )}
     }
-      
-
-
-function renderNavigator() {
-    return <NavigationContainer>
-        <Stack.Navigator screenOptions={{ headerShown: false }} mode="modal">
-            <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }} />
-            <Stack.Screen name="reset password" component={ResetPWD} />
-            <Stack.Screen name="notification" component={NotificationPage} />
-            <Stack.Screen name="scan" component={ScanPage} />
-            <Stack.Screen name="detail" component={DetailInfo} />
-
-        </Stack.Navigator>
-    </NavigationContainer>;
-}
 
 export default Account;
