@@ -153,9 +153,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
     width: 300
   },
-  image:{
-
-  }
 
 });
 
