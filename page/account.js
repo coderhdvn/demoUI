@@ -10,6 +10,7 @@ import Welcome from './welcome'
 import Profile from "./profile";
 import DetailInfo from './detailProduct';
 import { NavigationContainer } from '@react-navigation/native';
+import Main from './main';
 
 const Stack = createStackNavigator();
 
@@ -23,9 +24,9 @@ class Account extends React.Component {
                 <Stack.Screen name="Sign Up" component={Signup} />
                 <Stack.Screen name="Reset Password" component={ResetPWD} />
                 <Stack.Screen name="notification" component={NotificationPage} />
-                <Stack.Screen name="scan" component={ScanPage} />
+                <Stack.Screen name="ScanPage" component={ScanPage} />
                 <Stack.Screen name="detail" component={DetailInfo} />
-
+                <Stack.Screen name="Main" component={Main} />
             </Stack.Navigator>
         </NavigationContainer>
       )}

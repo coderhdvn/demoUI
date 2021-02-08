@@ -73,11 +73,13 @@ export default class Signup extends React.Component {
             }}/>
         </View>
         <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu không khớp !!!</Text>
-        <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.hide} onPress={()=>{
+        <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
              console.log("USERNAME", this.state.username)
              console.log("EMAIL", this.state.email)
              console.log("PASSWORD", this.state.password)
              // Call API here: /api/v1/user/signup (POST)
+             this.props.navigation.navigate("Login")
+
           }}>
           <Text style={styles.signupText}>Đăng ký</Text>
         </TouchableOpacity>
@@ -121,13 +123,22 @@ const styles = StyleSheet.create({
   },
   signupBtn:{
     width:"50%",
-    borderWidth: 2,
-    borderColor: "#1CBCC7",
+    backgroundColor:"#1CBCC7",
     borderRadius:25,
     height:50,
     alignItems:"center",
     justifyContent:"center",
-    margin:25,
+    marginTop:40,
+    marginBottom:10
+  },
+  disable:{
+    width:"50%",
+    borderRadius:25,
+    backgroundColor:"#8E908A",
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
     marginBottom:10
   },
   loginText:{
@@ -135,7 +146,7 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   signupText:{
-    color:"#1CBCC7",
+    color:"white",
     fontSize: 16
   },
   warning: {

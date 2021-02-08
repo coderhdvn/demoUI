@@ -95,6 +95,8 @@ export default class ResetPWD extends React.Component {
           this.setState({show: true})
           this.setState({bg: false})
           // Call API here: /api/v1/user/email (POST)
+          this.props.navigation.navigate("ScanPage")
+
           }}>
           <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>

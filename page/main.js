@@ -45,16 +45,6 @@ class Main extends React.Component {
   render(){
     return (
       <NavigationContainer>
-        {/* <Stack.Navigator  screenOptions={{headerShown: false}} mode="modal">
-          <Stack.Screen name="Home" component={HomeScreen} options={{ title: 'Welcome' }} />
-          <Stack.Screen name="Profile" component={ProfileScreen} />
-          <Stack.Screen name="reset password" component={ResetPWD} />
-          <Stack.Screen name="notification" component={NotificationPage} />
-          <Stack.Screen name="scan" component={ScanPage} />
-          <Stack.Screen name="detail" component={DetailInfo} />
-
-        </Stack.Navigator> */}
-
         <Tab.Navigator 
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {

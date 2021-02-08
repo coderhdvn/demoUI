@@ -5,7 +5,8 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'reac
 export default class Login extends React.Component {
   state = {
     email:"",
-    password:""
+    password:"",
+    disable:true
   }
 
   render(){
@@ -17,9 +18,15 @@ export default class Login extends React.Component {
             style={styles.inputText}
             placeholder="Tên đăng nhập..." 
             placeholderTextColor="#C9D9DA"
-            onChangeText={text => this.setState({email:text})}/>
+            onChangeText={text => {
+              if(text.length > 0) {
+                this.setState({email:text})
+                if(this.state.password.length > 0) {
+                  this.setState({disable:false})
+                }  
+              } 
+            }}/>
         </View>
-        <Text style={styles.warning}>Tên đăng nhập không tồn tại !!!</Text>
 
         <View style={styles.inputView} >
           <TextInput  
@@ -27,20 +34,27 @@ export default class Login extends React.Component {
             style={styles.inputText}
             placeholder="Mật khẩu..." 
             placeholderTextColor="#C9D9DA"
-            onChangeText={text => this.setState({password:text})}/>
+            onChangeText={text => {
+              if(text.length > 0) {
+                this.setState({password:text})
+                if(this.state.email.length > 0) {
+                  this.setState({disable:false})
+                }   
+              } 
+            }}/>
         </View>
-        <Text style={styles.warning}>Mật khẩu không đúng !!!</Text>
 
         <TouchableOpacity onPress={()=>{
             this.props.navigation.navigate("Reset Password")
           }}>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn} onPress={()=>{
+        <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={()=>{
           console.log("EMAIL", this.state.email)
           console.log("PASSWORD", this.state.password)
           // Call API here: /api/v1/user/login (POST)
           // setToken to Local Storage
+            this.props.navigation.navigate("ScanPage")
           }}>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
@@ -106,6 +120,16 @@ const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent:"center",
     marginTop:10,
+    marginBottom:10
+  },
+  disable: {
+    width:"50%",
+    backgroundColor:"#8E908A",
+    borderRadius:25,
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
     marginBottom:10
   },
   loginText:{
