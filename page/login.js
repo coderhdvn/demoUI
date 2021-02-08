@@ -3,8 +3,8 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 
 export default class Login extends React.Component {
-  state={
-    email:"",
+  state = {
+    username:"",
     password:""
   }
 
@@ -17,7 +17,7 @@ export default class Login extends React.Component {
             style={styles.inputText}
             placeholder="Tên đăng nhập..." 
             placeholderTextColor="#C9D9DA"
-            onChangeText={text => this.setState({email:text})}/>
+            onChangeText={text => this.setState({username:text})}/>
         </View>
         <Text style={styles.warning}>Tên đăng nhập không tồn tại !!!</Text>
 
@@ -34,10 +34,17 @@ export default class Login extends React.Component {
         <TouchableOpacity>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.loginBtn} onPress={()=>{this.props.navigation.navigate("signup")}}>
+        <TouchableOpacity style={styles.loginBtn} onPress={()=>{
+          console.log("USERNAME", this.state.username)
+          console.log("PASSWORD", this.state.password)
+          // Call API here: /api/v1/user/login
+          // setToken to Local Storage
+          }}>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.signupBtn}>
+        <TouchableOpacity style={styles.signupBtn} onPress={()=>{
+            this.props.navigation.navigate("Sign Up")
+          }}>
           <Text style={styles.signupText}>Đăng ký</Text>
         </TouchableOpacity>
         
