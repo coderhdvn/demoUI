@@ -8,7 +8,7 @@ import NotificationPage from './notification';
 import ScanPage from './ScanPage'
 import Welcome from './welcome'
 import Profile from "./profile";
-import DetailInfo from './detailProduct';
+import DetailInfo from './detailInfo';
 import { NavigationContainer } from '@react-navigation/native';
 import Main from './main';
 

@@ -1,7 +1,8 @@
 import React from 'react';
 import Main from './page/main';
 import Account from './page/account';
-import {getToken} from './storage/AsyncStorage';
+import {getData} from './storage/AsyncStorage';
+import {TOKEN_KEY} from './constants/Constant';
 
 class App extends React.Component {
 
@@ -10,7 +11,7 @@ class App extends React.Component {
   }
   
   componentDidMount() {
-    getToken().then(token => {
+    getData(TOKEN_KEY).then(token => {
       if(token != null) {
         this.setState({isToken: true})
       }

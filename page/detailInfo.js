@@ -8,18 +8,10 @@ export default class DetailInfo extends React.Component {
   }
 
   componentWillMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
-            .then(response => response.json())
-            .then((responseJson) => {
-                console.log('getting data from fetch', responseJson)
-                setTimeout(() => {
-                    this.setState({
-                        dataSource: responseJson
-                    })
-                }, 2000)
-
-            })
-            .catch(error => console.log(error))
+    fetch('http://facebook.github.io/react-native/movies.json', {
+          }).then(res => {
+            console.log("RESPONSE", res.json())
+          });
   }
 
   render(){
@@ -29,11 +21,11 @@ export default class DetailInfo extends React.Component {
             <ScrollView style={styles.scrollView}>
             <View>
             <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
-            <Text style={styles.textContent}> {this.state.dataSource[0]} </Text>
+            <Text style={styles.textContent}> IPhone 12 </Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Nhà sản phẩm:</Text> 
-            <Text style={styles.textContent}> {this.state.dataSource[1]}</Text>
+            <Text style={styles.textContent}> Apple</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
