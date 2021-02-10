@@ -7,6 +7,7 @@ export default class Signup extends React.Component {
     password:"",
     username:"",
     display: false,
+    fail: false,
     click: false
   }
   render(){
@@ -19,6 +20,7 @@ export default class Signup extends React.Component {
             placeholder="Tên hiển thị..." 
             placeholderTextColor="#C9D9DA"
             onChangeText={text => {
+              this.setState({fail: false})
               if(text.length != 0) {
               this.setState({username:text})
             } else {
@@ -28,11 +30,11 @@ export default class Signup extends React.Component {
         </View>
         <View style={styles.inputView} >
           <TextInput  
-            secureTextEntry
             style={styles.inputText}
             placeholder="Email..." 
             placeholderTextColor="#C9D9DA"
             onChangeText={text => {
+              this.setState({fail: false})
               if(text.length != 0) {
               this.setState({email:text})
             } else {
@@ -47,6 +49,7 @@ export default class Signup extends React.Component {
             placeholder="Mật khẩu..." 
             placeholderTextColor="#C9D9DA"
             onChangeText={text => {
+              this.setState({fail: false})
               if(text.length != 0) {
               this.setState({password:text})
             } else {
@@ -61,6 +64,7 @@ export default class Signup extends React.Component {
             placeholder="Nhập lại mật khẩu..." 
             placeholderTextColor="#C9D9DA"
             onChangeText={text => {
+              this.setState({fail: false})
               if(text != this.state.password && text.length >= this.state.password.length) {
                 this.setState({display: true});
                 this.setState({click: false});
@@ -74,16 +78,36 @@ export default class Signup extends React.Component {
         </View>
         <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu không khớp !!!</Text>
         <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
-             console.log("USERNAME", this.state.username)
-             console.log("EMAIL", this.state.email)
-             console.log("PASSWORD", this.state.password)
-             // Call API here: /api/v1/user/signup (POST)
-             this.props.navigation.navigate("Login")
+          // Call API here: /api/v1/user/signup (POST)            
+          console.log("USERNAME", this.state.username)
+          console.log("EMAIL", this.state.email)
+          console.log("PASSWORD", this.state.password)
+
+          fetch('http://facebook.github.io/react-native/movies.json', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              username: this.state.username,
+              email: this.state.email,
+              password: this.state.password 
+            })
+          }).then(res => {
+            if(res && res.status == 200) {
+              this.props.navigation.navigate("Login")
+            }
+            else {
+              this.setState({fail: true})
+            }
+          });
 
           }}>
           <Text style={styles.signupText}>Đăng ký</Text>
         </TouchableOpacity>
-        
+        <Text style={this.state.fail ? styles.warning : styles.hide}>Đăng kí tài khoản không thành công !!!</Text>
+
       </View>
     );
   }

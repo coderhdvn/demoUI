@@ -36,7 +36,6 @@ export default class ResetPWD extends React.Component {
                 if (text.length==6) {
                   this.setState({verify: true})
                   this.setState({show: false})
-
                 }
               }}
               maxLength={6}

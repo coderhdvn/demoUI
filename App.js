@@ -18,9 +18,9 @@ class App extends React.Component {
   }
 
   render() {
-    // check token
-    // if not or expired token => redirect Login Screen
-    // else go to Main Screen
+    /* check token
+      if not or expired token => redirect Login Screen
+      else go to Main Screen */
     if(this.state.isToken) {
       return <Main></Main>
     } else {

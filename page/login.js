@@ -1,14 +1,15 @@
 import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import {setToken} from './storage/AsyncStorage';
+import {setToken} from '../storage/AsyncStorage';
 
 
 export default class Login extends React.Component {
   state = {
     email:"",
     password:"",
-    disable:true
+    disable:true,
+    display: false
   }
 
   render(){
@@ -46,6 +47,8 @@ export default class Login extends React.Component {
             }}/>
         </View>
 
+        <Text style={this.state.display ? styles.warning : styles.hide}>Tài khoản không tồn tại !!!</Text>
+
         <TouchableOpacity onPress={()=>{
             this.props.navigation.navigate("Reset Password")
           }}>
@@ -56,8 +59,27 @@ export default class Login extends React.Component {
           console.log("PASSWORD", this.state.password)
           // Call API here: /api/v1/user/login (POST)
           // setToken to Local Storage
-          setToken("nhat lam")
-          this.props.navigation.navigate("ScanPage")
+          fetch('http://facebook.github.io/react-native/movies.json', {
+            method: 'POST',
+            headers: {
+              Accept: 'application/json',
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              email: this.state.email,
+              password: this.state.password 
+            })
+          }).then(res => {
+            console.log("RESPONSE", res.json())
+            if(res && res.status == 200) {
+              setToken(res.json())
+              this.setState({display: false})
+              this.props.navigation.navigate("ScanPage")
+            }
+            else {
+              this.setState({display: true})
+            }
+          });
           }}>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
@@ -149,5 +171,8 @@ const styles = StyleSheet.create({
     textAlign: "left",
     justifyContent: "flex-start",
     fontSize: 12
+  },
+  hide: {
+    display: 'none'
   }
 });
