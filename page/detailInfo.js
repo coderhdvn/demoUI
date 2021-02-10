@@ -3,15 +3,20 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'reac
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default class DetailInfo extends React.Component {
-  state= {
-      dataSource: [],
+  state = {
+      dataSource: {},
   }
 
   componentWillMount() {
-    fetch('http://facebook.github.io/react-native/movies.json', {
-          }).then(res => {
-            console.log("RESPONSE", res.json())
-          });
+    fetch('https://facebook.github.io/react-native/movies.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        this.setState({dataSource: responseJson})
+        console.log(this.state.dataSource.movies[1].title)
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   render(){
@@ -21,15 +26,15 @@ export default class DetailInfo extends React.Component {
             <ScrollView style={styles.scrollView}>
             <View>
             <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
-            <Text style={styles.textContent}> IPhone 12 </Text>
+            <Text style={styles.textContent}> {this.state.dataSource.title} </Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Nhà sản phẩm:</Text> 
-            <Text style={styles.textContent}> Apple</Text>
+            <Text style={styles.textContent}> {this.state.dataSource.description}</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
-            <Text style={styles.textContent}> 17/2/2020</Text>
+            <Text style={styles.textContent}> 2/7/2020</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Hạn sử dụng:</Text> 
