@@ -1,45 +1,30 @@
 import React from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import Login from './page/login';
 import Main from './page/main';
 import Account from './page/account';
-
-const setToken = async (value) => {
-  try {
-    await AsyncStorage.setItem('token', value);
-  } catch (e) {
-    // saving error
-  }
-};
-
-const getToken = async () => {
-  try {
-    const value = await AsyncStorage.getItem('token');
-    console.log("GET DATA", value);
-    if (value == null) {
-      return "";
-    }
-    return value;
-  } catch (e) {
-    return null;
-  }
-};
+import {getToken} from './storage/AsyncStorage';
 
 class App extends React.Component {
+
+  state = {
+    isToken: false
+  }
+  
+  componentDidMount() {
+    getToken().then(token => {
+      if(token != null) {
+        this.setState({isToken: true})
+      }
+    })
+  }
 
   render() {
     // check token
     // if not or expired token => redirect Login Screen
     // else go to Main Screen
-    var token = getToken();
-    console.log("TOKEN\t", token);
-    if (token == "") {
-      console.log("LOGIN");
-      return <Account></Account>;
-    }
-    else {
-      console.log("MAIN");
-      return <Account></Account>;
+    if(this.state.isToken) {
+      return <Main></Main>
+    } else {
+      return <Account></Account>
     }
   }
 };

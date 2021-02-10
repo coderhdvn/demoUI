@@ -1,6 +1,8 @@
 import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import {setToken} from './storage/AsyncStorage';
+
 
 export default class Login extends React.Component {
   state = {
@@ -13,7 +15,7 @@ export default class Login extends React.Component {
     return (
       <View style={styles.container}>
         <Image style={styles.logo} source={require('../images/fingerprint-accepted.png')} />  
-        <View style={styles.inputView} >
+        <View style={styles.inputView}>
           <TextInput  
             style={styles.inputText}
             placeholder="Tên đăng nhập..." 
@@ -54,7 +56,8 @@ export default class Login extends React.Component {
           console.log("PASSWORD", this.state.password)
           // Call API here: /api/v1/user/login (POST)
           // setToken to Local Storage
-            this.props.navigation.navigate("ScanPage")
+          setToken("nhat lam")
+          this.props.navigation.navigate("ScanPage")
           }}>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
