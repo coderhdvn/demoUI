@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image,  Alert, Modal, TouchableHighlight} from 'react-native';
-import Button from '../components/button'
 export default class ResetPWD extends React.Component {
   state={
-    email:"",
+    password: "",
+    email: "",
     show: false,
     verify: false,
     bg: true,
+    display: false,
+    click: false
   }
   render(){
     return (
@@ -21,7 +23,6 @@ export default class ResetPWD extends React.Component {
             placeholderTextColor="#C9D9DA"
             onChangeText={text => this.setState({email:text})}/>
         </View>
-        <Text style={styles.warning}>Email không hợp lệ !!!</Text>
 
         <Modal
         transparent={true}
@@ -35,7 +36,6 @@ export default class ResetPWD extends React.Component {
                 if (text.length==6) {
                   this.setState({verify: true})
                   this.setState({show: false})
-
                 }
               }}
               maxLength={6}
@@ -52,11 +52,12 @@ export default class ResetPWD extends React.Component {
           <Image style={styles.logo} source={require('../images/img_398183.png')} />  
 
             <View style={styles.inputView} >
-              <TextInput  
+              <TextInput
+                secureTextEntry  
                 style={styles.inputText}
                 placeholder="Mật khẩu mới..." 
                 placeholderTextColor="#C9D9DA"
-                onChangeText={text => this.setState({email:text})}/>
+                onChangeText={text => this.setState({password:text})}/>
             </View>
 
             <View style={styles.inputView} >
@@ -65,11 +66,26 @@ export default class ResetPWD extends React.Component {
                 style={styles.inputText}
                 placeholder="Nhập lại mật khẩu..." 
                 placeholderTextColor="#C9D9DA"
-                onChangeText={text => this.setState({password:text})}/>
+                onChangeText={text => {
+                  if(text != this.state.password && text.length >= this.state.password.length) {
+                    this.setState({display: true});
+                    this.setState({click: false});
+                    console.log("TEXT", text, this.state.display)
+    
+                  } else if(text == this.state.password && this.state.password.length != 0) {
+                    this.setState({display: false});
+                    this.setState({click: true});
+                  } 
+                }}/>
             </View>
-            <Text style={styles.warning}>Mật khẩu mới không khớp !!!</Text>
+            <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu mới không khớp !!!</Text>
 
-            <TouchableOpacity style={styles.signupBtn}>
+            <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.hide} onPress={()=>{
+              console.log("EMAIL", this.state.email)
+              console.log("PASSWORD", this.state.password)
+              // Call API here: /api/v1/user/{id} (UPDATE)
+              // setToken to Local Storage
+              }}>
               <Text color="black">Đăng nhập</Text>
             </TouchableOpacity>
         </View>
@@ -77,6 +93,9 @@ export default class ResetPWD extends React.Component {
         <TouchableOpacity style={styles.signupBtn} onPress={() => {
           this.setState({show: true})
           this.setState({bg: false})
+          // Call API here: /api/v1/user/email (POST)
+          this.props.navigation.navigate("ScanPage")
+
           }}>
           <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>
@@ -153,5 +172,8 @@ const styles = StyleSheet.create({
   },
   titlePopUp: {
     fontSize: 20,
+  },
+  hide: {
+    display: 'none'
   }
 });
