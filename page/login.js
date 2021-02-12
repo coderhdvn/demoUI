@@ -1,7 +1,8 @@
 import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
-import {setToken} from '../storage/AsyncStorage';
+import {setData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 
 
 export default class Login extends React.Component {
@@ -55,7 +56,7 @@ export default class Login extends React.Component {
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={()=>{
-          this.props.navigation.navigate("Main")
+          //this.props.navigation.navigate("Main")
           console.log("EMAIL", this.state.email)
           console.log("PASSWORD", this.state.password)
           // Call API here: /api/v1/user/login (POST)
@@ -73,9 +74,9 @@ export default class Login extends React.Component {
           }).then(res => {
             console.log("RESPONSE", res.json())
             if(res && res.status == 200) {
-              setToken(res.json())
+              setData(TOKEN_KEY, res.json())
               this.setState({display: false})
-              this.props.navigation.navigate("ScanPage")
+              this.props.navigation.navigate("Main")
             }
             else {
               this.setState({display: true})

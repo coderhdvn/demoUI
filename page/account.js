@@ -8,7 +8,7 @@ import NotificationPage from './notification';
 import ScanPage from './ScanPage'
 import Welcome from './welcome'
 import Profile from "./profile";
-import DetailInfo from './detailProduct';
+import DetailInfo from './detailInfo';
 import { NavigationContainer } from '@react-navigation/native';
 import Main from './main';
 
@@ -19,7 +19,7 @@ class Account extends React.Component {
     render(){
       return (
        <NavigationContainer>
-            <Stack.Navigator screenOptions={{ headerShown: false }} mode="modal">
+            <Stack.Navigator initialRouteName={this.props.wasLogedIn?"Main":"Login"} screenOptions={{ headerShown: false }} mode="modal">
                 <Stack.Screen name="Login" component={Login} options={{ title: 'Login' }} />
                 <Stack.Screen name="Sign Up" component={Signup} />
                 <Stack.Screen name="Reset Password" component={ResetPWD} />

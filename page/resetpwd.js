@@ -1,4 +1,6 @@
 import React from 'react';
+import {setData} from '../storage/AsyncStorage';
+import {CODE_KEY} from '../constants/Constant';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image,  Alert, Modal, TouchableHighlight} from 'react-native';
 export default class ResetPWD extends React.Component {
   state={
@@ -80,22 +82,57 @@ export default class ResetPWD extends React.Component {
             </View>
             <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu mới không khớp !!!</Text>
 
-            <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.hide} onPress={()=>{
+            <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
               console.log("EMAIL", this.state.email)
               console.log("PASSWORD", this.state.password)
-              // Call API here: /api/v1/user/{id} (UPDATE)
-              // setToken to Local Storage
+              // Call API here: /api/v1/user/login (POST)
+              fetch('http://facebook.github.io/react-native/movies.json', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  email: this.state.email,
+                  password: this.state.password 
+                })
+                }).then(res => {
+                  if(res && res.status == 200) {
+                    this.props.navigation.navigate("Main")
+                  }
+                  else {
+                    this.setState({fail: true})
+                  }
+                });
               }}>
               <Text color="black">Đăng nhập</Text>
             </TouchableOpacity>
         </View>
         </Modal>
+
         <TouchableOpacity style={styles.signupBtn} onPress={() => {
           this.setState({show: true})
           this.setState({bg: false})
           // Call API here: /api/v1/user/email (POST)
-          this.props.navigation.navigate("ScanPage")
-
+          //this.props.navigation.navigate("ScanPage")
+          fetch('http://facebook.github.io/react-native/movies.json', {
+                method: 'POST',
+                headers: {
+                  Accept: 'application/json',
+                  'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                  email: this.state.email,
+                  password: this.state.password 
+                })
+                }).then(res => {
+                  if(res && res.status == 200) {
+                    setData(CODE_KEY, res.json())
+                  }
+                  else {
+                    this.setState({fail: true})
+                  }
+                });
           }}>
           <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>
@@ -145,6 +182,16 @@ const styles = StyleSheet.create({
     alignItems:"center",
     justifyContent:"center",
     margin:40,
+  },
+  disable:{
+    width:"50%",
+    borderRadius:25,
+    backgroundColor:"#8E908A",
+    height:50,
+    alignItems:"center",
+    justifyContent:"center",
+    marginTop:40,
+    marginBottom:10
   },
   loginText:{
     color:"white",

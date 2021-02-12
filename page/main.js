@@ -27,7 +27,7 @@ import NotificationPage from './notification';
 import ScanPage from './ScanPage'
 import Welcome from './welcome'
 import Profile from "./profile";
-import DetailInfo from './detailProduct';
+import DetailInfo from './detailInfo';
 import {Icon} from 'react-native-elements';
 import { color } from 'react-native-reanimated';
 
@@ -60,8 +60,8 @@ class Main extends React.Component {
             fontSize: 15,
           }   
         }}>
-            <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
             <Tab.Screen name="Profile" component={Welcome} options={{title: ''}}/>
+            <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
             <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
         </Tab.Navigator>
       /*</NavigationContainer>  */

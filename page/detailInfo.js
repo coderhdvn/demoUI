@@ -3,23 +3,9 @@ import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'reac
 import { ScrollView } from 'react-native-gesture-handler';
 
 export default class DetailInfo extends React.Component {
-  state= {
-      dataSource: [],
-  }
-
-  componentWillMount() {
-    fetch("https://jsonplaceholder.typicode.com/users")
-            .then(response => response.json())
-            .then((responseJson) => {
-                console.log('getting data from fetch', responseJson)
-                setTimeout(() => {
-                    this.setState({
-                        dataSource: responseJson
-                    })
-                }, 2000)
-
-            })
-            .catch(error => console.log(error))
+  
+  constructor(props) {
+    super(props)
   }
 
   render(){
@@ -29,19 +15,19 @@ export default class DetailInfo extends React.Component {
             <ScrollView style={styles.scrollView}>
             <View>
             <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
-            <Text style={styles.textContent}> {this.state.dataSource[0]} </Text>
+            <Text style={styles.textContent}> {this.props.route.params.data.title} </Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Nhà sản phẩm:</Text> 
-            <Text style={styles.textContent}> {this.state.dataSource[1]}</Text>
+            <Text style={styles.textContent}> {this.props.route.params.data.description}</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
-            <Text style={styles.textContent}> 17/2/2020</Text>
+            <Text style={styles.textContent}> 2/7/2020</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Hạn sử dụng:</Text> 
-            <Text style={styles.textContent}> Không</Text>
+            <Text style={styles.textContent}> {this.props.route.params.data.title}</Text>
             </View>
             <View>
             <Text style={styles.textTitle}> * Serial number:</Text> 

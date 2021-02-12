@@ -7,11 +7,19 @@ import * as Animatable from "react-native-animatable";
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
-console.disableYellowBox = true;
-
 class QrCodeCamera extends Component {
+
   onSuccess(e) {
-    alert(e);
+    console.log("DATA", JSON.stringify(e))
+    fetch('https://facebook.github.io/react-native/movies.json')
+      .then((response) => response.json())
+      .then((responseJson) => {
+        console.log("DATA", JSON.stringify(responseJson))
+        this.props.navigation.navigate("Detail", {data: responseJson})
+      })
+      .catch((error) => {
+        console.error(error);
+      });
   }
 
   makeSlideOutTranslation(translationType, fromValue) {

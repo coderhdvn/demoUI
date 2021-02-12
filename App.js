@@ -22,11 +22,12 @@ class App extends React.Component {
     /* check token
       if not or expired token => redirect Login Screen
       else go to Main Screen */
-    if(this.state.isToken) {
-      return <Main></Main>
+    return <Account wasLogedIn = {this.state.isToken}/>
+    /*  if(this.state.isToken) {
+      return <Account></Account>
     } else {
       return <Account></Account>
-    }
+    }*/
   }
 };
 
