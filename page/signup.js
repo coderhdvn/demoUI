@@ -1,116 +1,126 @@
-import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import React, { useReducer, useState } from 'react';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Button } from 'react-native';
+import Confirm from '../components/confirm'
 
-export default class Signup extends React.Component {
-  state={
-    email:"",
-    password:"",
-    username:"",
-    display: false,
-    fail: false,
-    click: false
+const validate_username = (username) => {
+  return username.length > 3 ? true : false;
+} 
+
+const validate_email = (email) => {
+  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return reg.test(email);
+}
+
+const validate_password = (password) => {
+  return password.length > 6 ? true : false;
+} 
+
+const validate_confirm_password = (password, confirm_password) => {
+  return password === confirm_password;
+} 
+
+const input = (state, action) => {
+  switch (action.change) {
+    case 'username':
+      return validate_username(action.text) ?
+              { ...state, username: action.text, error_username: ""}
+              : { ...state, username: null, error_username: "Username must be more than 3 characters"}
+    case 'email':
+      return validate_email(action.text) ?
+              { ...state, email: action.text, error_email: ""}
+              : { ...state, email: null, error_email: "Email not valid"}
+    case 'password':
+      return validate_password(action.text) ?
+              { ...state, password: action.text, error_password: ""}
+              : { ...state, password: null, error_password: "Password must be more than 6 characters"}
+    case 'confirm_password':
+      return validate_confirm_password(state.password, action.text) ?
+              { ...state, error_confirm_password: ""}
+              : { ...state, error_confirm_password: "Password don't match"}
+    default:
+      return state
   }
-  render(){
-    return (
-      <View style={styles.container}>
-        <Image style={styles.logo} source={require('../images/6654319_preview.png')} />  
-        <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="Tên hiển thị..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              this.setState({fail: false})
-              if(text.length != 0) {
-              this.setState({username:text})
-            } else {
-              this.setState({click:false})
-            }   
-          }}/>
-        </View>
-        <View style={styles.inputView} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="Email..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              this.setState({fail: false})
-              if(text.length != 0) {
-              this.setState({email:text})
-            } else {
-              this.setState({click:false})
-            }   
-          }}/>
-        </View>
-        <View style={styles.inputView} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Mật khẩu..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              this.setState({fail: false})
-              if(text.length != 0) {
-              this.setState({password:text})
-            } else {
-              this.setState({click:false})
-            }
-          }}/>
-        </View>
-        <View style={styles.inputView} hide={false} >
-          <TextInput  
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Nhập lại mật khẩu..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              this.setState({fail: false})
-              if(text != this.state.password && text.length >= this.state.password.length) {
-                this.setState({display: true});
-                this.setState({click: false});
-                console.log("TEXT", text, this.state.display)
+}
 
-              } else if(text == this.state.password && this.state.username.length != 0 && this.state.password.length != 0) {
-                this.setState({display: false});
-                this.setState({click: true});
-              } 
-            }}/>
-        </View>
-        <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu không khớp !!!</Text>
-        <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
-          // Call API here: /api/v1/user/signup (POST)            
-          console.log("USERNAME", this.state.username)
-          console.log("EMAIL", this.state.email)
-          console.log("PASSWORD", this.state.password)
+const SignUp = ({navigation}) => {
+  const [inputs, dispatch] = useReducer(input, {username: "", email: "", password: "",
+                                                 error_username: null, error_email: null, error_password: null, error_confirm_password: null});
+  
+  const [message, setMessage] = useState("");
+  
+  const confirm = () => {
+    let check = (inputs.error_username === inputs.error_email) && (inputs.error_password === inputs.error_confirm_password);
+    if (check) {
+      setMessage("Want to sign up?");
+    } else {
+      setMessage("Something wrong!");
+    }
+  }
 
-          fetch('http://facebook.github.io/react-native/movies.json', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              username: this.state.username,
-              email: this.state.email,
-              password: this.state.password 
-            })
-          }).then(res => {
-            if(res && res.status == 200) {
-              this.props.navigation.navigate("Login")
-            }
-            else {
-              this.setState({fail: true})
-            }
-          });
-
-          }}>
-          <Text style={styles.signupText}>Đăng ký</Text>
-        </TouchableOpacity>
-        <Text style={this.state.fail ? styles.warning : styles.hide}>Đăng kí tài khoản không thành công !!!</Text>
-
+  const submit = () => {
+    console.log('ok');
+    navigation.navigate("Login");
+    // Call API
+  }
+  return (
+    <View style={styles.container}>
+      <Image style={styles.logo} source={require('../images/6654319_preview.png')} />  
+      <View style={styles.inputView} >
+        <TextInput  
+          style={styles.inputText}
+          placeholder="Tên hiển thị..." 
+          placeholderTextColor="#C9D9DA"
+          onChangeText={(text) => {
+            dispatch({change: 'username', text: text})
+          }}
+        />
       </View>
-    );
-  }
+      <Text style={styles.errorInput}>{inputs.error_username}</Text>
+      <View style={styles.inputView} >
+        <TextInput  
+          style={styles.inputText}
+          placeholder="Email..." 
+          placeholderTextColor="#C9D9DA"
+          onChangeText={(text) => {
+            dispatch({change: 'email', text: text})
+          }}
+          />
+      </View>
+      <Text style={styles.errorInput}>{inputs.error_email}</Text>
+      <View style={styles.inputView} >
+        <TextInput  
+          secureTextEntry
+          style={styles.inputText}
+          placeholder="Mật khẩu..." 
+          placeholderTextColor="#C9D9DA"
+          onChangeText={(text) => {
+            dispatch({change: 'password', text: text})
+          }}
+          />
+      </View>
+      <Text style={styles.errorInput}>{inputs.error_password}</Text>
+      <View style={styles.inputView} hide={false} >
+        <TextInput  
+          secureTextEntry
+          style={styles.inputText}
+          placeholder="Nhập lại mật khẩu..." 
+          placeholderTextColor="#C9D9DA"
+          onChangeText={(text) => {
+            dispatch({change: 'confirm_password', text: text})
+          }}
+          />
+      </View>
+      <Text style={styles.errorInput}>{inputs.error_confirm_password}</Text>
+
+      <Confirm 
+        message = {message}
+        popup = {() => {
+          confirm();
+        }}
+        submit = {submit}
+      />
+    </View>
+  )
 }
 
 const styles = StyleSheet.create({
@@ -152,7 +162,7 @@ const styles = StyleSheet.create({
     height:50,
     alignItems:"center",
     justifyContent:"center",
-    marginTop:40,
+    marginTop:20,
     marginBottom:10
   },
   disable:{
@@ -182,5 +192,12 @@ const styles = StyleSheet.create({
   },
   hide: {
     display: 'none'
+  },
+  errorInput: {
+    color: 'red',
+    fontSize: 10,
+    marginBottom: -5
   }
 });
+
+export default SignUp;
