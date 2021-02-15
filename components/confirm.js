@@ -7,7 +7,6 @@ import {
   TouchableHighlight,
   View
 } from "react-native";
-import { TouchableOpacity } from "react-native-gesture-handler";
 
 const Confirm = ({ message, button, popup, submit }) => {
     const [visible, setVisible] = React.useState(false);

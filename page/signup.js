@@ -1,9 +1,14 @@
 import React, { useReducer, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, TextInput, Image } from 'react-native';
 import Confirm from '../components/confirm'
 
+const USERNAME_LENGTH = 3;
+const USERNAME_ERROR = "Username phải từ 3 ký tự trở lên";
+const PASSWORD_LENGTH = 6;
+const PASSWORD_ERROR = "Password phải từ 6 ký tự trở lên";
+
 const validate_username = (username) => {
-  return username.length > 3 ? true : false;
+  return username.length >= USERNAME_LENGTH ? true : false;
 } 
 
 const validate_email = (email) => {
@@ -12,7 +17,7 @@ const validate_email = (email) => {
 }
 
 const validate_password = (password) => {
-  return password.length > 6 ? true : false;
+  return password.length > PASSWORD_LENGTH ? true : false;
 } 
 
 const validate_confirm_password = (password, confirm_password) => {
@@ -24,7 +29,7 @@ const input = (state, action) => {
     case 'username':
       return validate_username(action.text) ?
               { ...state, username: action.text, error_username: ""}
-              : { ...state, username: null, error_username: "Username must be more than 3 characters"}
+              : { ...state, username: null, error_username: USERNAME_ERROR}
     case 'email':
       return validate_email(action.text) ?
               { ...state, email: action.text, error_email: ""}
@@ -32,7 +37,7 @@ const input = (state, action) => {
     case 'password':
       return validate_password(action.text) ?
               { ...state, password: action.text, error_password: ""}
-              : { ...state, password: null, error_password: "Password must be more than 6 characters"}
+              : { ...state, password: null, error_password: PASSWORD_ERROR}
     case 'confirm_password':
       return validate_confirm_password(state.password, action.text) ?
               { ...state, error_confirm_password: ""}
@@ -49,9 +54,9 @@ const SignUp = ({navigation}) => {
   const [message, setMessage] = useState("");
   
   const confirm = () => {
-    let check = (inputs.error_username === inputs.error_email) && (inputs.error_password === inputs.error_confirm_password);
+    let check = (inputs.error_username === "") && (inputs.error_email === "") && (inputs.error_password === "") && (inputs.error_confirm_password === "");
     if (check) {
-      setMessage("Want to sign up?");
+      setMessage(`Sign up with: \n Username: ${inputs.username} \n Email: ${inputs.email}`);
     } else {
       setMessage("Something wrong!");
     }
