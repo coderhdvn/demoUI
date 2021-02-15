@@ -9,7 +9,7 @@ import {
 } from "react-native";
 import { TouchableOpacity } from "react-native-gesture-handler";
 
-const Confirm = ({ message, popup, submit }) => {
+const Confirm = ({ message, button, popup, submit }) => {
     const [visible, setVisible] = React.useState(false);
 
     const showDialog = () => setVisible(true);
@@ -31,7 +31,7 @@ const Confirm = ({ message, popup, submit }) => {
               <Text style={styles.modalText}>{message}</Text>
 
               { message !== "Something wrong!" && <TouchableHighlight
-                style={{ ...styles.openButton, backgroundColor: "#2196F3" }}
+                style={{ ...styles.openButton, backgroundColor: "#2196F3", marginBottom: 5 }}
                 onPress={() => {
                     hideDialog();
                     submit();
@@ -56,7 +56,7 @@ const Confirm = ({ message, popup, submit }) => {
                 showDialog();
           }}
         >
-          <Text style={styles.textStyle}>Đăng ký</Text>
+          <Text style={styles.textStyle}>{button}</Text>
         </TouchableHighlight>
       </View>
     );
@@ -101,12 +101,12 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   submitBtn: {
-    width: 100,
+    width: 150,
     backgroundColor:"#1CBCC7",
     borderRadius:25,
     height:50,
     alignItems:"center",
     justifyContent:"center",
-    marginTop: -150
+    marginTop: -100
   }
 });

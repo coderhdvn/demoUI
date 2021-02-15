@@ -114,6 +114,7 @@ const SignUp = ({navigation}) => {
 
       <Confirm 
         message = {message}
+        button = "Đăng ký"
         popup = {() => {
           confirm();
         }}
