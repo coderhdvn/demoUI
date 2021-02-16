@@ -99,7 +99,7 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
   submitBtn: {
-    width: 150,
+    width: "70%",
     backgroundColor:"#1CBCC7",
     borderRadius:25,
     height:50,

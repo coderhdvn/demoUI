@@ -142,8 +142,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   logo:{
-    width: 100,
-    height: 100,
+    resizeMode: "contain",
+    height: "20%",
+    width: "20%",
     position: "absolute",
     marginTop: 20
   },
@@ -155,7 +156,7 @@ const styles = StyleSheet.create({
     transform: [
       {scaleX: 2}
       ],
-    marginTop: -350,
+    marginTop: -250,
   },
 
   inputView:{
@@ -223,7 +224,8 @@ const styles = StyleSheet.create({
   },
   scroll: {
     width: "80%",
-    marginBottom: 20
+    marginBottom: 20,
+    marginTop: 20
   }
 });
 
