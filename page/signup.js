@@ -72,6 +72,7 @@ const SignUp = ({navigation}) => {
   }
   return (
     <View style={styles.container}>
+      <View style={styles.shadow}></View>
       <Image style={styles.logo} source={require('../images/6654319_preview.png')} />  
       <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <View style={styles.inputView} >
@@ -139,13 +140,24 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-    justifyContent: 'center',
   },
   logo:{
-    resizeMode: "contain",
-    width: "30%",
-    height: "20%",
+    width: 100,
+    height: 100,
+    position: "absolute",
+    marginTop: 20
   },
+  shadow: {
+    width: 500,
+    height: 500,
+    backgroundColor: "#6FF6FF",
+    borderRadius: 250,
+    transform: [
+      {scaleX: 2}
+      ],
+    marginTop: -350,
+  },
+
   inputView:{
     backgroundColor:"#fff",
     borderWidth: 1,
