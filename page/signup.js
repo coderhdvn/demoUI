@@ -1,11 +1,14 @@
 import React, { useReducer, useState } from 'react';
 import { StyleSheet, Text, View, TextInput, Image } from 'react-native';
+import { ScrollView } from 'react-native-gesture-handler';
 import Confirm from '../components/confirm'
 
 const USERNAME_LENGTH = 3;
-const USERNAME_ERROR = "Username phải từ 3 ký tự trở lên";
+const USERNAME_ERROR = "Tên hiển thị phải từ 3 ký tự trở lên";
 const PASSWORD_LENGTH = 6;
-const PASSWORD_ERROR = "Password phải từ 6 ký tự trở lên";
+const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
+const EMAIL_ERROR = "Email không hợp lệ";
+const PASSWORD_CONFIRM_ERROR = "Mật khẩu không trùng khớp"
 
 const validate_username = (username) => {
   return username.length >= USERNAME_LENGTH ? true : false;
@@ -17,7 +20,7 @@ const validate_email = (email) => {
 }
 
 const validate_password = (password) => {
-  return password.length > PASSWORD_LENGTH ? true : false;
+  return password.length >= PASSWORD_LENGTH ? true : false;
 } 
 
 const validate_confirm_password = (password, confirm_password) => {
@@ -33,7 +36,7 @@ const input = (state, action) => {
     case 'email':
       return validate_email(action.text) ?
               { ...state, email: action.text, error_email: ""}
-              : { ...state, email: null, error_email: "Email not valid"}
+              : { ...state, email: null, error_email: EMAIL_ERROR}
     case 'password':
       return validate_password(action.text) ?
               { ...state, password: action.text, error_password: ""}
@@ -41,7 +44,7 @@ const input = (state, action) => {
     case 'confirm_password':
       return validate_confirm_password(state.password, action.text) ?
               { ...state, error_confirm_password: ""}
-              : { ...state, error_confirm_password: "Password don't match"}
+              : { ...state, error_confirm_password: PASSWORD_CONFIRM_ERROR}
     default:
       return state
   }
@@ -70,6 +73,7 @@ const SignUp = ({navigation}) => {
   return (
     <View style={styles.container}>
       <Image style={styles.logo} source={require('../images/6654319_preview.png')} />  
+      <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
       <View style={styles.inputView} >
         <TextInput  
           style={styles.inputText}
@@ -80,7 +84,7 @@ const SignUp = ({navigation}) => {
           }}
         />
       </View>
-      <Text style={styles.errorInput}>{inputs.error_username}</Text>
+      <Text style={styles.errorText}>{inputs.error_username}</Text>
       <View style={styles.inputView} >
         <TextInput  
           style={styles.inputText}
@@ -91,7 +95,7 @@ const SignUp = ({navigation}) => {
           }}
           />
       </View>
-      <Text style={styles.errorInput}>{inputs.error_email}</Text>
+      <Text style={styles.errorText}>{inputs.error_email}</Text>
       <View style={styles.inputView} >
         <TextInput  
           secureTextEntry
@@ -103,7 +107,7 @@ const SignUp = ({navigation}) => {
           }}
           />
       </View>
-      <Text style={styles.errorInput}>{inputs.error_password}</Text>
+      <Text style={styles.errorText}>{inputs.error_password}</Text>
       <View style={styles.inputView} hide={false} >
         <TextInput  
           secureTextEntry
@@ -115,7 +119,7 @@ const SignUp = ({navigation}) => {
           }}
           />
       </View>
-      <Text style={styles.errorInput}>{inputs.error_confirm_password}</Text>
+      <Text style={styles.errorText}>{inputs.error_confirm_password}</Text>
 
       <Confirm 
         message = {message}
@@ -125,6 +129,7 @@ const SignUp = ({navigation}) => {
         }}
         submit = {submit}
       />
+      </ScrollView>
     </View>
   )
 }
@@ -139,10 +144,9 @@ const styles = StyleSheet.create({
   logo:{
     resizeMode: "contain",
     width: "30%",
-    height: "20%"
+    height: "20%",
   },
   inputView:{
-    width:"80%",
     backgroundColor:"#fff",
     borderWidth: 1,
     borderRadius:15,
@@ -154,7 +158,8 @@ const styles = StyleSheet.create({
   },
   inputText:{
     height:50,
-    color:"black"
+    color:"black",
+    alignItems: 'center'
   },
   forgot:{
     color:"#1CBCC7",
@@ -199,10 +204,14 @@ const styles = StyleSheet.create({
   hide: {
     display: 'none'
   },
-  errorInput: {
+  errorText: {
     color: 'red',
     fontSize: 10,
     marginBottom: -5
+  },
+  scroll: {
+    width: "80%",
+    marginBottom: 20
   }
 });
 

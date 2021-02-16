@@ -17,6 +17,15 @@ const Confirm = ({ message, button, popup, submit }) => {
 
     return (
       <View style={styles.centeredView}>
+        <TouchableHighlight
+          style={styles.submitBtn}
+          onPress={() => {
+                popup();
+                showDialog();
+          }}
+        >
+          <Text style={styles.textStyle}>{button}</Text>
+        </TouchableHighlight>
         <Modal
           animationType="slide"
           transparent={true}
@@ -47,16 +56,6 @@ const Confirm = ({ message, button, popup, submit }) => {
             </View>
           </View>
         </Modal>
-
-        <TouchableHighlight
-          style={styles.submitBtn}
-          onPress={() => {
-                popup();
-                showDialog();
-          }}
-        >
-          <Text style={styles.textStyle}>{button}</Text>
-        </TouchableHighlight>
       </View>
     );
 }
@@ -106,6 +105,5 @@ const styles = StyleSheet.create({
     height:50,
     alignItems:"center",
     justifyContent:"center",
-    marginTop: -100
   }
 });
