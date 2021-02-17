@@ -220,7 +220,8 @@ const styles = StyleSheet.create({
   errorText: {
     color: 'red',
     fontSize: 10,
-    marginBottom: -5
+    marginBottom: -5,
+    textAlign: 'center'
   },
   scroll: {
     width: "80%",

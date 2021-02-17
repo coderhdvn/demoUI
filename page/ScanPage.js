@@ -4,6 +4,7 @@ import { View, Dimensions, Text, ScrollView, Image } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
 import Icon from "react-native-ionicons";
+import TaskBar from "../components/taskbar";
 
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -33,18 +34,6 @@ class QrCodeCamera extends Component {
         [translationType]: fromValue
       }
     };
-  }
-
-  pressSearch() {
-    console.log('search');
-  }
-
-  pressHome() {
-    console.log('home');
-  }
-
-  pressAccount() {
-    console.log('account');
   }
 
   pressFolder() {
@@ -113,17 +102,8 @@ class QrCodeCamera extends Component {
             </View>
         </View>
 
-        <View style={styles.homebar}> 
-            <View >
-              <Icon name="search" style={styles.icon} size={50} onPress={() => this.pressSearch()}></Icon>
-            </View>
-            <View style={styles.homeIcon}>
-              <Icon name="home" style={styles.icon} size={50} onPress={() => this.pressHome()}></Icon>
-            </View>
-            <View >
-              <Icon name="person" style={styles.icon} size={50} onPress={() => this.pressAccount()}></Icon>
-            </View>
-        </View>
+        {/* add Task Bar */}
+        <TaskBar />
 
       </View>
     );
@@ -223,18 +203,6 @@ const styles = {
   },
   textIcon: {
     textAlign: 'center'
-  },
-  homebar: {
-    flexDirection: 'row',
-    justifyContent: 'space-around',
-    backgroundColor: 'white'
-  },
-  homeIcon: {
-    height: 90,
-    width: 90,
-    backgroundColor: 'white',
-    borderRadius: 45,
-    marginTop: -25
   },
 };
 
