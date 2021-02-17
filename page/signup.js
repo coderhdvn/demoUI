@@ -156,7 +156,7 @@ const styles = StyleSheet.create({
     transform: [
       {scaleX: 2}
       ],
-    marginTop: -250,
+    marginTop: -320,
   },
 
   inputView:{

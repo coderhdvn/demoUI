@@ -35,6 +35,30 @@ class QrCodeCamera extends Component {
     };
   }
 
+  pressSearch() {
+    console.log('search');
+  }
+
+  pressHome() {
+    console.log('home');
+  }
+
+  pressAccount() {
+    console.log('account');
+  }
+
+  pressFolder() {
+    console.log('folder');
+  }
+
+  pressGallery() {
+    console.log('gallery');
+  }
+
+  pressHistory() {
+    console.log('history');
+  }
+
   render() {
     return (
       <View style={{flex:1}}>
@@ -76,28 +100,28 @@ class QrCodeCamera extends Component {
         />
         <View style={styles.listView}> 
             <View style={styles.viewIcon}>
-              <Icon name="folder-open" style={styles.icon} size={60}></Icon>
+              <Icon name="folder-open" style={styles.icon} size={50} onPress={() => this.pressFolder()}></Icon>
               <Text style={styles.textIcon}>Đã lưu</Text>
             </View>
             <View style={styles.viewIcon}>
-              <Icon name="images" style={styles.icon} size={60}></Icon>
+              <Icon name="images" style={styles.icon} size={50} onPress={() => this.pressGallery()}></Icon>
               <Text style={styles.textIcon}>Thư viện</Text>
             </View>
             <View style={styles.viewIcon}>
-              <Icon name="time" style={styles.icon} size={60}></Icon>
+              <Icon name="time" style={styles.icon} size={50} onPress={() => this.pressHistory()}></Icon>
               <Text style={styles.textIcon}>Lịch sử</Text>
             </View>
         </View>
 
-        <View style={styles.listView}> 
-            <View style={styles.viewIcon}>
-              <Icon name="search" style={styles.icon} size={60}></Icon>
+        <View style={styles.homebar}> 
+            <View >
+              <Icon name="search" style={styles.icon} size={50} onPress={() => this.pressSearch()}></Icon>
             </View>
-            <View style={styles.viewIcon}>
-              <Icon name="home" style={styles.icon} size={60}></Icon>
+            <View style={styles.homeIcon}>
+              <Icon name="home" style={styles.icon} size={50} onPress={() => this.pressHome()}></Icon>
             </View>
-            <View style={styles.viewIcon}>
-              <Icon name="person" style={styles.icon} size={60}></Icon>
+            <View >
+              <Icon name="person" style={styles.icon} size={50} onPress={() => this.pressAccount()}></Icon>
             </View>
         </View>
 
@@ -184,23 +208,34 @@ const styles = {
     justifyContent: "center",
   },
   viewIcon: {
-    height: 100,
-    width: 100,
-    backgroundColor: 'white'
+    height: 90,
+    width: 90,
+    backgroundColor: '#1CBCC7',
+    marginBottom: 40
   },
   icon: {
     textAlign: 'center',
-    marginTop: 10
+    marginTop: 10,
   },
   listView: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-    borderColor: 'white',
-    marginBottom: 20
   },
   textIcon: {
     textAlign: 'center'
-  }
+  },
+  homebar: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    backgroundColor: 'white'
+  },
+  homeIcon: {
+    height: 90,
+    width: 90,
+    backgroundColor: 'white',
+    borderRadius: 45,
+    marginTop: -25
+  },
 };
 
 export default QrCodeCamera;
