@@ -3,6 +3,9 @@ import React, { Component } from "react";
 import { View, Dimensions, Text, ScrollView, Image } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
+import Icon from "react-native-ionicons";
+import TaskBar from "../components/taskbar";
+
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -31,6 +34,18 @@ class QrCodeCamera extends Component {
         [translationType]: fromValue
       }
     };
+  }
+
+  pressFolder() {
+    console.log('folder');
+  }
+
+  pressGallery() {
+    console.log('gallery');
+  }
+
+  pressHistory() {
+    console.log('history');
   }
 
   render() {
@@ -72,19 +87,24 @@ class QrCodeCamera extends Component {
             </View>
           }
         />
-      <View > 
-          <ScrollView horizontal={true} style={styles.listIcons}>
-            <View>
-              <Image style={styles.logo} source={require('../images/pic1.jpg')} />  
+        <View style={styles.listView}> 
+            <View style={styles.viewIcon}>
+              <Icon name="folder-open" style={styles.icon} size={50} onPress={() => this.pressFolder()}></Icon>
+              <Text style={styles.textIcon}>Đã lưu</Text>
             </View>
-            <View>
-              <Image style={styles.logo} source={require('../images/pic2.jpg')} />  
+            <View style={styles.viewIcon}>
+              <Icon name="images" style={styles.icon} size={50} onPress={() => this.pressGallery()}></Icon>
+              <Text style={styles.textIcon}>Thư viện</Text>
             </View>
-            <View>
-              <Image style={styles.logo} source={require('../images/pic3.jpg')} />  
+            <View style={styles.viewIcon}>
+              <Icon name="time" style={styles.icon} size={50} onPress={() => this.pressHistory()}></Icon>
+              <Text style={styles.textIcon}>Lịch sử</Text>
             </View>
-          </ScrollView>
         </View>
+
+        {/* add Task Bar */}
+        <TaskBar />
+
       </View>
     );
   }
@@ -155,10 +175,6 @@ const styles = {
     scaleY: 0.6,
   },
 
-  listIcons: {
-    height: '22%'
-  },
-
   scanBar: {
     width: scanBarWidth,
     height: scanBarHeight,
@@ -170,7 +186,24 @@ const styles = {
     fontSize: 16,
     textAlign: "center",
     justifyContent: "center",
-  }
+  },
+  viewIcon: {
+    height: 90,
+    width: 90,
+    backgroundColor: '#1CBCC7',
+    marginBottom: 40
+  },
+  icon: {
+    textAlign: 'center',
+    marginTop: 10,
+  },
+  listView: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
+  textIcon: {
+    textAlign: 'center'
+  },
 };
 
 export default QrCodeCamera;
