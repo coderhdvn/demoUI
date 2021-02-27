@@ -56,7 +56,7 @@ export default class Login extends React.Component {
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={()=>{
-          //this.props.navigation.navigate("Main")
+          this.props.navigation.navigate("Main")
           console.log("EMAIL", this.state.email)
           console.log("PASSWORD", this.state.password)
           // Call API here: /api/v1/user/login (POST)

@@ -4,7 +4,6 @@ import { View, Dimensions, Text, ScrollView, Image } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
 import Icon from "react-native-ionicons";
-import TaskBar from "../components/taskbar";
 
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -101,9 +100,6 @@ class QrCodeCamera extends Component {
               <Text style={styles.textIcon}>Lịch sử</Text>
             </View>
         </View>
-
-        {/* add Task Bar */}
-        <TaskBar />
 
       </View>
     );
