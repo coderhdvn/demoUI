@@ -1,6 +1,9 @@
+import { Tab } from 'native-base';
 import React from 'react';
+import { Button } from 'react-native';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import DistributionRoute from './DistributionRoute'
 
 export default class DetailInfo extends React.Component {
     
@@ -64,6 +67,10 @@ export default class DetailInfo extends React.Component {
                   </View>
                 )
               }}
+            />
+            <Button 
+              title="Show more"
+              onPress={() => console.log('oke')}
             />
             </View>
 
