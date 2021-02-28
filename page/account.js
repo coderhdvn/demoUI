@@ -10,6 +10,7 @@ import Welcome from './welcome'
 import Profile from "./profile";
 import DetailInfo from './detailInfo';
 import GGMap from './DistributionRoute';
+import History from './history';
 
 import { NavigationContainer } from '@react-navigation/native';
 import Main from './main';
@@ -29,6 +30,7 @@ class Account extends React.Component {
                 <Stack.Screen name="ScanPage" component={ScanPage} />
                 <Stack.Screen name="detail" component={DetailInfo} />
                 <Stack.Screen name="map" component={GGMap} />
+                <Stack.Screen name="history" component={History} />
                 <Stack.Screen name="Main" component={Main} />
             </Stack.Navigator>
         </NavigationContainer>
