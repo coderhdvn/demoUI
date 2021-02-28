@@ -64,9 +64,7 @@ class Main extends React.Component {
         }}>
             <Tab.Screen name="Profile" component={Welcome} options={{title: ''}}/>
             <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
-            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
-            <Tab.Screen name="Distribute" component={DistributionRoute} options={{title: ''}}/>
-            
+            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>            
         </Tab.Navigator>
       /*</NavigationContainer>  */
   );

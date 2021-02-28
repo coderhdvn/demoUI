@@ -69,8 +69,12 @@ export default class DetailInfo extends React.Component {
               }}
             />
             <Button 
-              title="Show more"
-              onPress={() => console.log('oke')}
+              style={styles.btnShow}
+              title="Xem Bản Đồ"
+              onPress={() => {
+                  this.props.navigation.navigate("map")
+                }
+              }
             />
             </View>
 
@@ -167,5 +171,8 @@ const styles = StyleSheet.create({
     height: 300,
     width: 300,
     marginTop: 5
+  },
+  btnShow: {
+    borderRadius: 5
   }
 });
