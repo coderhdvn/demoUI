@@ -48,6 +48,7 @@ class Main extends React.Component {
     return (
       /*<NavigationContainer>*/
         <Tab.Navigator 
+        initialRouteName="Scan"
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
             if (route.name == "Profile")
