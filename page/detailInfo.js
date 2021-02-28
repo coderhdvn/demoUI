@@ -97,10 +97,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#00F0FF",
 },
   titleView: {
-    marginLeft: 50,
-    marginRight: 40,
-    marginBottom: 10,
-    marginTop: 20,
+    alignSelf: 'center',
     backgroundColor: 'white',
     shadowColor: '#000000',
     shadowOffset: {
@@ -109,23 +106,22 @@ const styles = StyleSheet.create({
     },
     shadowOpacity: 0.2,
     elevation: 20,
-    position: 'absolute',
-    borderRadius: 2
+    borderRadius: 5,
+    marginTop: 20,
+    marginBottom: 27
   },
   shadow: {
-    marginLeft: 40,
-    marginRight: 50,
-    marginBottom: 20,
-    marginTop: 30,
-    backgroundColor: '#777777',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 2
-    },
-    shadowOpacity: 0.2,
-    elevation: 20,
-    borderRadius: 5
+    backgroundColor: 'black',
+    opacity: 0.4,
+    borderRadius: 5,
+    position: 'absolute',
+    top: 27,
+    alignSelf: 'center',
+    transform: [
+      {
+        translateX: -7
+      }
+    ]
   },
   title: {
       color:"black", 
