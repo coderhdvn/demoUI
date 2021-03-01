@@ -45,6 +45,7 @@ class QrCodeCamera extends Component {
 
   pressHistory() {
     console.log('history');
+    this.props.navigation.navigate('history');
   }
 
   render() {
