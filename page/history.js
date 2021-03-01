@@ -68,7 +68,6 @@ export default class History extends React.Component {
       <View style={styles.container}>
         <View style={styles.titleView}>
             <View style={styles.shadow}>
-
             </View>
             <View style={styles.circle}>
                 <Text style={styles.title}>Lịch sử</Text>
@@ -116,31 +115,31 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleView: {
-        height: 120
+        height: "17%",
+        flexDirection: 'column',
+        justifyContent: 'center'
     },
     circle: {
         backgroundColor: '#E6FDFF',
         height: 200,
         width: 200,
-        position: 'absolute',
-        alignSelf: 'center',
-        top: -35,
-        borderRadius: 100
+        right: -220,
+        borderRadius: 100,
+        flexDirection: 'column',
+        justifyContent: 'center'
     },
     shadow: {
         backgroundColor: '#B7FBFF',
         height: 300,
         width: 300,
         position: 'absolute',
-        top: -82,
-        alignSelf: 'center',
+        right: -15,
         borderRadius: 150
     },
     title: {
         fontSize: 25,
         color: '#22595C',
-        alignSelf: 'center',
-        top: 75
+        alignSelf: 'center'
     },
     listView: {
         marginLeft: 10,
