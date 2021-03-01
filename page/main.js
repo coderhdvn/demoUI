@@ -47,13 +47,12 @@ class Main extends React.Component {
 
   render(){
     return (
-      /*<NavigationContainer>*/
         <Tab.Navigator 
         initialRouteName="Scan"
         screenOptions={({ route }) => ({
           tabBarIcon: ({ focused, color, size }) => {
-            if (route.name == "Profile")
-              return <Icon name='home' color={color} size={size*1.5}/>;
+            if (route.name == "UserInfo")
+              return <Icon name='person' color={color} size={size*1.5}/>;
             if (route.name == "Scan")
               return <Icon name='camera' reverse color={color} size={size*1.3} solid={true}/>;
             return <Icon name='list' color={color} size={size*1.5}/>;
@@ -64,14 +63,12 @@ class Main extends React.Component {
             fontSize: 15,
           }   
         }}>
-            <Tab.Screen name="Profile" component={Welcome} options={{title: ''}}/>
+            <Tab.Screen name="UserInfo" component={UserInfo} options={{title: ''}}/>                        
             <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
             <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
-            <Tab.Screen name="UserInfo" component={UserInfo} options={{title: ''}}/>                        
         </Tab.Navigator>
-      /*</NavigationContainer>  */
   );
-}
+  }
 };
 
 const styles = StyleSheet.create({

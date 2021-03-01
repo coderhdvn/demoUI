@@ -13,7 +13,7 @@ export default class DetailInfo extends React.Component {
       expiry_day: '02/02/2020',
       date_of_manufacture: '02/02/2020',
       serial_number: '123456789',
-      distributor: ['distributor 1', 'distributor 2', 'distributor 3', 'distributor 4'],
+      distributor: ['Công ty 1', 'Công ty 2', 'Công ty 3', 'Công ty 4'],
       description: 'Ram 12GB - ROM 64GB',
       image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
     }
@@ -164,8 +164,10 @@ const styles = StyleSheet.create({
     borderColor: 'gray',
     marginTop: 10,
     marginBottom: 10,
-    backgroundColor: 'gray',
-    marginRight: 10
+    backgroundColor: 'grey',
+    marginRight: 10,
+    borderRadius: 5,
+    padding: 10
   },
   image: {
     height: 300,

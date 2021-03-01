@@ -1,55 +1,86 @@
 import React, { useReducer, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-ionicons';
+import * as ImagePicker from 'react-native-image-picker'
+import { Component } from 'react';
 
-const UserInfo = () => {
-  return (
-    <View style={styles.container}>
-        <View style={styles.shadow}></View>
-        <Image style={styles.logo} source={require('../images/6654319_preview.png')} />
-        <TouchableOpacity>
-            <Image style={styles.addLogo} source={require('../images/plus.png')} /> 
-        </TouchableOpacity>
-        <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+class UserInfo extends Component {
 
-        <View style={styles.inputView} >
-            <View  
-            style={styles.inputText}>
-                <Text style={styles.title} >Tên hiển thị:</Text> 
-                <Text>Nhật Lâm</Text>   
-  
-            </View>
-        </View>
-        <View style={styles.inputView} >
-            <View  
-            style={styles.inputText}>
-                <Text style={styles.title} > Email:</Text>  
-                <Text>nhatlam@gmail.com</Text>  
-            </View>
-        </View><View style={styles.inputView} >
-            <View  
-            style={styles.inputText}>
-                <Text style={styles.title} >Địa chỉ: </Text>    
-                <Text>9/1 Trần Trọng Cung</Text>
-            </View>
-        </View>
-        <View style={styles.inputView} >
-            <View  
-            style={styles.inputText}>
-                <Text style={styles.title} >Điện thoại:</Text>
-                <Text>0905984573</Text>    
-            </View>
-        </View>
-        <View style={styles.inputView} >
-            <View  
-            style={styles.inputText}>
-                <Text style={styles.title} >Mã số thuế:</Text>
-                <Text>123456789</Text>    
-            </View>
-        </View>
-      </ScrollView>
-    </View>
-  )
+  constructor(props) {
+    super(props)
+    this.state = {
+      resourcePath: {},
+    }
+  }
+
+  getImageFromGallery() {
+    ImagePicker.launchImageLibrary((response) => {
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
+        const source = { uri: response.uri };
+        console.log('response', JSON.stringify(response));
+        this.setState({
+          filePath: response,
+          fileData: response.data,
+          fileUri: response.uri
+        });
+      }
+    });
+  };
+
+  render() {
+    return (
+      <View style={styles.container}>
+          <View style={styles.shadow}></View>
+          <Icon name="contact" style={styles.addLogo}  size={50} onPress={() => this.getImageFromGallery()}></Icon>
+          <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+
+          <View style={styles.inputView} >
+              <View  
+              style={styles.inputText}>
+                  <Text style={styles.title} >Tên hiển thị:</Text> 
+                  <Text>Nhật Lâm</Text>   
+    
+              </View>
+          </View>
+          <View style={styles.inputView} >
+              <View  
+              style={styles.inputText}>
+                  <Text style={styles.title} > Email:</Text>  
+                  <Text>nhatlam@gmail.com</Text>  
+              </View>
+          </View><View style={styles.inputView} >
+              <View  
+              style={styles.inputText}>
+                  <Text style={styles.title} >Địa chỉ: </Text>    
+                  <Text>9/1 Trần Trọng Cung</Text>
+              </View>
+          </View>
+          <View style={styles.inputView} >
+              <View  
+              style={styles.inputText}>
+                  <Text style={styles.title} >Điện thoại:</Text>
+                  <Text>0905984573</Text>    
+              </View>
+          </View>
+          <View style={styles.inputView} >
+              <View  
+              style={styles.inputText}>
+                  <Text style={styles.title} >Mã số thuế:</Text>
+                  <Text>123456789</Text>    
+              </View>
+          </View>
+        </ScrollView>
+      </View>
+    )
+  }
 }
 
 const styles = StyleSheet.create({
@@ -67,10 +98,11 @@ const styles = StyleSheet.create({
   },
   addLogo:{
     resizeMode: "contain",
-    height: "5%",
-    width: "5%",
+    transform: [
+      {scale: 2}
+      ],
     position: "absolute",
-    marginTop: "24%"
+    marginTop: "30%"
   },
   shadow: {
     width: "100%",
