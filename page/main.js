@@ -32,6 +32,7 @@ import {Icon} from 'react-native-elements';
 import { color } from 'react-native-reanimated';
 
 import DistributionRoute from './DistributionRoute'
+import UserInfo from './userInfo';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -65,7 +66,8 @@ class Main extends React.Component {
         }}>
             <Tab.Screen name="Profile" component={Welcome} options={{title: ''}}/>
             <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
-            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>            
+            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
+            <Tab.Screen name="UserInfo" component={UserInfo} options={{title: ''}}/>                        
         </Tab.Navigator>
       /*</NavigationContainer>  */
   );

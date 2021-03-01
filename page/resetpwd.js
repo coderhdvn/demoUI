@@ -85,25 +85,26 @@ export default class ResetPWD extends React.Component {
             <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
               console.log("EMAIL", this.state.email)
               console.log("PASSWORD", this.state.password)
+              this.props.navigation.navigate("Main")
               // Call API here: /api/v1/user/login (POST)
-              fetch('http://facebook.github.io/react-native/movies.json', {
-                method: 'POST',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  email: this.state.email,
-                  password: this.state.password 
-                })
-                }).then(res => {
-                  if(res && res.status == 200) {
-                    this.props.navigation.navigate("Main")
-                  }
-                  else {
-                    this.setState({fail: true})
-                  }
-                });
+              // fetch('http://facebook.github.io/react-native/movies.json', {
+              //   method: 'POST',
+              //   headers: {
+              //     Accept: 'application/json',
+              //     'Content-Type': 'application/json'
+              //   },
+              //   body: JSON.stringify({
+              //     email: this.state.email,
+              //     password: this.state.password 
+              //   })
+              //   }).then(res => {
+              //     if(res && res.status == 200) {
+              //       this.props.navigation.navigate("Main")
+              //     }
+              //     else {
+              //       this.setState({fail: true})
+              //     }
+              //   });
               }}>
               <Text color="black">Đăng nhập</Text>
             </TouchableOpacity>
