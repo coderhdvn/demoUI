@@ -82,7 +82,7 @@ project.ext.react = [
 ]
 
 apply from: "../../node_modules/react-native/react.gradle"
-
+apply plugin: 'com.onesignal.androidsdk.onesignal-gradle-plugin'
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -135,8 +135,8 @@ android {
         versionCode 1
         versionName "1.0"
         missingDimensionStrategy 'react-native-camera', 'general'
-        // Enabling multidex support.
-        multiDexEnabled true
+        manifestPlaceholders = [onesignal_app_id: "0e6352b4-fdb3-4480-bb12-ca5b511cfa44", 
+        onesignal_google_project_number: "915294541633"]
     }
     splits {
         abi {
