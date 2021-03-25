@@ -2,8 +2,9 @@ import React, { useReducer, useState } from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-ionicons';
-import * as ImagePicker from 'react-native-image-picker'
+import * as ImagePicker from 'react-native-image-picker';
 import { Component } from 'react';
+import { ActionSheet, Root } from 'native-base'
 
 class UserInfo extends Component {
 
@@ -11,11 +12,19 @@ class UserInfo extends Component {
     super(props)
     this.state = {
       resourcePath: {},
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Microsoft_Account.svg/1024px-Microsoft_Account.svg.png'
     }
   }
 
-  getImageFromGallery() {
-    ImagePicker.launchImageLibrary((response) => {
+  launchCamera = () => {
+    let options = {
+      storeageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchCamera(options, (response) => {
+      console.log('Response = ', response);
       if (response.didCancel) {
         console.log('User cancelled image picker');
       } else if (response.error) {
@@ -24,22 +33,73 @@ class UserInfo extends Component {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        const source = { uri: response.uri };
+        this.setState({image: response.uri})
+        console.log('response', JSON.stringify(response));
+      }
+    });
+  }
+
+  openLibrary = () => {
+    let options = {
+      storageOptions: {
+        skipBackup: true,
+        path: 'images',
+      },
+    };
+    ImagePicker.launchImageLibrary(options, (response) => {
+      console.log('Response = ', response);
+
+      if (response.didCancel) {
+        console.log('User cancelled image picker');
+      } else if (response.error) {
+        console.log('ImagePicker Error: ', response.error);
+      } else if (response.customButton) {
+        console.log('User tapped custom button: ', response.customButton);
+        alert(response.customButton);
+      } else {
         console.log('response', JSON.stringify(response));
         this.setState({
-          filePath: response,
-          fileData: response.data,
-          fileUri: response.uri
+          image: response.uri
         });
       }
     });
-  };
+  }
+
+  changeAvatar = () => {
+    const BUTTONS = ['Take photo', 'Choose photo from library', 'Cancel'];
+    ActionSheet.show(
+      {options: BUTTONS, cancelButtonIndex: 2, title: 'Select a Photo'},
+      buttonIndex => {
+        switch (buttonIndex) {
+          case 0:
+            this.launchCamera();
+            break;
+          case 1: 
+            this.openLibrary();
+            break;
+          default:
+            break;
+        }
+      }    
+    )
+  }
 
   render() {
     return (
-      <View style={styles.container}>
+      <Root>
+        <View style={styles.container}>
           <View style={styles.shadow}></View>
-          <Icon name="contact" style={styles.addLogo}  size={50} onPress={() => this.getImageFromGallery()}></Icon>
+          {/* <Icon name="contact" style={styles.addLogo}  size={50} onPress={() => this.getImageFromGallery()}></Icon> */}
+          <TouchableOpacity 
+            onPress={() => {this.changeAvatar()}}
+            style={styles.avatar}
+          >
+            <Image 
+              source = {{uri: this.state.image}}
+              style = {styles.image}
+            />
+          </TouchableOpacity>
+          
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
 
           <View style={styles.inputView} >
@@ -78,7 +138,9 @@ class UserInfo extends Component {
               </View>
           </View>
         </ScrollView>
-      </View>
+        </View>
+      </Root>
+      
     )
   }
 }
@@ -105,14 +167,11 @@ const styles = StyleSheet.create({
     marginTop: "30%"
   },
   shadow: {
-    width: "100%",
-    height: "45%",
+    width: 1000,
+    height: 1000,
     backgroundColor: "#6FF6FF",
-    borderRadius: 300,
-    transform: [
-      {scaleX:1.3}
-      ],
-    marginTop: -100,
+    borderRadius: 500,
+    marginTop: -800,
   },
 
   inputView:{
@@ -188,6 +247,15 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 12,
     color: 'grey'
+  },
+  avatar: {
+    position: 'absolute',
+    top: 20
+  },
+  image: {
+    height: 150,
+    width: 150,
+    borderRadius: 100
   }
 });
 
