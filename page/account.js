@@ -14,6 +14,7 @@ import History from './history';
 
 import { NavigationContainer } from '@react-navigation/native';
 import Main from './main';
+import Distributors from './Distributors';
 
 const Stack = createStackNavigator();
 
@@ -29,6 +30,7 @@ class Account extends React.Component {
                 <Stack.Screen name="notification" component={NotificationPage} />
                 <Stack.Screen name="ScanPage" component={ScanPage} />
                 <Stack.Screen name="detail" component={DetailInfo} />
+                <Stack.Screen name="distributors" component={Distributors} />
                 <Stack.Screen name="map" component={GGMap} />
                 <Stack.Screen name="history" component={History} />
                 <Stack.Screen name="Main" component={Main} />

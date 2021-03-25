@@ -1,9 +1,8 @@
-import { Tab } from 'native-base';
 import React from 'react';
 import { Button } from 'react-native';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import DistributionRoute from './DistributionRoute'
+import Wraper from '../components/Wraper'
 
 export default class DetailInfo extends React.Component {
     
@@ -30,65 +29,68 @@ export default class DetailInfo extends React.Component {
         
         <View style={styles.contentView}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
-            {/* <Text style={styles.textContent}> {this.props.route.params.data.title} </Text> */}
-            <Text style={styles.textContent}>{this.state.name}</Text>
-            </View>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Nhà sản xuất:</Text> 
+                <Wraper>
+                  <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
+              {/* <Text style={styles.textContent}> {this.props.route.params.data.title} </Text> */}
+                  <Text style={styles.textContent}>{this.state.name}</Text>
+                </Wraper>
+
+              <Wraper>
+                <Text style={styles.textTitle}> * Nhà sản xuất:</Text> 
             {/* <Text style={styles.textContent}> {this.props.route.params.data.description}</Text> */}
-            <Text style={styles.textContent}>{this.state.producer}</Text>
-            </View>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
-            <Text style={styles.textContent}>{this.state.date_of_manufacture}</Text>
-            </View>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Hạn sử dụng:</Text> 
+                <Text style={styles.textContent}>{this.state.producer}</Text>
+              </Wraper>
+
+              <Wraper>
+                <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
+                <Text style={styles.textContent}>{this.state.date_of_manufacture}</Text>
+              </Wraper>
+
+              <Wraper>
+                <Text style={styles.textTitle}> * Hạn sử dụng:</Text> 
             {/* <Text style={styles.textContent}> {this.props.route.params.data.title}</Text> */}
-            <Text style={styles.textContent}>{this.state.expiry_day}</Text>
-            </View>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Serial number:</Text> 
-            <Text style={styles.textContent}>{this.state.serial_number}</Text>
-            </View>
-            <View style={styles.item}>
-            <Text style={styles.textTitle}> * Nhà phân phối:</Text> 
-            <FlatList 
-              showsHorizontalScrollIndicator={false}
-              horizontal={true}
-              data={this.state.distributor}
-              keyExtractor={(data) => data}
-              renderItem={({item}) => {
-                return (
-                  <View style={styles.listView}>
-                    <Text style={styles.textContent}>{item}</Text>
-                  </View>
-                )
-              }}
-            />
-            <Button 
-              style={styles.btnShow}
-              title="Xem Bản Đồ"
-              onPress={() => {
-                  this.props.navigation.navigate("map")
-                }
-              }
-            />
-            </View>
+                <Text style={styles.textContent}>{this.state.expiry_day}</Text>
+              </Wraper>
 
-            <View style={styles.item}>
-              <Text style={styles.textTitle}> * Mô tả:</Text> 
-              <Text style={styles.textContent}>{this.state.description}</Text>
-            </View>
+              <Wraper>
+                <Text style={styles.textTitle}> * Serial number:</Text> 
+                <Text style={styles.textContent}>{this.state.serial_number}</Text>
+              </Wraper>
 
-            <View style={styles.item}>
-              <Text style={styles.textTitle}> * Hình ảnh:</Text> 
-              <Image style={styles.image} source={{uri: this.state.image}} />
-            </View>
-        </ScrollView>
-        
+              <Wraper>
+                <Text style={styles.textTitle}> * Nhà phân phối:</Text> 
+                {/* <FlatList 
+                  showsHorizontalScrollIndicator={false}
+                  horizontal={true}
+                  data={this.state.distributor}
+                  keyExtractor={(data) => data}
+                  renderItem={({item}) => {
+                  return (
+                    <View style={styles.listView}>
+                      <Text style={styles.textContent}>{item}</Text>
+                    </View>
+                  )
+                }}
+                /> */}
+                <Button 
+                  style={styles.btnShow}
+                  title="Xem danh sách nhà phân phối"
+                  onPress={() => {
+                      this.props.navigation.navigate("distributors")
+                    }}
+                />
+              </Wraper>
+
+              <Wraper>
+                <Text style={styles.textTitle}> * Mô tả:</Text> 
+                <Text style={styles.textContent}>{this.state.description}</Text>
+              </Wraper>
+
+              <Wraper>
+                <Text style={styles.textTitle}> * Hình ảnh:</Text> 
+                <Image style={styles.image} source={{uri: this.state.image}} />
+              </Wraper>
+            </ScrollView>
         </View>
       </View>
     );
@@ -145,10 +147,6 @@ const styles = StyleSheet.create({
     },
   textContent: {
     fontSize: 20,
-  },
-  item: {
-    alignItems: 'center',
-    marginBottom: 10
   },
   contentView: {
     backgroundColor: "#fff",
