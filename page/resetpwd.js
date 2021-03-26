@@ -116,24 +116,24 @@ export default class ResetPWD extends React.Component {
           this.setState({bg: false})
           // Call API here: /api/v1/user/email (POST)
           //this.props.navigation.navigate("ScanPage")
-          fetch('http://facebook.github.io/react-native/movies.json', {
-                method: 'POST',
-                headers: {
-                  Accept: 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  email: this.state.email,
-                  password: this.state.password 
-                })
-                }).then(res => {
-                  if(res && res.status == 200) {
-                    setData(CODE_KEY, res.json())
-                  }
-                  else {
-                    this.setState({fail: true})
-                  }
-                });
+          // fetch('http://facebook.github.io/react-native/movies.json', {
+          //       method: 'POST',
+          //       headers: {
+          //         Accept: 'application/json',
+          //         'Content-Type': 'application/json'
+          //       },
+          //       body: JSON.stringify({
+          //         email: this.state.email,
+          //         password: this.state.password 
+          //       })
+          //       }).then(res => {
+          //         if(res && res.status == 200) {
+          //           setData(CODE_KEY, res.json())
+          //         }
+          //         else {
+          //           this.setState({fail: true})
+          //         }
+          //       });
           }}>
           <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
         </TouchableOpacity>

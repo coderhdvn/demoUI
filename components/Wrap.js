@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
-const Wraper = ({ children }) => {
+const Wrap = ({ children }) => {
     return <View style={styles.spacer}>
         {children}
     </View>
@@ -14,4 +14,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default Wraper;
+export default Wrap;

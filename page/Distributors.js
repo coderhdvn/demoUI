@@ -1,7 +1,6 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image, Button } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import Wraper from '../components/Wraper';
 
 export default class Distributors extends React.Component {
     

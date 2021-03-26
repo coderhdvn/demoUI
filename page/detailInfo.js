@@ -2,7 +2,9 @@ import React from 'react';
 import { Button } from 'react-native';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
-import Wraper from '../components/Wraper'
+import Wrap from '../components/Wrap';
+import { getData } from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 
 export default class DetailInfo extends React.Component {
     
@@ -29,35 +31,35 @@ export default class DetailInfo extends React.Component {
         
         <View style={styles.contentView}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                <Wraper>
+                <Wrap>
                   <Text style={styles.textTitle}> * Tên sản phẩm:</Text> 
               {/* <Text style={styles.textContent}> {this.props.route.params.data.title} </Text> */}
                   <Text style={styles.textContent}>{this.state.name}</Text>
-                </Wraper>
+                </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Nhà sản xuất:</Text> 
             {/* <Text style={styles.textContent}> {this.props.route.params.data.description}</Text> */}
                 <Text style={styles.textContent}>{this.state.producer}</Text>
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Ngày sản xuất:</Text> 
                 <Text style={styles.textContent}>{this.state.date_of_manufacture}</Text>
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Hạn sử dụng:</Text> 
             {/* <Text style={styles.textContent}> {this.props.route.params.data.title}</Text> */}
                 <Text style={styles.textContent}>{this.state.expiry_day}</Text>
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Serial number:</Text> 
                 <Text style={styles.textContent}>{this.state.serial_number}</Text>
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Nhà phân phối:</Text> 
                 {/* <FlatList 
                   showsHorizontalScrollIndicator={false}
@@ -75,21 +77,23 @@ export default class DetailInfo extends React.Component {
                 <Button 
                   style={styles.btnShow}
                   title="Xem danh sách nhà phân phối"
-                  onPress={() => {
-                      this.props.navigation.navigate("distributors")
+                  onPress={ async () => {
+                      // this.props.navigation.navigate("distributors")
+                      const token = getData(TOKEN_KEY);
+                      console.log(token);
                     }}
                 />
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Mô tả:</Text> 
                 <Text style={styles.textContent}>{this.state.description}</Text>
-              </Wraper>
+              </Wrap>
 
-              <Wraper>
+              <Wrap>
                 <Text style={styles.textTitle}> * Hình ảnh:</Text> 
                 <Image style={styles.image} source={{uri: this.state.image}} />
-              </Wraper>
+              </Wrap>
             </ScrollView>
         </View>
       </View>

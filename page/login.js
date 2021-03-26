@@ -3,11 +3,12 @@ import React from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import {setData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
+import API from '../api/API';
 
 
 export default class Login extends React.Component {
   state = {
-    email:"",
+    name:"",
     password:"",
     disable:true,
     display: false
@@ -19,12 +20,13 @@ export default class Login extends React.Component {
         <Image style={styles.logo} source={require('../images/fingerprint-accepted.png')} />  
         <View style={styles.inputView}>
           <TextInput  
+            autoCapitalize='none'
             style={styles.inputText}
             placeholder="Tên đăng nhập..." 
             placeholderTextColor="#C9D9DA"
             onChangeText={text => {
               if(text.length > 0) {
-                this.setState({email:text})
+                this.setState({name:text})
                 if(this.state.password.length > 0) {
                   this.setState({disable:false})
                 }  
@@ -33,7 +35,8 @@ export default class Login extends React.Component {
         </View>
 
         <View style={styles.inputView} >
-          <TextInput  
+          <TextInput 
+            autoCapitalize='none' 
             secureTextEntry
             style={styles.inputText}
             placeholder="Mật khẩu..." 
@@ -41,7 +44,7 @@ export default class Login extends React.Component {
             onChangeText={text => {
               if(text.length > 0) {
                 this.setState({password:text})
-                if(this.state.email.length > 0) {
+                if(this.state.name.length > 0) {
                   this.setState({disable:false})
                 }   
               } 
@@ -55,34 +58,20 @@ export default class Login extends React.Component {
           }}>
           <Text style={styles.forgot}>Quên mật khẩu?</Text>
         </TouchableOpacity>
-        <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={()=>{
-          this.props.navigation.navigate("Main")
-          console.log("EMAIL", this.state.email)
-          console.log("PASSWORD", this.state.password)
-          // Call API here: /api/v1/user/login (POST)
-          // setToken to Local Storage
-          fetch('http://facebook.github.io/react-native/movies.json', {
-            method: 'POST',
-            headers: {
-              Accept: 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              email: this.state.email,
-              password: this.state.password 
-            })
-          }).then(res => {
-            console.log("RESPONSE", res.json())
-            if(res && res.status == 200) {
-              setData(TOKEN_KEY, res.json())
-              this.setState({display: false})
-              this.props.navigation.navigate("Main")
+        <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={ async ()=>{
+          const input = {
+            username: this.state.name,
+            password: this.state.password
+          }
+          try {
+            const token = await (await API.post('/authenticate', input)).data.token;
+            setData(TOKEN_KEY, token);
+            this.props.navigation.navigate('Main');
+          } catch (err) {
+              console.error(err.message);
             }
-            else {
-              this.setState({display: true})
-            }
-          });
-          }}>
+        }
+        }>
           <Text style={styles.loginText}>Đăng nhập</Text>
         </TouchableOpacity>
         <TouchableOpacity style={styles.signupBtn} onPress={()=>{
