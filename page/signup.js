@@ -166,7 +166,7 @@ export default class SignUp extends React.Component {
             title='Sign Up'
             type='outline'
             titleStyle={{color: '#1CBCC7', fontSize: 20, padding: 30}}
-            buttonStyle={{borderRadius: 30,}}
+            buttonStyle={{borderRadius: 30, borderColor: '#1CBCC7'}}
             onPress={this.onSubmit}
           />
         </View>
