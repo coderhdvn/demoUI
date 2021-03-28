@@ -1,11 +1,12 @@
 import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ImageBackground } from 'react-native';
+import { StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import {setData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import API from '../api/API';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
+import { BASIC_COLOR } from '../constants/Constant';
 
 export default class Login extends React.Component {
   state = {
@@ -42,7 +43,7 @@ export default class Login extends React.Component {
               <Icon
                 name='user'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             // errorStyle={{ color: 'red' }}
@@ -51,7 +52,7 @@ export default class Login extends React.Component {
               this.setState({name: value})
             }}
             autoCapitalize="none"
-            inputStyle={{color: '#1CBCC7'}}
+            inputStyle={{color: BASIC_COLOR}}
             // inputContainerStyle={{backgroundColor: 'white'}}
           />  
 
@@ -61,7 +62,7 @@ export default class Login extends React.Component {
               <Icon
                 name='key'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             // errorStyle={{ color: 'red' }}
@@ -70,7 +71,7 @@ export default class Login extends React.Component {
               this.setState({password: value})
             }}
             autoCapitalize="none"
-            inputStyle={{color: '#1CBCC7'}}
+            inputStyle={{color: BASIC_COLOR}}
           />  
         </View>
         <View style={styles.buttonView}>

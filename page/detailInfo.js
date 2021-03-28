@@ -6,7 +6,9 @@ import { getData } from '../storage/AsyncStorage';
 import {TOKEN_KEY, BASIC_COLOR} from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import Animated from 'react-native-reanimated';
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, Rating, AirbnbRating } from 'react-native-elements';
+import { Modal } from 'react-native';
+import { Alert } from 'react-native';
 
 const MAX_STARS = 5;
 
@@ -18,7 +20,6 @@ export default class DetailInfo extends React.Component {
       expiry_day: '02/02/2020',
       date_of_manufacture: '02/02/2020',
       serial_number: '123456789',
-      distributor: ['Công ty 1', 'Công ty 2', 'Công ty 3', 'Công ty 4'],
       description: "Sau thành công của Samsung Galaxy A51 với mức doanh số khá tốt thì trong năm 2020, Samsung lại tiếp tục cho ra mắt mẫu smartphone Galaxy A52 với những cải tiến về hệ thống camera cũng như được trang bị cấu hình mạnh mẽ cho trải nghiệm tuyệt vời.",
       image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg',
       reviews: [
@@ -35,8 +36,10 @@ export default class DetailInfo extends React.Component {
           comment: "In reception they don't speak English and every time I need help or I don't understand they roll their eyes, they are extremely rude and on top of that they lost my results once."
         }
       ],
-      rating: 3,
-      reviewSummary : {}
+      reviewSummary : {},
+      rating: 0,
+      comment: '',
+      modalVisible: false
     }
 
     rate = star => {
@@ -62,6 +65,10 @@ export default class DetailInfo extends React.Component {
       let avg = Math.round(sum / total);
       let reviewSummary = {total, avg}
       this.setState({ reviewSummary })
+    }
+
+    ratingCompleted(rating) {
+      console.log(rating)
     }
 
     componentDidMount() {
@@ -154,17 +161,49 @@ export default class DetailInfo extends React.Component {
                   type='outline'
                   titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
                   buttonStyle={{borderColor: 'white'}}
-                  onPress={() => {}}
+                  onPress={() => this.setState({modalVisible: true})}
                   containerStyle={{padding: 5}}
                 />
               </View>
+              <AirbnbRating
+                count={5}
+                reviews={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
+                defaultRating={5}
+                size={30}
+                selectedColor={BASIC_COLOR}
+                unSelectedColor="#BDC3C7"
+                reviewColor={BASIC_COLOR}
+                starContainerStyle={{borderColor: BASIC_COLOR, borderWidth: 1, borderRadius: 5, padding: 5}}
+              />
+
+              {
+                this.state.modalVisible &&
+                <View style={{alignItems: 'center'}}>
+                  <View style={{flexDirection: 'row'}}>{stars}</View>
+                  <Input
+                    placeholder='Đánh giá ở đây'
+                    onChangeText={value => {
+                      this.setState({password: value})
+                    }}
+                    autoCapitalize="none"
+                    inputStyle={{color: BASIC_COLOR}}
+                  />
+                  <Button
+                    title="Lưu đánh giá"
+                    type="outline"
+                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                    buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
+                    onPress={() => this.setState({modalVisible: false})}
+                  />
+                </View>
+              }
 
               <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
               {
                 this.state.reviews.map((item) => {
                   return (
                     <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5,}}>
-                        <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>{item.user}</Text>
+                        <Text style={{fontSize: 18, padding: 5}}>{item.user}</Text>
                         {
                           this.showRating(item.rating)
                         }
@@ -192,6 +231,35 @@ export default class DetailInfo extends React.Component {
 
             </ScrollView>
         </View>
+
+        {/* <View style={styles.centeredView}>
+          <Modal
+            animationType="slide"
+            transparent={true}
+            visible={this.state.modalVisible}
+            onRequestClose={() => {
+              Alert.alert("Modal has been closed.");
+              this.setState({modalVisible: !this.state.modalVisible});
+            }}
+          >
+            <View style={styles.centeredView}>
+              
+              <View>{stars}</View>
+              <Input
+                placeholder='Comment here'
+                onChangeText={value => {
+                  this.setState({password: value})
+                }}
+                autoCapitalize="none"
+                inputStyle={{color: BASIC_COLOR}}
+              />
+              <Button
+                title="Lưu đánh giá"
+                onPress={() => this.setState({modalVisible: false})}
+              />
+            </View>
+          </Modal>
+        </View> */}
       </View>
     );
   }
@@ -258,6 +326,7 @@ const styles = StyleSheet.create({
   scrollView: {
     marginLeft: 10,
     marginRight: 10,
+    flex: 1
   },
   textTitle: {
     fontSize: 13,
@@ -273,6 +342,13 @@ const styles = StyleSheet.create({
     alignItems: 'center', 
     margin: 20,
     borderRadius: 10,
+    padding: 10
+  },
+  centeredView: {
+    backgroundColor: 'white',
+    justifyContent: "center",
+    alignItems: "center",
+    marginTop: 20
+  },
 
-  }
 });

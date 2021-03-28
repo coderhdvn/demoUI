@@ -1,9 +1,11 @@
-import React, { useReducer, useState } from 'react';
-import { StyleSheet, Text, View, TextInput, Image } from 'react-native';
+import React from 'react';
+import { StyleSheet, View, Image } from 'react-native';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import API from '../api/API';
 import { ScrollView } from 'react-native-gesture-handler';
+import { BASIC_COLOR } from '../constants/Constant'
+import { Alert } from 'react-native';
 
 const USERNAME_LENGTH = 3;
 const USERNAME_ERROR = "Tên hiển thị phải từ 3 ký tự trở lên";
@@ -66,7 +68,10 @@ export default class SignUp extends React.Component {
         console.error(err.message)
       }
     } else {
-      console.error("Please check all your information")
+      Alert.alert(
+        "Lỗi !",
+        "Làm ơn hãy kiểm tra lại thông tin",
+      )
     }
 
   }
@@ -85,7 +90,7 @@ export default class SignUp extends React.Component {
               <Icon
                 name='user'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             errorStyle={{ color: 'red' }}
@@ -103,7 +108,7 @@ export default class SignUp extends React.Component {
               <Icon
                 name='envelope'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             autoCapitalize="none"
@@ -122,7 +127,7 @@ export default class SignUp extends React.Component {
               <Icon
                 name='key'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             autoCapitalize="none"
@@ -141,7 +146,7 @@ export default class SignUp extends React.Component {
               <Icon
                 name='key'
                 size={24}
-                color='#1CBCC7'
+                color={BASIC_COLOR}
               />
             }
             autoCapitalize="none"
@@ -154,19 +159,19 @@ export default class SignUp extends React.Component {
             }}
           />
         </ScrollView>
-        <View style={styles.button}>
+        <View style={{margin: 20}}>
           <Button
             icon={
               <Icon
                 name="user-plus"
                 size={25}
-                color="#1CBCC7"
+                color={BASIC_COLOR}
               />
             }
             title='Sign Up'
             type='outline'
-            titleStyle={{color: '#1CBCC7', fontSize: 20, padding: 30}}
-            buttonStyle={{borderRadius: 30, borderColor: '#1CBCC7'}}
+            titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 30}}
+            buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
             onPress={this.onSubmit}
           />
         </View>
@@ -180,11 +185,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
+    justifyContent: 'center',
+    borderWidth: 2,
+    borderColor: BASIC_COLOR,
+    borderRadius: 10,
+    margin: 15,
+    shadowColor: BASIC_COLOR,
+    shadowOffset: {
+      width: 5,
+      height: 5
+    },
+    shadowOpacity: 0.2,
+    elevation: 20,
   },
   contentView: {
-    width: '85%',
+    width: '95%',
   },
-  button: {
-    margin: 20
-  }
 });
