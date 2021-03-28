@@ -3,6 +3,7 @@ import Main from './page/main';
 import Account from './page/account';
 import {getData} from './storage/AsyncStorage';
 import {TOKEN_KEY} from './constants/Constant';
+import { ImageBackground } from 'react-native';
 // import OneSignal from 'react-native-onesignal';
 
 class App extends React.Component {
@@ -58,7 +59,10 @@ class App extends React.Component {
     /* check token
       if not or expired token => redirect Login Screen
       else go to Main Screen */
-    return <Account wasLogedIn = {this.state.isToken}/>
+    return (
+        <Account wasLogedIn = {this.state.isToken}/>
+    )
+    
     /*  if(this.state.isToken) {
       return <Account></Account>
     } else {

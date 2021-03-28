@@ -1,10 +1,11 @@
 import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import {setData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import API from '../api/API';
-
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Input, Button } from 'react-native-elements';
 
 export default class Login extends React.Component {
   state = {
@@ -14,72 +15,101 @@ export default class Login extends React.Component {
     display: false
   }
 
+  onSubmit = async () => {
+    // const input = {
+    //   username: this.state.name,
+    //   password: this.state.password
+    // }
+    // try {
+    //   const token = await (await API.post('/authenticate', input)).data.token;
+    //   setData(TOKEN_KEY, token);
+    //   this.props.navigation.navigate('Main');
+    // } catch (err) {
+    //     console.error(err.message);
+    // }
+    this.props.navigation.navigate('detail');
+  }
+
   render(){
     return (
       <View style={styles.container}>
-        <Image style={styles.logo} source={require('../images/fingerprint-accepted.png')} />  
-        <View style={styles.inputView}>
-          <TextInput  
-            autoCapitalize='none'
-            style={styles.inputText}
-            placeholder="Tên đăng nhập..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              if(text.length > 0) {
-                this.setState({name:text})
-                if(this.state.password.length > 0) {
-                  this.setState({disable:false})
-                }  
-              } 
-            }}/>
-        </View>
-
-        <View style={styles.inputView} >
-          <TextInput 
-            autoCapitalize='none' 
-            secureTextEntry
-            style={styles.inputText}
-            placeholder="Mật khẩu..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => {
-              if(text.length > 0) {
-                this.setState({password:text})
-                if(this.state.name.length > 0) {
-                  this.setState({disable:false})
-                }   
-              } 
-            }}/>
-        </View>
-
-        <Text style={this.state.display ? styles.warning : styles.hide}>Tài khoản không tồn tại !!!</Text>
-
-        <TouchableOpacity onPress={()=>{
-            this.props.navigation.navigate("Reset Password")
-          }}>
-          <Text style={styles.forgot}>Quên mật khẩu?</Text>
-        </TouchableOpacity>
-        <TouchableOpacity disabled={this.state.disable} style={this.state.disable ? styles.disable : styles.loginBtn} onPress={ async ()=>{
-          const input = {
-            username: this.state.name,
-            password: this.state.password
-          }
-          try {
-            const token = await (await API.post('/authenticate', input)).data.token;
-            setData(TOKEN_KEY, token);
-            this.props.navigation.navigate('Main');
-          } catch (err) {
-              console.error(err.message);
+        <ImageBackground source={{uri: "https://i.pinimg.com/564x/a5/9c/bf/a59cbfbbcc2c5d232acbaaf011a453a7.jpg"}} style={styles.backgroundImage} >
+          <Image style={styles.logo} source={require('../images/LOGO.jpeg')} />  
+          <View style={styles.contentView}>
+          <Input
+            placeholder='User name'
+            leftIcon={
+              <Icon
+                name='user'
+                size={24}
+                color='#1CBCC7'
+              />
             }
-        }
-        }>
-          <Text style={styles.loginText}>Đăng nhập</Text>
+            // errorStyle={{ color: 'red' }}
+            // errorMessage={this.state.nameError}
+            onChangeText={value => {
+              this.setState({name: value})
+            }}
+            autoCapitalize="none"
+            inputStyle={{color: '#1CBCC7'}}
+            // inputContainerStyle={{backgroundColor: 'white'}}
+          />  
+
+          <Input
+            placeholder='Password'
+            leftIcon={
+              <Icon
+                name='key'
+                size={24}
+                color='#1CBCC7'
+              />
+            }
+            // errorStyle={{ color: 'red' }}
+            // errorMessage={this.state.nameError}
+            onChangeText={value => {
+              this.setState({password: value})
+            }}
+            autoCapitalize="none"
+            inputStyle={{color: '#1CBCC7'}}
+          />  
+        </View>
+        <View style={styles.buttonView}>
+        <Button
+            icon={
+              <Icon
+                name="sign-in"
+                size={30}
+                color="white"
+              />
+            }
+            title='Sign In'
+            type='outline'
+            titleStyle={{color: 'white', fontSize: 20, padding: 30}}
+            buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
+            onPress={this.onSubmit}
+            containerStyle={{padding: 10}}
+        />
+        <Text style={{color: 'white', alignSelf: 'center'}}>----- OR -----</Text>
+        <Button
+            icon={
+              <Icon
+                name="user-plus"
+                size={25}
+                color="white"
+              />
+            }
+            title='Sign Up'
+            type='outline'
+            titleStyle={{color: 'white', fontSize: 20, padding: 30}}
+            buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
+            onPress={() => this.props.navigation.navigate("Sign Up")}
+            containerStyle={{padding: 10}}
+        />
+        </View>
+        <TouchableOpacity onPress={() => console.log('Forgot password')}>
+          <Text style={{color: 'white'}}>Forgot password?</Text>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.signupBtn} onPress={()=>{
-            this.props.navigation.navigate("Sign Up")
-          }}>
-          <Text style={styles.signupText}>Đăng ký</Text>
-        </TouchableOpacity>
-        
+        </ImageBackground>
       </View>
     );
   }
@@ -88,82 +118,26 @@ export default class Login extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+  },
+  backgroundImage:{
+    width: "100%",
+    height: "100%",
+    justifyContent: 'space-around',
     alignItems: 'center',
-    justifyContent: 'center',
+  },
+  contentView: {
+    width: '85%',
+    backgroundColor: 'white',
+    borderRadius: 10
   },
   logo:{
     resizeMode: "contain",
-    width: "40%",
-    height: "30%"
+    width: "45%",
+    height: "30%",
+    borderRadius: 100
   },
-  inputView:{
-    width:"80%",
-    backgroundColor:"#fff",
-    borderWidth: 1,
-    borderRadius:15,
-    height:50,
-    marginBottom:5,
-    marginTop: 18,
-    justifyContent:"center",
-    padding:20
-  },
-  inputText:{
-    height:50,
-    color:"black"
-  },
-  forgot:{
-    color:"#1CBCC7",
-    fontSize:13,
-    margin: 5
-  },
-  loginBtn:{
-    width:"50%",
-    backgroundColor:"#1CBCC7",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
-  },
-  signupBtn:{
-    width:"50%",
-    borderWidth: 2,
-    borderColor: "#1CBCC7",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:10,
-    marginBottom:10
-  },
-  disable: {
-    width:"50%",
-    backgroundColor:"#8E908A",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
-  },
-  loginText:{
-    color:"white",
-    fontSize: 16
-  },
-  signupText:{
-    color:"#1CBCC7",
-    fontSize: 16
-  },
-  warning: {
-    color: "#F17575",
-    fontStyle: "italic",
-    textAlign: "left",
-    justifyContent: "flex-start",
-    fontSize: 12
-  },
-  hide: {
-    display: 'none'
+  buttonView: {
+    width: '80%',
   }
+  
 });

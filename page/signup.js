@@ -148,7 +148,7 @@ export default class SignUp extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.confirmPasswordError}
             onChangeText={value => {
-              validate_confirm_password(value) 
+              validate_confirm_password(value, this.state.password) 
                 ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
                 : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
             }}
