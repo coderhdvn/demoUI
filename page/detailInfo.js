@@ -5,10 +5,11 @@ import Wrap from '../components/Wrap';
 import { getData } from '../storage/AsyncStorage';
 import {TOKEN_KEY, BASIC_COLOR} from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Animated from 'react-native-reanimated';
-import { Input, Button, Rating, AirbnbRating } from 'react-native-elements';
+import Animated, { Easing } from 'react-native-reanimated';
+import { Input, Button} from 'react-native-elements';
 import { Modal } from 'react-native';
 import { Alert } from 'react-native';
+import Rating from '../components/Rating';
 
 const MAX_STARS = 5;
 
@@ -39,24 +40,7 @@ export default class DetailInfo extends React.Component {
       reviewSummary : {},
       rating: 0,
       comment: '',
-      modalVisible: false
-    }
-
-    rate = star => {
-      this.setState({ rating: star });
-    }
-
-    showRating = (rating) => {
-      let stars = [];
-
-      for(let i = 1; i <= MAX_STARS; i++) {
-        stars.push(
-          <Star
-            filled = { i <= rating ? true : false }
-          />
-        )
-      }
-      return <View style={{flexDirection: 'row'}}>{stars}</View>
+      animation: new Animated.Value(1)
     }
 
     cal_Review_Summary() {
@@ -67,33 +51,12 @@ export default class DetailInfo extends React.Component {
       this.setState({ reviewSummary })
     }
 
-    ratingCompleted(rating) {
-      console.log(rating)
-    }
-
     componentDidMount() {
       this.cal_Review_Summary();
     }
 
   render(){
-    let stars = []
 
-      for(let x = 1; x <= 5; x++) {
-        stars.push(
-          <TouchableWithoutFeedback
-            key={x}
-            onPress={() => {
-              this.rate(x);
-            }}
-          >
-            <Animated.View>
-              <Star
-                filled = {x <= this.state.rating ? true : false}
-              />
-            </Animated.View>
-          </TouchableWithoutFeedback>
-        )
-      }
     return (
       <View style={styles.container}>
         <View style={styles.shadow}>
@@ -146,8 +109,13 @@ export default class DetailInfo extends React.Component {
                 <Text style={styles.textTitle}>Đánh giá sản phẩm</Text> 
                 <Text style={{fontSize: 40, fontWeight: 'bold'}}>{this.state.reviewSummary.avg}</Text>
                 {
-                  this.showRating(this.state.reviewSummary.avg)
+                  
                 }
+                <Rating
+                  rating={this.state.reviewSummary.avg}
+                  size={30}
+                  enableRating={false}
+                />
                 <Text>{this.state.reviewSummary.total} đánh giá</Text>
                 <Button
                   icon={
@@ -165,21 +133,14 @@ export default class DetailInfo extends React.Component {
                   containerStyle={{padding: 5}}
                 />
               </View>
-              <AirbnbRating
-                count={5}
-                reviews={["Rất tệ", "Tệ", "Ổn", "Tốt", "Rất tốt"]}
-                defaultRating={5}
-                size={30}
-                selectedColor={BASIC_COLOR}
-                unSelectedColor="#BDC3C7"
-                reviewColor={BASIC_COLOR}
-                starContainerStyle={{borderColor: BASIC_COLOR, borderWidth: 1, borderRadius: 5, padding: 5}}
-              />
-
               {
                 this.state.modalVisible &&
                 <View style={{alignItems: 'center'}}>
-                  <View style={{flexDirection: 'row'}}>{stars}</View>
+                  <Rating
+                    size={30}
+                    enableRating={true}
+                    rating={this.state.rating}
+                  />
                   <Input
                     placeholder='Đánh giá ở đây'
                     onChangeText={value => {
@@ -203,10 +164,11 @@ export default class DetailInfo extends React.Component {
                 this.state.reviews.map((item) => {
                   return (
                     <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5,}}>
-                        <Text style={{fontSize: 18, padding: 5}}>{item.user}</Text>
-                        {
-                          this.showRating(item.rating)
-                        }
+                      <Text style={{fontSize: 18, padding: 5}}>{item.user}</Text>
+                      <Rating
+                        rating={item.rating}
+                        size={25}
+                      />  
                       <Text style={{padding: 5}}>{item.comment}</Text>
                     </View>
                   )
