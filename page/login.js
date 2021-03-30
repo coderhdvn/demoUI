@@ -1,4 +1,3 @@
-import { NavigationHelpersContext } from '@react-navigation/native';
 import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image, ImageBackground } from 'react-native';
 import {setData} from '../storage/AsyncStorage';
@@ -17,18 +16,18 @@ export default class Login extends React.Component {
   }
 
   onSubmit = async () => {
-    // const input = {
-    //   username: this.state.name,
-    //   password: this.state.password
-    // }
-    // try {
-    //   const token = await (await API.post('/authenticate', input)).data.token;
-    //   setData(TOKEN_KEY, token);
-    //   this.props.navigation.navigate('Main');
-    // } catch (err) {
-    //     console.error(err.message);
-    // }
-    this.props.navigation.navigate('detail');
+    const input = {
+      username: this.state.name,
+      password: this.state.password
+    }
+    try {
+      const token = await (await API.post('/authenticate', input)).data.token;
+      setData(TOKEN_KEY, token);
+      this.props.navigation.navigate('Main');
+    } catch (err) {
+        console.error(err.message);
+    }
+    // this.props.navigation.navigate('detail');
   }
 
   render(){

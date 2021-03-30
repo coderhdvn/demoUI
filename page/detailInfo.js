@@ -1,18 +1,11 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { FlatList, ScrollView, TouchableOpacity, TouchableWithoutFeedback } from 'react-native-gesture-handler';
+import { ScrollView } from 'react-native-gesture-handler';
 import Wrap from '../components/Wrap';
-import { getData } from '../storage/AsyncStorage';
-import {TOKEN_KEY, BASIC_COLOR} from '../constants/Constant';
+import { BASIC_COLOR} from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import Animated, { Easing } from 'react-native-reanimated';
 import { Input, Button} from 'react-native-elements';
-import { Modal } from 'react-native';
-import { Alert } from 'react-native';
 import Rating from '../components/Rating';
-
-const MAX_STARS = 5;
-
 export default class DetailInfo extends React.Component {
     
     state = {
@@ -40,7 +33,7 @@ export default class DetailInfo extends React.Component {
       reviewSummary : {},
       rating: 0,
       comment: '',
-      animation: new Animated.Value(1)
+      modalVisible: false
     }
 
     cal_Review_Summary() {
@@ -57,6 +50,7 @@ export default class DetailInfo extends React.Component {
 
     onSaveReview = () => {
       console.log(this.state.rating + this.state.comment);
+      this.setState({modalVisible: false})
     }
 
     componentDidMount() {
@@ -149,6 +143,7 @@ export default class DetailInfo extends React.Component {
               {
                 this.state.modalVisible &&
                 <View style={styles.modal}>
+                  <Text style={{fontSize: 18, padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR, marginBottom: 10}}>Đánh giá của bạn</Text>
                   <Rating
                     size={30}
                     enableRating={true}
@@ -184,7 +179,7 @@ export default class DetailInfo extends React.Component {
 
               <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
               {
-                this.state.reviews.map((item) => {
+                this.state.reviews.map((item, index) => {
                   return (
                     <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5,}}>
                       <Text style={{fontSize: 18, padding: 5}}>{item.user}</Text>
@@ -216,48 +211,8 @@ export default class DetailInfo extends React.Component {
 
             </ScrollView>
         </View>
-
-        {/* <View style={styles.centeredView}>
-          <Modal
-            animationType="slide"
-            transparent={true}
-            visible={this.state.modalVisible}
-            onRequestClose={() => {
-              Alert.alert("Modal has been closed.");
-              this.setState({modalVisible: !this.state.modalVisible});
-            }}
-          >
-            <View style={styles.centeredView}>
-              
-              <View>{stars}</View>
-              <Input
-                placeholder='Comment here'
-                onChangeText={value => {
-                  this.setState({password: value})
-                }}
-                autoCapitalize="none"
-                inputStyle={{color: BASIC_COLOR}}
-              />
-              <Button
-                title="Lưu đánh giá"
-                onPress={() => this.setState({modalVisible: false})}
-              />
-            </View>
-          </Modal>
-        </View> */}
       </View>
     );
-  }
-}
-
-class Star extends React.Component {
-  render () {
-    return <Icon
-      name={this.props.filled === true ? "star": "star-o"}
-      color={BASIC_COLOR}
-      size={25}
-      style={{ marginHorizontal: 6 }}
-    />
   }
 }
 
@@ -329,12 +284,6 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10
   },
-  // centeredView: {
-  //   backgroundColor: 'white',
-  //   justifyContent: "center",
-  //   alignItems: "center",
-  //   marginTop: 20
-  // },
   modal: {
     alignItems: 'center',
     borderTopWidth: 1,

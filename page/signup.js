@@ -14,12 +14,6 @@ const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
 const EMAIL_ERROR = "Email không hợp lệ";
 const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp"
 
-const auth = {
-  headers: {
-    'Authorization': 'Bearer ' + 'eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY0ODEzNzY5MCwiaWF0IjoxNjE2NjAxNjkwfQ.ezk9cf5ZaCMRDl_ZdLgLwd3zlTCr5_gM1t4kc4tm9BAgpF7ubmUOs3lvLs-3GiLdZR0XFNZtAq7bcgaQ_potBw'
-  }
-}
-
 const validate_username = (username) => {
   return username.length >= USERNAME_LENGTH ? true : false;
 } 
@@ -61,7 +55,7 @@ export default class SignUp extends React.Component {
     }
     if (validate_before_submit(input)) {
       try {
-        const response = await API.post('/account/users', input, auth);
+        const response = await API.post('/account/users', input);
         console.log(response.data);
         this.props.navigation.navigate("Login");
       } catch (err) {
