@@ -51,6 +51,14 @@ export default class DetailInfo extends React.Component {
       this.setState({ reviewSummary })
     }
 
+    getRating = (rating) => {
+      this.setState({rating});
+    }
+
+    onSaveReview = () => {
+      console.log(this.state.rating + this.state.comment);
+    }
+
     componentDidMount() {
       this.cal_Review_Summary();
     }
@@ -94,6 +102,14 @@ export default class DetailInfo extends React.Component {
                   <Button 
                         title="Xem danh sách nhà phân phối"
                         type="outline"
+                        icon={
+                          <Icon
+                            name="list-alt"
+                            size={25}
+                            color={BASIC_COLOR}
+                            style={{padding: 2}}
+                          />
+                        }
                         titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
                         buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
                         onPress={() => {
@@ -108,9 +124,6 @@ export default class DetailInfo extends React.Component {
               <View style={styles.cardSummary}>
                 <Text style={styles.textTitle}>Đánh giá sản phẩm</Text> 
                 <Text style={{fontSize: 40, fontWeight: 'bold'}}>{this.state.reviewSummary.avg}</Text>
-                {
-                  
-                }
                 <Rating
                   rating={this.state.reviewSummary.avg}
                   size={30}
@@ -135,11 +148,12 @@ export default class DetailInfo extends React.Component {
               </View>
               {
                 this.state.modalVisible &&
-                <View style={{alignItems: 'center'}}>
+                <View style={styles.modal}>
                   <Rating
                     size={30}
                     enableRating={true}
                     rating={this.state.rating}
+                    getRating={this.getRating}
                   />
                   <Input
                     placeholder='Đánh giá ở đây'
@@ -148,13 +162,22 @@ export default class DetailInfo extends React.Component {
                     }}
                     autoCapitalize="none"
                     inputStyle={{color: BASIC_COLOR}}
+                    onChangeText={value => {this.setState({comment: value})}}
                   />
                   <Button
                     title="Lưu đánh giá"
                     type="outline"
                     titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
                     buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
-                    onPress={() => this.setState({modalVisible: false})}
+                    onPress={this.onSaveReview}
+                    icon={
+                      <Icon
+                        name="save"
+                        size={20}
+                        color={BASIC_COLOR}
+                        style={{padding: 5}}
+                      />
+                    }
                   />
                 </View>
               }
@@ -306,11 +329,16 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 10
   },
-  centeredView: {
-    backgroundColor: 'white',
-    justifyContent: "center",
-    alignItems: "center",
-    marginTop: 20
-  },
-
+  // centeredView: {
+  //   backgroundColor: 'white',
+  //   justifyContent: "center",
+  //   alignItems: "center",
+  //   marginTop: 20
+  // },
+  modal: {
+    alignItems: 'center',
+    borderTopWidth: 1,
+    borderColor: BASIC_COLOR,
+    padding: 10
+  }
 });

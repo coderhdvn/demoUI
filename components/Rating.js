@@ -19,7 +19,8 @@ export default class Rating extends React.Component {
     }
 
     rate = star => {
-        this.setState({ rating: star })
+        this.setState({ rating: star });
+        this.props.getRating(star);
     }
 
     animate = () => {
