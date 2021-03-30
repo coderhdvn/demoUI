@@ -6,37 +6,47 @@ import { BASIC_COLOR} from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button} from 'react-native-elements';
 import Rating from '../components/Rating';
+import API from '../api/API';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 export default class DetailInfo extends React.Component {
     
     state = {
-      name: "Iphone X",
-      producer: 'Apple',
-      expiry_day: '02/02/2020',
-      date_of_manufacture: '02/02/2020',
-      serial_number: '123456789',
-      description: "Sau thành công của Samsung Galaxy A51 với mức doanh số khá tốt thì trong năm 2020, Samsung lại tiếp tục cho ra mắt mẫu smartphone Galaxy A52 với những cải tiến về hệ thống camera cũng như được trang bị cấu hình mạnh mẽ cho trải nghiệm tuyệt vời.",
-      image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg',
+      product: {},
       reviews: [
         {
           id: '1',
-          user: 'Anh Tu',
+          customerName: 'Anh Tu',
           rating: 4,
-          comment: 'Very good'
+          content: 'Very good'
         },
         {
           id: '2',
-          user: 'Nhat Lam',
+          customerName: 'Nhat Lam',
           rating: 2,
-          comment: "In reception they don't speak English and every time I need help or I don't understand they roll their eyes, they are extremely rude and on top of that they lost my results once."
+          content: "In reception they don't speak English and every time I need help or I don't understand they roll their eyes, they are extremely rude and on top of that they lost my results once."
         }
       ],
       reviewSummary : {},
       rating: 0,
-      comment: '',
-      modalVisible: false
+      content: '',
+      modalVisible: false,
+      productId: "30711bee-2cad-429b-ab5f-0274fbeaa7b0"
     }
 
-    cal_Review_Summary() {
+    getHeader = async() => {
+      // const token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY0ODEzNzY5MCwiaWF0IjoxNjE2NjAxNjkwfQ.ezk9cf5ZaCMRDl_ZdLgLwd3zlTCr5_gM1t4kc4tm9BAgpF7ubmUOs3lvLs-3GiLdZR0XFNZtAq7bcgaQ_potBw";
+      
+      const token = "Bearer " + await getData(TOKEN_KEY);
+
+      const headers = {
+        'Authorization': token
+      }
+      
+      return headers
+    }
+
+    cal_Review_Summary= () => {
       let total = this.state.reviews.length;
       let sum = this.state.reviews.reduce((a, b) => a.rating + b.rating);
       let avg = Math.round(sum / total);
@@ -48,12 +58,77 @@ export default class DetailInfo extends React.Component {
       this.setState({rating});
     }
 
-    onSaveReview = () => {
-      console.log(this.state.rating + this.state.comment);
-      this.setState({modalVisible: false})
+    onSaveReview = async() => {
+
+      const headers = await this.getHeader();
+
+      try {
+        let feedback = {
+          rating: this.state.rating,
+          content: this.state.content
+        }
+        let templateId = this.state.product.templateId;
+        const response = await API.put(`/product/templates/feedback/${templateId}`, feedback, {headers});
+
+        this.setState({modalVisible: false});
+
+      } catch (err) {
+        console.error(err.message)
+      }
     }
 
-    componentDidMount() {
+    setProduct = async () => {
+      const headers = await this.getHeader();
+      const productId = this.state.productId;
+
+      try {
+        let response = await API.get(`/product/products/${productId}`, {headers});
+        let product = response.data;
+
+        this.setState({
+          product: {
+            templateId: product.template.id,
+            name: product.template.name,
+            expDate: product.expDate,
+            mfgDate: product.mfgDate,
+            producerId: product.template.producerId,
+            feedbacks: product.template.feedbacks,
+            description: product.template.description,
+            image: product.template.imageUrl
+          }
+        })
+
+      } catch (err) {
+          console.error(err.message);
+      }
+    }
+
+    setFeedbacks = async (feedbacks) => {
+      const headers = await this.getHeader();
+      
+      try {
+        if (feedbacks.length === 0){
+          return null
+        } else {
+          feedbacks.map(async feedback => {
+            let review = feedback;
+            let customerId = feedback.customerId;
+
+            let response = await API.get(`/account/users/${customerId}`, {headers});
+            let customerName = response.data.name;
+            review = {...review, customerName}
+            this.setState({reviews: [...this.state.reviews, review]})
+          });
+        }
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+
+    componentDidMount = async()  => {
+      await this.setProduct();
+      await this.setFeedbacks(this.state.product.feedbacks);
+
       this.cal_Review_Summary();
     }
 
@@ -67,28 +142,27 @@ export default class DetailInfo extends React.Component {
         <View style={styles.titleView}>
           <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
         </View>
-        
         <View style={styles.contentView}>
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <View style={{flexDirection: 'row'}}>
                   <View style={{width: '40%', alignSelf: 'center'}}>
-                    <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.image}} />
+                    <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.product.image}} />
                   </View>
                   <View style={{width: '60%'}}>
                     <Wrap>                   
                       <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
-                      <Text style={styles.textContent}>{this.state.name}</Text>
+                      <Text style={styles.textContent}>{this.state.product.name}</Text>
                       <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.producer}</Text>
+                      <Text style={styles.textContent}>{this.state.product.producerId}</Text>
 
                       <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.date_of_manufacture}</Text>
+                      <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
 
                       <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{this.state.expiry_day}</Text>
+                      <Text style={styles.textContent}>{this.state.product.expDate}</Text>
 
                       <Text style={styles.textTitle}>Serial number:</Text> 
-                      <Text style={styles.textContent}>{this.state.serial_number}</Text>
+                      <Text style={styles.textContent}>{this.state.product.producerId}</Text>
                     </Wrap>
                   </View>
                 </View>
@@ -113,7 +187,7 @@ export default class DetailInfo extends React.Component {
                 </Wrap>
                 
                   <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR}}>Mô tả</Text>
-                  <Text>{this.state.description}</Text>
+                  <Text>{this.state.product.description}</Text>
                 
               <View style={styles.cardSummary}>
                 <Text style={styles.textTitle}>Đánh giá sản phẩm</Text> 
@@ -157,7 +231,7 @@ export default class DetailInfo extends React.Component {
                     }}
                     autoCapitalize="none"
                     inputStyle={{color: BASIC_COLOR}}
-                    onChangeText={value => {this.setState({comment: value})}}
+                    onChangeText={value => {this.setState({content: value})}}
                   />
                   <Button
                     title="Lưu đánh giá"
@@ -181,13 +255,13 @@ export default class DetailInfo extends React.Component {
               {
                 this.state.reviews.map((item, index) => {
                   return (
-                    <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5,}}>
-                      <Text style={{fontSize: 18, padding: 5}}>{item.user}</Text>
+                    <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
+                      <Text style={{fontSize: 18, padding: 5}}>{item.customerName}</Text>
                       <Rating
                         rating={item.rating}
                         size={25}
                       />  
-                      <Text style={{padding: 5}}>{item.comment}</Text>
+                      <Text style={{padding: 5}}>{item.content}</Text>
                     </View>
                   )
                 })

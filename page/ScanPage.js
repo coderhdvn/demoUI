@@ -13,15 +13,8 @@ class QrCodeCamera extends Component {
 
   onSuccess(e) {
     console.log("DATA", JSON.stringify(e))
-    fetch('https://facebook.github.io/react-native/movies.json')
-      .then((response) => response.json())
-      .then((responseJson) => {
-        console.log("DATA", JSON.stringify(responseJson))
-        this.props.navigation.navigate("Detail", {data: responseJson})
-      })
-      .catch((error) => {
-        console.error(error);
-      });
+    let id = JSON.stringify(e);
+    this.props.navigation.navigate("detail", {productId: id})
   }
 
   makeSlideOutTranslation(translationType, fromValue) {
