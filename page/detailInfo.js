@@ -13,29 +13,15 @@ export default class DetailInfo extends React.Component {
     
     state = {
       product: {},
-      reviews: [
-        {
-          id: '1',
-          customerName: 'Anh Tu',
-          rating: 4,
-          content: 'Very good'
-        },
-        {
-          id: '2',
-          customerName: 'Nhat Lam',
-          rating: 2,
-          content: "In reception they don't speak English and every time I need help or I don't understand they roll their eyes, they are extremely rude and on top of that they lost my results once."
-        }
-      ],
+      reviews: [],
       reviewSummary : {},
       rating: 0,
       content: '',
       modalVisible: false,
-      productId: "30711bee-2cad-429b-ab5f-0274fbeaa7b0"
+      productId: "c260f1a5-e610-45b0-982c-fa99926596f7"
     }
 
     getHeader = async() => {
-      // const token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY0ODEzNzY5MCwiaWF0IjoxNjE2NjAxNjkwfQ.ezk9cf5ZaCMRDl_ZdLgLwd3zlTCr5_gM1t4kc4tm9BAgpF7ubmUOs3lvLs-3GiLdZR0XFNZtAq7bcgaQ_potBw";
       
       const token = "Bearer " + await getData(TOKEN_KEY);
 
@@ -46,12 +32,20 @@ export default class DetailInfo extends React.Component {
       return headers
     }
 
-    cal_Review_Summary= () => {
-      let total = this.state.reviews.length;
-      let sum = this.state.reviews.reduce((a, b) => a.rating + b.rating);
-      let avg = Math.round(sum / total);
-      let reviewSummary = {total, avg}
-      this.setState({ reviewSummary })
+    cal_Review_Summary = (reviews) => {
+      if (reviews.length !== 0) {
+        let total = reviews.length;
+  
+        const sum = reviews.reduce((a, b) => a + b.rating, 0);
+
+        let avg = Math.round(sum / total);
+  
+        let reviewSummary = {total, avg}
+  
+        this.setState({ reviewSummary })
+      } else {
+        this.setState({ reviewSummary: {avg: 0, total: 0}});
+      } 
     }
 
     getRating = (rating) => {
@@ -69,6 +63,8 @@ export default class DetailInfo extends React.Component {
         }
         let templateId = this.state.product.templateId;
         const response = await API.put(`/product/templates/feedback/${templateId}`, feedback, {headers});
+
+        this.setFeedbacks(response.data.feedbacks);
 
         this.setState({modalVisible: false});
 
@@ -96,7 +92,15 @@ export default class DetailInfo extends React.Component {
             description: product.template.description,
             image: product.template.imageUrl
           }
-        })
+        });
+
+        try{
+          console.log(this.state.product.producerId);
+          let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
+          console.log(response.data)
+        } catch (err) {
+          console.error(err.message)
+        }
 
       } catch (err) {
           console.error(err.message);
@@ -105,31 +109,35 @@ export default class DetailInfo extends React.Component {
 
     setFeedbacks = async (feedbacks) => {
       const headers = await this.getHeader();
+
+      this.cal_Review_Summary(feedbacks);
+
+      this.setState({reviews: []});
       
-      try {
         if (feedbacks.length === 0){
           return null
         } else {
-          feedbacks.map(async feedback => {
-            let review = feedback;
-            let customerId = feedback.customerId;
+          try {
+            await feedbacks.map(async feedback => {
+                  let review = feedback;
+                  const customerId = feedback.customerId;
 
-            let response = await API.get(`/account/users/${customerId}`, {headers});
-            let customerName = response.data.name;
-            review = {...review, customerName}
-            this.setState({reviews: [...this.state.reviews, review]})
-          });
+                  const response = await API.get(`/account/users/${customerId}`, {headers});
+                  const customerName = response.data.name;
+
+                  review = {...review, customerName};
+
+                  this.setState({reviews: [...this.state.reviews, review]});
+            });
+          } catch (err) {
+            console.error(err.message);
+          }
         }
-      } catch (err) {
-        console.error(err.message);
-      }
     }
 
     componentDidMount = async()  => {
-      await this.setProduct();
-      await this.setFeedbacks(this.state.product.feedbacks);
-
-      this.cal_Review_Summary();
+        await this.setProduct();
+        await this.setFeedbacks(this.state.product.feedbacks);
     }
 
   render(){
@@ -160,9 +168,6 @@ export default class DetailInfo extends React.Component {
 
                       <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
                       <Text style={styles.textContent}>{this.state.product.expDate}</Text>
-
-                      <Text style={styles.textTitle}>Serial number:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.producerId}</Text>
                     </Wrap>
                   </View>
                 </View>
