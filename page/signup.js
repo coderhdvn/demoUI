@@ -63,7 +63,7 @@ export default class SignUp extends React.Component {
         showMessage({
           message: "Đăng ký thành công !",
           type: "success",
-          description: `Đăng ký thành công với tên đăng nhập: ${input.name}`,
+          description: `Đăng ký thành công với tài khoản: ${input.name}`,
           duration: 4000,
           floating: true,
           icon: {

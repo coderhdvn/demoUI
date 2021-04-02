@@ -6,7 +6,7 @@ import API from '../api/API';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
-import { Alert } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 
 export default class Login extends React.Component {
   state = {
@@ -25,6 +25,20 @@ export default class Login extends React.Component {
       const token = await (await API.post('/authenticate', input)).data.token;
       setData(TOKEN_KEY, token);
       this.props.navigation.navigate('Main');
+
+      showMessage({
+        message: "Đăng nhập thành công !",
+        type: "success",
+        description: `Đăng nhập thành công với tài khoản: ${input.username}`,
+        duration: 4000,
+        floating: true,
+        icon: {
+          icon: "success", position: "right"
+        },
+        style: {
+          backgroundColor: BASIC_COLOR,
+        }
+      })
     } catch (err) {
         console.error(err.message);
     }
