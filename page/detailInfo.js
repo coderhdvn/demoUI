@@ -2,13 +2,14 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Wrap from '../components/Wrap';
-import { BASIC_COLOR} from '../constants/Constant';
+import { BASIC_COLOR } from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button} from 'react-native-elements';
 import Rating from '../components/Rating';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
+import { Alert } from 'react-native';
 export default class DetailInfo extends React.Component {
     
     state = {
@@ -18,7 +19,7 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
-      productId: "c260f1a5-e610-45b0-982c-fa99926596f7"
+      productId: "16de7132-2c62-4da9-a2dd-e8c3d52bccc2"
     }
 
     getHeader = async() => {
@@ -56,20 +57,27 @@ export default class DetailInfo extends React.Component {
 
       const headers = await this.getHeader();
 
-      try {
-        let feedback = {
-          rating: this.state.rating,
-          content: this.state.content
+      if (this.state.rating !== 0) {
+        try {
+          let feedback = {
+            rating: this.state.rating,
+            content: this.state.content
+          }
+          let templateId = this.state.product.templateId;
+          const response = await API.put(`/product/templates/feedback/${templateId}`, feedback, {headers});
+  
+          this.setFeedbacks(response.data.feedbacks);
+  
+          this.setState({modalVisible: false});
+  
+        } catch (err) {
+          console.error(err.message)
         }
-        let templateId = this.state.product.templateId;
-        const response = await API.put(`/product/templates/feedback/${templateId}`, feedback, {headers});
-
-        this.setFeedbacks(response.data.feedbacks);
-
-        this.setState({modalVisible: false});
-
-      } catch (err) {
-        console.error(err.message)
+      } else {
+        Alert.alert(
+          "Lỗi !",
+          "Bạn không thể đánh giá 0 sao",
+        )
       }
     }
 
@@ -95,9 +103,9 @@ export default class DetailInfo extends React.Component {
         });
 
         try{
-          console.log(this.state.product.producerId);
           let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
-          console.log(response.data)
+          let producer = response.data.name;
+          this.setState({product: {...this.state.product, producer}})
         } catch (err) {
           console.error(err.message)
         }
@@ -156,12 +164,12 @@ export default class DetailInfo extends React.Component {
                   <View style={{width: '40%', alignSelf: 'center'}}>
                     <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.product.image}} />
                   </View>
-                  <View style={{width: '60%'}}>
+                  <View style={{width: '60%', alignSelf: 'center'}}>
                     <Wrap>                   
                       <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
                       <Text style={styles.textContent}>{this.state.product.name}</Text>
                       <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.producerId}</Text>
+                      <Text style={styles.textContent}>{this.state.product.producer}</Text>
 
                       <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
                       <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
@@ -353,7 +361,7 @@ const styles = StyleSheet.create({
   },
   textContent: {
     fontSize: 18,
-    paddingBottom: 10
+    paddingBottom: 15
   },
   cardSummary: {
     borderWidth:1, 

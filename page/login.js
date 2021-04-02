@@ -6,11 +6,12 @@ import API from '../api/API';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
+import { Alert } from 'react-native';
 
 export default class Login extends React.Component {
   state = {
-    name:"",
-    password:"",
+    name:"staff",
+    password:"991999",
     disable:true,
     display: false
   }
@@ -52,6 +53,7 @@ export default class Login extends React.Component {
             }}
             autoCapitalize="none"
             inputStyle={{color: BASIC_COLOR}}
+            value={this.state.name}
             // inputContainerStyle={{backgroundColor: 'white'}}
           />  
 
@@ -71,6 +73,7 @@ export default class Login extends React.Component {
             }}
             autoCapitalize="none"
             inputStyle={{color: BASIC_COLOR}}
+            value={this.state.password}
           />  
         </View>
         <View style={styles.buttonView}>

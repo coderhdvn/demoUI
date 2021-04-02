@@ -12,9 +12,10 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 class QrCodeCamera extends Component {
 
   onSuccess(e) {
-    console.log("DATA", JSON.stringify(e))
-    let id = JSON.stringify(e);
-    this.props.navigation.navigate("detail", {productId: id})
+    // console.log("DATA", JSON.stringify(e))
+    // let productId = JSON.stringify(e);
+    let productId = "16de7132-2c62-4da9-a2dd-e8c3d52bccc2"
+    this.props.navigation.navigate("detail", {productId})
   }
 
   makeSlideOutTranslation(translationType, fromValue) {

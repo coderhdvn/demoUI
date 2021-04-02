@@ -6,6 +6,7 @@ import API from '../api/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BASIC_COLOR } from '../constants/Constant'
 import { Alert } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 
 const USERNAME_LENGTH = 3;
 const USERNAME_ERROR = "Tên hiển thị phải từ 3 ký tự trở lên";
@@ -37,10 +38,10 @@ const validate_before_submit = (input) => {
 
 export default class SignUp extends React.Component {
   state = {
-    name:"",
-    email:"",
-    password:"",
-    confirmPassword: "",
+    name:"anhtu",
+    email:"anhtu@gmail.com",
+    password:"123456",
+    confirmPassword: "123456",
     nameError: '',
     emailError: '',
     passwordError: '',
@@ -57,7 +58,22 @@ export default class SignUp extends React.Component {
       try {
         const response = await API.post('/account/users', input);
         console.log(response.data);
-        this.props.navigation.navigate("Login");
+        this.props.navigation.navigate("Login", {message: "Sign up success !", name: input.name});
+
+        showMessage({
+          message: "Đăng ký thành công !",
+          type: "success",
+          description: `Đăng ký thành công với tên đăng nhập: ${input.name}`,
+          duration: 4000,
+          floating: true,
+          icon: {
+            icon: "success", position: "right"
+          },
+          style: {
+            backgroundColor: BASIC_COLOR,
+          }
+        })
+
       } catch (err) {
         console.error(err.message)
       }
@@ -95,6 +111,7 @@ export default class SignUp extends React.Component {
                 : this.setState({ name: '', nameError: USERNAME_ERROR})
             }}
             autoCapitalize="none"
+            value={this.state.name}
           />  
           <Input
             placeholder='Email'
@@ -113,6 +130,7 @@ export default class SignUp extends React.Component {
                 ? this.setState({ email: value, emailError: ''}) 
                 : this.setState({ email: '', emailError: EMAIL_ERROR})
             }}
+            value={this.state.email}
           />
           <Input
             placeholder='Password'
@@ -132,6 +150,7 @@ export default class SignUp extends React.Component {
                 ? this.setState({ password: value, passwordError: ''}) 
                 : this.setState({ password: '', passwordError: PASSWORD_ERROR})
             }}
+            value={this.state.password}
           />
           <Input
             placeholder='Confirm password'
@@ -151,6 +170,7 @@ export default class SignUp extends React.Component {
                 ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
                 : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
             }}
+            value={this.state.password}
           />
         </ScrollView>
         <View style={{margin: 20}}>
