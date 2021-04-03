@@ -1,21 +1,31 @@
 import React, { Component } from "react";
 
-import { View, Dimensions, Text, ScrollView, Image } from "react-native";
+import { View, Dimensions, Text } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
-import Icon from "react-native-ionicons";
+import { BASIC_COLOR } from '../constants/Constant';
+import { Button } from 'react-native-elements';
+import Icon from 'react-native-vector-icons/FontAwesome';
 
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
 
 class QrCodeCamera extends Component {
+  state = {
+    scan: false
+  }
 
   onSuccess(e) {
-    // console.log("DATA", JSON.stringify(e))
-    // let productId = JSON.stringify(e);
-    let productId = "16de7132-2c62-4da9-a2dd-e8c3d52bccc2"
-    this.props.navigation.navigate("detail", {productId})
+    let productId = e.data;
+    // let productId = "ad8752e6-b149-4d1d-b8b0-ac0bcf096f52"
+    this.setState({scan: false});
+    this.props.navigation.navigate("detail", {productId});
+    
+  }
+
+  activeQR = () => {
+    this.setState({ scan: true });
   }
 
   makeSlideOutTranslation(translationType, fromValue) {
@@ -45,14 +55,16 @@ class QrCodeCamera extends Component {
   render() {
     return (
       <View style={{flex:1}}>
+        {this.state.scan &&
         <QRCodeScanner
-          showMarker
+          reactivate={true}
+          showMarker={true}
           onRead={this.onSuccess.bind(this)}
           cameraStyle={{ height: SCREEN_HEIGHT }}
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{ fontSize: 30, color: "white" }}>
+                <Text style={{ fontSize: 30, color: "white", fontStyle: 'italic' }}>
                   QR CODE SCANNER
                 </Text>
               </View>
@@ -81,17 +93,37 @@ class QrCodeCamera extends Component {
             </View>
           }
         />
+        }
+        {!this.state.scan &&
+          <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
+            <Button
+            title="Quét lại mã QR"
+            type="outline"
+            icon={
+              <Icon
+                name="qrcode"
+                size={30}
+                color={BASIC_COLOR}
+                style={{padding: 2}}
+              />
+            }
+            titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+            buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
+            onPress={this.activeQR}
+            />
+          </View>
+        }
         <View style={styles.listView}> 
             <View style={styles.viewIcon}>
-              <Icon name="folder-open" style={styles.icon} size={50} onPress={() => this.pressFolder()}></Icon>
+              <Icon name="save" style={styles.icon} size={50} onPress={() => this.pressFolder()}></Icon>
               <Text style={styles.textIcon}>Đã lưu</Text>
             </View>
             <View style={styles.viewIcon}>
-              <Icon name="images" style={styles.icon} size={50} onPress={() => this.pressGallery()}></Icon>
+              <Icon name="image" style={styles.icon} size={50} onPress={() => this.pressGallery()}></Icon>
               <Text style={styles.textIcon}>Thư viện</Text>
             </View>
             <View style={styles.viewIcon}>
-              <Icon name="time" style={styles.icon} size={50} onPress={() => this.pressHistory()}></Icon>
+              <Icon name="history" style={styles.icon} size={50} onPress={() => this.pressHistory()}></Icon>
               <Text style={styles.textIcon}>Lịch sử</Text>
             </View>
         </View>
@@ -179,21 +211,26 @@ const styles = {
     justifyContent: "center",
   },
   viewIcon: {
-    height: 90,
-    width: 90,
-    backgroundColor: '#1CBCC7',
-    marginBottom: 40
+    justifyContent: 'center',
+    height: 100,
+    width: 100,
+    backgroundColor: "white",
+    marginBottom: 40,
+    borderRadius: 100,
+    borderColor: BASIC_COLOR,
+    borderWidth: 1
   },
   icon: {
-    textAlign: 'center',
-    marginTop: 10,
+    alignSelf: 'center',
+    color: BASIC_COLOR,
   },
   listView: {
     flexDirection: 'row',
     justifyContent: 'space-around',
   },
   textIcon: {
-    textAlign: 'center'
+    textAlign: 'center',
+    color: BASIC_COLOR
   },
 };
 

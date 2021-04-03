@@ -83,7 +83,8 @@ export default class DetailInfo extends React.Component {
 
     setProduct = async () => {
       const headers = await this.getHeader();
-      const productId = this.state.productId;
+      const productId = this.props.route.params.productId;
+      console.log(productId);
 
       try {
         let response = await API.get(`/product/products/${productId}`, {headers});

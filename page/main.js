@@ -28,11 +28,11 @@ import ScanPage from './ScanPage'
 import Welcome from './welcome'
 import Profile from "./profile";
 import DetailInfo from './detailInfo';
-import {Icon} from 'react-native-elements';
-import { color } from 'react-native-reanimated';
+import {Icon} from 'react-native-elements'
 
 import DistributionRoute from './DistributionRoute'
 import UserInfo from './userInfo';
+import { BASIC_COLOR } from '../constants/Constant';
 
 const Stack = createStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -54,18 +54,32 @@ class Main extends React.Component {
             if (route.name == "UserInfo")
               return <Icon name='person' color={color} size={size*1.5}/>;
             if (route.name == "Scan")
-              return <Icon name='camera' reverse color={color} size={size*1.3} solid={true}/>;
+              return <View style={{bottom: 0, position: 'absolute'}}>
+                <Icon name='camera' reverse color={color} size={size*1.2} solid={true} />
+              </View> 
+              
             return <Icon name='list' color={color} size={size*1.5}/>;
           },
         })}
         tabBarOptions={{
-          labelStyle: {
-            fontSize: 15,
-          }   
+          activeTintColor: BASIC_COLOR,
+          showLabel: false,
+          style: {
+            
+          }
         }}>
-            <Tab.Screen name="UserInfo" component={UserInfo} options={{title: ''}}/>                        
-            <Tab.Screen name="Scan" component={ScanPage} options={{title: ''}}/>
-            <Tab.Screen name="Detail" component={DetailInfo} options={{title: ''}}/>
+            <Tab.Screen 
+              name="UserInfo" 
+              component={UserInfo} 
+            />                        
+            <Tab.Screen 
+              name="Scan" 
+              component={ScanPage} 
+            />
+            <Tab.Screen
+              name="Detail" 
+              component={DetailInfo} 
+            />
         </Tab.Navigator>
   );
   }
