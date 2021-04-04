@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image } from 'react-native';
+import { StyleSheet, Text, View, Image, TouchableOpacity } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import Wrap from '../components/Wrap';
 import { BASIC_COLOR } from '../constants/Constant';
@@ -19,6 +19,7 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
+      visible: false
     }
 
     getHeader = async() => {
@@ -82,34 +83,29 @@ export default class DetailInfo extends React.Component {
 
     setProduct = async () => {
       const headers = await this.getHeader();
-      const productId = this.props.route.params.productId;
+      if (this.props.route.params) {
+          const product = this.props.route.params.product;
 
-      try {
-        let response = await API.get(`/product/products/${productId}`, {headers});
-        let product = response.data;
-
-        this.setState({
-          product: {
-            templateId: product.template.id,
-            name: product.template.name,
-            expDate: product.expDate,
-            mfgDate: product.mfgDate,
-            producerId: product.template.producerId,
-            description: product.template.description,
-            image: product.template.imageUrl
+          this.setState({
+            product: {
+              templateId: product.template.id,
+              name: product.template.name,
+              expDate: product.expDate,
+              mfgDate: product.mfgDate,
+              producerId: product.template.producerId,
+              description: product.template.description,
+              image: product.template.imageUrl
+            },
+            visible: true
+          });
+  
+          try{
+            let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
+            let producer = response.data.name;
+            this.setState({product: {...this.state.product, producer}})
+          } catch (err) {
+            console.error(err.message)
           }
-        });
-
-        try{
-          let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
-          let producer = response.data.name;
-          this.setState({product: {...this.state.product, producer}})
-        } catch (err) {
-          console.error(err.message)
-        }
-
-      } catch (err) {
-          console.error(err.message);
       }
     }
 
@@ -121,10 +117,11 @@ export default class DetailInfo extends React.Component {
       try {
         let response = await API.get(`/product/feedbacks/${templateId}`, {headers});
 
-        let feedbacks = response.data;
+        let avg = response.data.average_rate;
+        let total = response.data.num_feedbacks;
+        this.setState({reviewSummary: {avg, total}})
 
-        // calculate summary
-        this.cal_Review_Summary(feedbacks)
+        let feedbacks = response.data.feedbacks;
 
         if (feedbacks) {
           feedbacks.map(async feedback  => {
@@ -169,6 +166,7 @@ export default class DetailInfo extends React.Component {
           <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
         </View>
         <View style={styles.contentView}>
+          { this.state.visible ? (
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
                 <View style={{flexDirection: 'row'}}>
                   <View style={{width: '40%', alignSelf: 'center'}}>
@@ -306,7 +304,13 @@ export default class DetailInfo extends React.Component {
                   containerStyle={{padding: 10}}
                 />
 
-            </ScrollView>
+            </ScrollView> ) : (
+              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}} 
+                onPress={() => this.props.navigation.navigate('Scan')}>
+                <Text style={{fontSize: 20}}>Hãy quét mã QR CODE</Text>
+              </TouchableOpacity>
+            )
+          }
         </View>
       </View>
     );

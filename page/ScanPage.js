@@ -1,6 +1,6 @@
 import React, { Component } from "react";
 
-import { View, Dimensions, Text } from "react-native";
+import { View, Dimensions, Text, Pressable } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
 import { BASIC_COLOR } from '../constants/Constant';
@@ -12,6 +12,8 @@ import Geolocation from '@react-native-community/geolocation';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
+import { showMessage } from "react-native-flash-message";
+import { TouchableOpacity } from "react-native-gesture-handler";
 
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -39,17 +41,18 @@ class QrCodeCamera extends Component {
       position => {
         let latitude = position.coords.latitude;
         let longitude = position.coords.longitude;
-        this.setState({ location: { x: latitude, y: longitude }})
+        this.setState({ location: { latitude, longitude }})
       },
       error => Alert.alert(error.message),
-      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
   }
 
   saveHistory = async (productId) => {
     let body = {
       productId,
-      location: this.state.location
+      latitude: this.state.location.latitude,
+      longitude: this.state.location.longitude
     }
     let headers = await this.getHeader();
 
@@ -61,12 +64,26 @@ class QrCodeCamera extends Component {
     let productId = e.data;
     this.setState({scan: false});
 
-    this.saveHistory(productId);
-    this.props.navigation.navigate("detail", {productId});
-  }
+    let headers = await this.getHeader();
 
-  activeQR = () => {
-    this.setState({ scan: true });
+    try {
+      const response = await API.get(`/product/products/${productId}`, {headers});
+        if (response) {
+          this.props.navigation.navigate("detail", {product: response.data});
+          this.saveHistory(productId);
+        }
+    } catch (err) {
+      showMessage({
+        message: "Quét mã không thành công !",
+        type: 'danger',
+        description: "Mã QR không đúng. Hãy thử lại.",
+        duration: 5000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }   
   }
 
   makeSlideOutTranslation(translationType, fromValue) {
@@ -100,8 +117,9 @@ class QrCodeCamera extends Component {
   render() {
     return (
       <View style={{flex:1}}>
-        {this.state.scan &&
+        {this.state.scan ? (
         <QRCodeScanner
+          // cameraTimeout={10000} 
           reactivate={true}
           showMarker={true}
           onRead={this.onSuccess.bind(this)}
@@ -109,7 +127,7 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{ fontSize: 30, color: "white", fontStyle: 'italic' }}>
+                <Text style={{ fontSize: 30, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '100%', textAlign: 'center' }}>
                   QR CODE SCANNER
                 </Text>
               </View>
@@ -137,40 +155,25 @@ class QrCodeCamera extends Component {
               <View style={styles.bottomOverlay} />
             </View>
           }
-        />
-        }
-        {!this.state.scan &&
-          <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
-            <Button
-            title="Quét lại mã QR"
-            type="outline"
-            icon={
-              <Icon
-                name="qrcode"
-                size={30}
-                color={BASIC_COLOR}
-                style={{padding: 2}}
-              />
-            }
-            titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-            buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
-            onPress={this.activeQR}
-            />
-          </View>
+        />) : (
+          <TouchableOpacity onPress={this.setState({ scan: true })}>
+            <Text>Tab here to scan again</Text>
+          </TouchableOpacity>
+        )
         }
         <View style={styles.listView}> 
-            <View style={styles.viewIcon}>
-              <Icon name="save" style={styles.icon} size={50} onPress={() => this.pressFolder()}></Icon>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressFolder()}>
+              <Icon name="save" style={styles.icon} size={40}></Icon>
               <Text style={styles.textIcon}>Đã lưu</Text>
-            </View>
-            <View style={styles.viewIcon}>
-              <Icon name="image" style={styles.icon} size={50} onPress={() => this.pressGallery()}></Icon>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressGallery()}>
+              <Icon name="image" style={styles.icon} size={40}></Icon>
               <Text style={styles.textIcon}>Thư viện</Text>
-            </View>
-            <View style={styles.viewIcon}>
-              <Icon name="history" style={styles.icon} size={50} onPress={() => this.pressHistory()}></Icon>
+            </TouchableOpacity>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressHistory()}>
+              <Icon name="history" style={styles.icon} size={40}></Icon>
               <Text style={styles.textIcon}>Lịch sử</Text>
-            </View>
+            </TouchableOpacity>
         </View>
 
       </View>
@@ -182,13 +185,11 @@ const overlayColor = "rgba(0,0,0,0.5)"; // this gives us a black color with a 50
 
 const rectDimensions = SCREEN_WIDTH * 0.65; // this is equivalent to 255 from a 393 device width
 const rectBorderWidth = SCREEN_WIDTH * 0.005; // this is equivalent to 2 from a 393 device width
-const rectBorderColor = "green";
+const rectBorderColor = 'white';
 
 const scanBarWidth = SCREEN_WIDTH * 0.4; // this is equivalent to 180 from a 393 device width
 const scanBarHeight = SCREEN_WIDTH * 0.005; //this is equivalent to 1 from a 393 device width
-const scanBarColor = "#22ff00";
-
-const iconScanColor = "blue";
+const scanBarColor = BASIC_COLOR;
 
 const styles = {
   rectangleContainer: {
@@ -231,12 +232,6 @@ const styles = {
     backgroundColor: overlayColor
   },
 
-  scanBar: {
-    width: scanBarWidth,
-    height: scanBarHeight,
-    backgroundColor: scanBarColor
-  },
-
   logo: {
     resizeMode: 'contain',
     scaleX: 0.6,
@@ -257,13 +252,11 @@ const styles = {
   },
   viewIcon: {
     justifyContent: 'center',
-    height: 100,
-    width: 100,
+    height: 90,
+    width: 90,
     backgroundColor: "white",
     marginBottom: 40,
     borderRadius: 100,
-    borderColor: BASIC_COLOR,
-    borderWidth: 1
   },
   icon: {
     alignSelf: 'center',
