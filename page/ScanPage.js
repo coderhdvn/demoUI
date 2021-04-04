@@ -6,6 +6,12 @@ import * as Animatable from "react-native-animatable";
 import { BASIC_COLOR } from '../constants/Constant';
 import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
+import { Alert } from "react-native";
+import Geolocation from '@react-native-community/geolocation';
+// import { Platform, PermissionsAndroid } from 'react-native';
+import API from '../api/API';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
@@ -13,15 +19,50 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 
 class QrCodeCamera extends Component {
   state = {
-    scan: false
+    scan: true,
+    location: null
   }
 
-  onSuccess(e) {
-    let productId = e.data;
-    // let productId = "ad8752e6-b149-4d1d-b8b0-ac0bcf096f52"
-    this.setState({scan: false});
-    this.props.navigation.navigate("detail", {productId});
+  getHeader = async() => {
+      
+    const token = "Bearer " + await getData(TOKEN_KEY);
+
+    const headers = {
+      'Authorization': token
+    }
     
+    return headers
+  }
+
+  getLocation = async () => {
+    Geolocation.getCurrentPosition(
+      position => {
+        let latitude = position.coords.latitude;
+        let longitude = position.coords.longitude;
+        this.setState({ location: { x: latitude, y: longitude }})
+      },
+      error => Alert.alert(error.message),
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+    )
+  }
+
+  saveHistory = async (productId) => {
+    let body = {
+      productId,
+      location: this.state.location
+    }
+    let headers = await this.getHeader();
+
+    const response = await API.post('/logger/consumes', body, {headers});
+    console.log(response.data);
+  }
+
+  onSuccess = async (e) => {
+    let productId = e.data;
+    this.setState({scan: false});
+
+    this.saveHistory(productId);
+    this.props.navigation.navigate("detail", {productId});
   }
 
   activeQR = () => {
@@ -50,6 +91,10 @@ class QrCodeCamera extends Component {
   pressHistory() {
     console.log('history');
     this.props.navigation.navigate('history');
+  }
+
+  componentDidMount = async () => {
+    await this.getLocation();
   }
 
   render() {
