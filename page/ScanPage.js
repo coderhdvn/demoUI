@@ -103,6 +103,7 @@ class QrCodeCamera extends Component {
         {this.state.scan &&
         <QRCodeScanner
           reactivate={true}
+          cameraTimeout={10000}
           showMarker={true}
           onRead={this.onSuccess.bind(this)}
           cameraStyle={{ height: SCREEN_HEIGHT }}

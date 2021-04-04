@@ -77,7 +77,7 @@ class Main extends React.Component {
               component={ScanPage} 
             />
             <Tab.Screen
-              name="Detail" 
+              name="detail" 
               component={DetailInfo} 
             />
         </Tab.Navigator>

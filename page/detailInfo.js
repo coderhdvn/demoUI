@@ -19,7 +19,6 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
-      productId: "16de7132-2c62-4da9-a2dd-e8c3d52bccc2"
     }
 
     getHeader = async() => {
