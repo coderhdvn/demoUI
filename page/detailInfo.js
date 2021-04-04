@@ -63,9 +63,9 @@ export default class DetailInfo extends React.Component {
             content: this.state.content
           }
           let templateId = this.state.product.templateId;
-          const response = await API.put(`/product/templates/feedback/${templateId}`, feedback, {headers});
+          const response = await API.post(`/product/feedbacks/${templateId}`, feedback, {headers});
   
-          this.setFeedbacks(response.data.feedbacks);
+          this.setFeedbacks(templateId);
   
           this.setState({modalVisible: false});
   
@@ -83,7 +83,6 @@ export default class DetailInfo extends React.Component {
     setProduct = async () => {
       const headers = await this.getHeader();
       const productId = this.props.route.params.productId;
-      console.log(productId);
 
       try {
         let response = await API.get(`/product/products/${productId}`, {headers});
@@ -96,7 +95,6 @@ export default class DetailInfo extends React.Component {
             expDate: product.expDate,
             mfgDate: product.mfgDate,
             producerId: product.template.producerId,
-            feedbacks: product.template.feedbacks,
             description: product.template.description,
             image: product.template.imageUrl
           }
@@ -115,37 +113,49 @@ export default class DetailInfo extends React.Component {
       }
     }
 
-    setFeedbacks = async (feedbacks) => {
+    setFeedbacks = async (templateId) => {
       const headers = await this.getHeader();
 
-      this.cal_Review_Summary(feedbacks);
-
       this.setState({reviews: []});
-      
-        if (feedbacks.length === 0){
-          return null
-        } else {
-          try {
-            await feedbacks.map(async feedback => {
-                  let review = feedback;
-                  const customerId = feedback.customerId;
 
-                  const response = await API.get(`/account/users/${customerId}`, {headers});
-                  const customerName = response.data.name;
+      try {
+        let response = await API.get(`/product/feedbacks/${templateId}`, {headers});
 
-                  review = {...review, customerName};
+        let feedbacks = response.data;
 
-                  this.setState({reviews: [...this.state.reviews, review]});
-            });
-          } catch (err) {
-            console.error(err.message);
-          }
+        // calculate summary
+        this.cal_Review_Summary(feedbacks)
+
+        if (feedbacks) {
+          feedbacks.map(async feedback  => {
+            let review = {
+              content: feedback.content,
+              rating: feedback.rating,
+              created_at: feedback.created_at
+            }
+            const customerId = feedback.customerId;
+
+            let response = await API.get(`/account/users/${customerId}`, {headers});
+            const customerName = response.data.name;
+
+            review = {...review, customerName};
+
+            this.setState({reviews: [...this.state.reviews, review].sort((a, b) => {return b.created_at - a.created_at})});
+          })
         }
+      } catch (err) {
+        console.error(err.message);
+      }
     }
 
     componentDidMount = async()  => {
         await this.setProduct();
-        await this.setFeedbacks(this.state.product.feedbacks);
+        await this.setFeedbacks(this.state.product.templateId);
+    }
+
+    UNSAFE_componentWillReceiveProps = async() => {
+      await this.setProduct();
+      await this.setFeedbacks(this.state.product.templateId);
     }
 
   render(){
