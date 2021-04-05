@@ -2,8 +2,10 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Input, Button } from 'react-native-elements';
+import { Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
+import Draggable from 'react-native-draggable';
+import { Dimensions } from 'react-native';
 
 export default class Distributors extends React.Component {
     
@@ -40,7 +42,6 @@ export default class Distributors extends React.Component {
             image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
           }
       ],
-      
     }
 
   render(){
@@ -79,18 +80,6 @@ export default class Distributors extends React.Component {
               )}
             }
           />
-          <Button
-                icon={
-                  <Icon
-                    name="home"
-                    size={30}
-                    color='white'
-                  />
-                }
-                containerStyle={{position: 'absolute', right: 5, top: '20%'}}
-                buttonStyle={{backgroundColor: BASIC_COLOR, borderRadius: 100, width: 50, height: 50}}
-                onPress={() => {this.props.navigation.navigate('Scan')}}
-            />
             <Button
               icon={
                 <Icon
@@ -106,6 +95,19 @@ export default class Distributors extends React.Component {
               buttonStyle={{borderColor: BASIC_COLOR}}
               onPress={() => {this.props.navigation.navigate('map')}}
           />
+          <Draggable x={Dimensions.get('window').width - 55} y={100}>
+            <Button
+                  icon={
+                    <Icon
+                      name="home"
+                      size={35}
+                      color='white'
+                    />
+                  }
+                  buttonStyle={{backgroundColor: BASIC_COLOR, borderRadius: 100, width: 50, height: 50}}
+                  onPress={() => {this.props.navigation.navigate('Scan')}}
+              />
+          </Draggable>
         </View>
       </View>
     );
