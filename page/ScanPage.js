@@ -1,20 +1,18 @@
 import React, { Component } from "react";
 
-import { View, Dimensions, Text, Pressable } from "react-native";
+import { View, Dimensions, Text } from "react-native";
 import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
 import { BASIC_COLOR } from '../constants/Constant';
-import { Button } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Alert } from "react-native";
 import Geolocation from '@react-native-community/geolocation';
-// import { Platform, PermissionsAndroid } from 'react-native';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from "react-native-flash-message";
 import { TouchableOpacity } from "react-native-gesture-handler";
-
+import { Button } from 'react-native-elements';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -83,7 +81,8 @@ class QrCodeCamera extends Component {
           icon: 'danger', position: "right"
         },
       })
-    }   
+    }
+    this.setState({scan: true});
   }
 
   makeSlideOutTranslation(translationType, fromValue) {
@@ -127,9 +126,9 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{ fontSize: 30, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '100%', textAlign: 'center' }}>
+                {/* <Text style={{ fontSize: 30, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '100%', textAlign: 'center' }}>
                   QR CODE SCANNER
-                </Text>
+                </Text> */}
               </View>
 
               <View style={{ flexDirection: "row" }}>
@@ -156,9 +155,21 @@ class QrCodeCamera extends Component {
             </View>
           }
         />) : (
-          <TouchableOpacity onPress={this.setState({ scan: true })}>
-            <Text>Tab here to scan again</Text>
-          </TouchableOpacity>
+          <View style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}}>
+            <Button
+                  icon={
+                    <Icon
+                      name="spinner"
+                      size={40}
+                      color={BASIC_COLOR}
+                    />
+                  }
+                  title='Đang quét'
+                  type='outline'
+                  titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 10}}
+                  buttonStyle={{borderColor: 'white'}}
+                />
+          </View>
         )
         }
         <View style={styles.listView}> 
@@ -215,7 +226,8 @@ const styles = {
     width: SCREEN_WIDTH,
     backgroundColor: overlayColor,
     justifyContent: "center",
-    alignItems: "center"
+    alignItems: "center",
+    marginBottom: -50
   },
 
   bottomOverlay: {
@@ -252,11 +264,11 @@ const styles = {
   },
   viewIcon: {
     justifyContent: 'center',
-    height: 90,
-    width: 90,
+    height: 80,
+    width: 80,
     backgroundColor: "white",
     marginBottom: 40,
-    borderRadius: 100,
+    borderRadius: 10,
   },
   icon: {
     alignSelf: 'center',

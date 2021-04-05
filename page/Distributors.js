@@ -1,47 +1,90 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
 import Draggable from 'react-native-draggable';
 import { Dimensions } from 'react-native';
+import API from '../api/API';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
+import { Modal } from 'react-native';
 
 export default class Distributors extends React.Component {
     
     state = {
-      distributors: [
-          {
-            name: "Cong ti 1",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
-          },
-          {
-            name: "Cong ti 2",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://lh3.googleusercontent.com/proxy/S2M3fc1hwiJrO4aYsjuulC0k5y4W-lFDxBuw7Hsj0nld_UvJnglEdEK10MR6bvEcIXbZVeQe1cP5suazLIwxAG0WpEV4nQUNI9u5M0z_6OeQFrpfKzGOI86bcihQLQlEHA"
-          },
-          {
-            name: "Cong ti 3",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
-          },
-          {
-            name: "Cong ti 4",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
-          },
-          {
-            name: "Cong ti 5",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
-          },
-          {
-            name: "Cong ti 6",
-            address: "Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam",
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png"
+      distributors: [],
+      modalVisible: false,
+      click_company: {}
+    }
+
+    getHeader = async() => {
+      
+      const token = "Bearer " + await getData(TOKEN_KEY);
+
+      const headers = {
+        'Authorization': token
+      }
+      
+      return headers
+    }
+
+    getCompany = async (distributorId) => {
+      const headers = await this.getHeader();
+
+      try {
+        const response = await API.get(`/account/companies/${distributorId}`, {headers})
+        return response.data
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+
+    setDistributors = async () => {
+      const headers = await this.getHeader();
+      
+      const productId = this.props.route.params.productId;
+      console.log(productId);
+      try {
+        const response = await API.get(`/logger/distributes/${productId}/10/0`, {headers});
+
+        let distributors = response.data;
+
+        distributors.forEach(async item => {
+          let location = {
+            latitude: item.latitude,
+            longitude: item.longitude
           }
-      ],
+
+          let company = await this.getCompany(item.distributorId);
+
+          let distributor = {
+            id: item.id,
+            location,
+            company,
+            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png",
+          }
+          this.setState({
+            distributors: [...this.state.distributors, distributor]
+          })
+        })
+      } catch (err) {
+        console.error(err.message);
+      }
+    }
+
+    componentDidMount = () => {
+      this.setDistributors();
+    }
+
+    onPressDistributor = async (id) => {
+      let distributor = this.state.distributors.filter(distributor => distributor.id === id)[0];
+
+      this.setState({
+        click_company: distributor.company,
+        modalVisible: true
+      });
     }
 
   render(){
@@ -60,10 +103,10 @@ export default class Distributors extends React.Component {
             showsVerticalScrollIndicator={false}
             // horizontal={true}
             data={this.state.distributors}
-            keyExtractor={(data) => data.name}
+            keyExtractor={(data) => data.id}
             renderItem={({item}) => {
               return (
-                  <View style={styles.listView}>
+                  <TouchableOpacity style={styles.listView} onPress={() => this.onPressDistributor(item.id)}>
                     <View>
                       <Image
                         source={{uri: item.image}}
@@ -73,10 +116,10 @@ export default class Distributors extends React.Component {
                     </View>
                     
                     <View style={styles.textView}>
-                      <Text style={styles.textName}>{item.name}</Text>
-                      <Text style={styles.textAddress}>{item.address}</Text>
+                      <Text style={styles.textName}>{item.company.name}</Text>
+                      <Text style={styles.textAddress}>{item.company.detailAddress}</Text>
                     </View>
-                  </View>
+                  </TouchableOpacity>
               )}
             }
           />
@@ -88,9 +131,9 @@ export default class Distributors extends React.Component {
                   color='white'
                 />
               }
-              title='Xem bản đồ'
+              title='Xem trên bản đồ'
               type='outline'
-              titleStyle={{color: 'white', fontSize: 20, padding: 5}}
+              titleStyle={{color: 'white', fontSize: 20, padding: 10}}
               containerStyle={{backgroundColor: BASIC_COLOR, alignSelf: 'center', width: '100%'}}
               buttonStyle={{borderColor: BASIC_COLOR}}
               onPress={() => {this.props.navigation.navigate('map')}}
@@ -108,6 +151,39 @@ export default class Distributors extends React.Component {
                   onPress={() => {this.props.navigation.navigate('Scan')}}
               />
           </Draggable>
+          
+          <Modal
+            visible={this.state.modalVisible}
+            animationType="slide"
+            transparent={true}
+          >
+            <View style={styles.modalView}>
+              <View style={styles.viewInModal}>
+                <Image
+                        source={{uri: this.state.click_company.image}}
+                        style={styles.imageInModal}
+                      />
+                <Text style={styles.textModal}>Tên công ty: {this.state.click_company.name}</Text>
+                <Text style={styles.textModal}>Địa chỉ: {this.state.click_company.detailAddress}</Text>
+                <Button
+                  icon={
+                    <Icon
+                      name="times"
+                      size={20}
+                      color={BASIC_COLOR}
+                    />
+                  }
+                  title='Đóng'
+                  type='outline'
+                  titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                  buttonStyle={{borderColor: BASIC_COLOR}}
+                  onPress={() => this.setState({modalVisible: false})}
+                  containerStyle={{padding: 5}}
+                />
+              </View>
+            </View>
+          </Modal>
+
         </View>
       </View>
     );
@@ -183,5 +259,34 @@ const styles = StyleSheet.create({
   textView: {
     flexShrink: 1,
     marginLeft: 10
+  },
+  modalView: {
+    flex: 1,
+    justifyContent: 'center',
+    alignSelf: 'center',
+  },
+  viewInModal: {
+    backgroundColor: "#f7f7f7", 
+    borderRadius: 10, 
+    padding: 10, 
+    width: "90%", 
+    shadowColor: BASIC_COLOR,
+    shadowOffset: {
+      width: 5,
+      height: 5
+    },
+    shadowOpacity: 0.9,
+    elevation: 20,
+  },
+  textModal: {
+    color: BASIC_COLOR
+  },
+  imageInModal: {
+      height: 100,
+      width: 100,
+      borderColor: BASIC_COLOR,
+      borderWidth: 1,
+      borderRadius: 100,
+      alignSelf: 'center'
   }
 });

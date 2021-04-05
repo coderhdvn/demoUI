@@ -92,12 +92,15 @@ export default class DetailInfo extends React.Component {
       if (this.props.route.params) {
           const product = this.props.route.params.product;
 
+          let expDate = (new Date(product.expDate)).toLocaleDateString();
+          let mfgDate = (new Date(product.mfgDate)).toLocaleDateString();
           this.setState({
             product: {
+              productId: product.id,
               templateId: product.template.id,
               name: product.template.name,
-              expDate: product.expDate,
-              mfgDate: product.mfgDate,
+              expDate,
+              mfgDate,
               producerId: product.template.producerId,
               description: product.template.description,
               image: product.template.imageUrl
@@ -211,7 +214,7 @@ export default class DetailInfo extends React.Component {
                         titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
                         buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
                         onPress={() => {
-                            this.props.navigation.navigate("distributors")
+                            this.props.navigation.navigate("distributors", {productId: this.state.product.productId})
                           }}
                   />
                 </Wrap>
@@ -354,7 +357,8 @@ const styles = StyleSheet.create({
     elevation: 20,
     borderRadius: 5,
     marginTop: 20,
-    marginBottom: 27
+    marginBottom: 27,
+    width: "85%"
   },
   shadow: {
     backgroundColor: 'black',
@@ -367,11 +371,12 @@ const styles = StyleSheet.create({
       {
         translateX: -7
       }
-    ]
+    ],
+    // width: "85%"
   },
   title: {
       color:"black", 
-      fontSize:25, 
+      fontSize:22, 
       width: "100%", 
       textAlign: "center", 
       fontWeight: "300", 
