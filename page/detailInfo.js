@@ -9,7 +9,7 @@ import Rating from '../components/Rating';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
-import { Alert } from 'react-native';
+import { showMessage } from 'react-native-flash-message';
 export default class DetailInfo extends React.Component {
     
     state = {
@@ -74,10 +74,16 @@ export default class DetailInfo extends React.Component {
           console.error(err.message)
         }
       } else {
-        Alert.alert(
-          "Lỗi !",
-          "Bạn không thể đánh giá 0 sao",
-        )
+        showMessage({
+          message: "Đánh giá không thành công !",
+          type: 'danger',
+          description: "Bạn không thể đánh giá 0 sao",
+          duration: 5000,
+          floating: true,
+          icon: {
+            icon: 'danger', position: "right"
+          },
+        })
       }
     }
 
@@ -125,10 +131,13 @@ export default class DetailInfo extends React.Component {
 
         if (feedbacks) {
           feedbacks.map(async feedback  => {
+            let date = (new Date(feedback.created_at)).toLocaleDateString();
+
             let review = {
               content: feedback.content,
               rating: feedback.rating,
-              created_at: feedback.created_at
+              created_at: feedback.created_at,
+              date
             }
             const customerId = feedback.customerId;
 
@@ -271,43 +280,54 @@ export default class DetailInfo extends React.Component {
                   />
                 </View>
               }
-
-              <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
-              {
-                this.state.reviews.map((item, index) => {
-                  return (
-                    <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
-                      <Text style={{fontSize: 18, padding: 5}}>{item.customerName}</Text>
-                      <Rating
-                        rating={item.rating}
-                        size={25}
-                      />  
-                      <Text style={{padding: 5}}>{item.content}</Text>
-                    </View>
-                  )
-                })
-              }
-
-                <Button
-                  icon={
-                    <Icon
-                      name="caret-down"
-                      size={20}
-                      color={BASIC_COLOR}
-                    />
+              { this.state.reviewSummary.total !== 0 &&
+              <View>
+                <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
+                  {this.state.reviews.map((item, index) => {
+                    return (
+                      <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                          <Text style={{fontSize: 18, padding: 5}}>{item.customerName}</Text>
+                          <Text style={{fontSize: 13, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>
+                        </View>
+                        <Rating
+                          rating={item.rating}
+                          size={25}
+                        />  
+                        <Text style={{padding: 5}}>{item.content}</Text>
+                      </View>
+                    )
+                    })
                   }
-                  title='More reviews'
-                  type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                  buttonStyle={{borderColor: 'white'}}
-                  onPress={() => {}}
-                  containerStyle={{padding: 10}}
-                />
 
+                  <Button
+                    icon={
+                      <Icon
+                        name="caret-down"
+                        size={20}
+                        color={BASIC_COLOR}
+                      />
+                    }
+                    title='Xem thêm đánh giá'
+                    type='outline'
+                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                    buttonStyle={{borderColor: 'white'}}
+                    onPress={() => {}}
+                    containerStyle={{padding: 10}}
+                  />
+              </View>
+              }
+            
             </ScrollView> ) : (
-              <TouchableOpacity style={{flex: 1, justifyContent: 'center', alignSelf: 'center'}} 
+              <TouchableOpacity style={{flex: 1, justifyContent: 'center'}} 
                 onPress={() => this.props.navigation.navigate('Scan')}>
-                <Text style={{fontSize: 20}}>Hãy quét mã QR CODE</Text>
+                <Icon
+                  name="qrcode"
+                  size={200}
+                  color={BASIC_COLOR}
+                  style={{alignSelf: 'center'}}
+                />
+                <Text style={{fontSize: 25, alignSelf: 'center', color: BASIC_COLOR}}>Hãy quét mã QR</Text>
               </TouchableOpacity>
             )
           }
