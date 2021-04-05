@@ -1,6 +1,9 @@
 import React from 'react';
-import { StyleSheet, Text, View, Image, Button } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Input, Button } from 'react-native-elements';
+import { BASIC_COLOR } from '../constants/Constant';
 
 export default class Distributors extends React.Component {
     
@@ -77,8 +80,31 @@ export default class Distributors extends React.Component {
             }
           />
           <Button
-            title="Xem bản đồ"
-            onPress={() => this.props.navigation.navigate('map')}
+                icon={
+                  <Icon
+                    name="home"
+                    size={30}
+                    color='white'
+                  />
+                }
+                containerStyle={{position: 'absolute', right: 5, top: '20%'}}
+                buttonStyle={{backgroundColor: BASIC_COLOR, borderRadius: 100, width: 50, height: 50}}
+                onPress={() => {this.props.navigation.navigate('Scan')}}
+            />
+            <Button
+              icon={
+                <Icon
+                  name="map"
+                  size={30}
+                  color='white'
+                />
+              }
+              title='Xem bản đồ'
+              type='outline'
+              titleStyle={{color: 'white', fontSize: 20, padding: 5}}
+              containerStyle={{backgroundColor: BASIC_COLOR, alignSelf: 'center', width: '100%'}}
+              buttonStyle={{borderColor: BASIC_COLOR}}
+              onPress={() => {this.props.navigation.navigate('map')}}
           />
         </View>
       </View>
@@ -89,7 +115,7 @@ export default class Distributors extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#00F0FF",
+    backgroundColor: BASIC_COLOR,
   },
   contentView: {
     backgroundColor: "#fff",
@@ -148,7 +174,7 @@ const styles = StyleSheet.create({
   image: {
     height: 100,
     width: 100,
-    borderColor: 'gray',
+    borderColor: BASIC_COLOR,
     borderWidth: 1,
     borderRadius: 100
   },

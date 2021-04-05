@@ -57,8 +57,9 @@ class Main extends React.Component {
               return <View style={{bottom: 0, position: 'absolute'}}>
                 <Icon name='camera' reverse color={color} size={size*1.2} solid={true} />
               </View> 
-              
-            return <Icon name='list' color={color} size={size*1.5}/>;
+            if (route.name == "detail")
+              return <Icon name='list' color={color} size={size*1.5}/>;
+            return null
           },
         })}
         tabBarOptions={{

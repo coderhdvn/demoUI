@@ -3,6 +3,9 @@ import { Dimensions } from 'react-native';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import MapView, {Callout, Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import Carousel from 'react-native-snap-carousel';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Input, Button } from 'react-native-elements';
+import { BASIC_COLOR } from '../constants/Constant';
 
 export default class DetailInfo extends React.Component {
     
@@ -111,6 +114,18 @@ export default class DetailInfo extends React.Component {
               sliderWidth={Dimensions.get('window').width}
               itemWidth={300}
               onSnapToItem={(index) => this.onCarouselItemChange(index)}
+            />
+            <Button
+                icon={
+                  <Icon
+                    name="home"
+                    size={30}
+                    color='white'
+                  />
+                }
+                containerStyle={{position: 'absolute', right: 5, top: '20%'}}
+                buttonStyle={{backgroundColor: BASIC_COLOR, borderRadius: 100, width: 50, height: 50}}
+                onPress={() => {this.props.navigation.navigate('Scan')}}
             />
         </View>
         )
