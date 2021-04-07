@@ -5,7 +5,6 @@ import QRCodeScanner from "react-native-qrcode-scanner";
 import * as Animatable from "react-native-animatable";
 import { BASIC_COLOR } from '../constants/Constant';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Alert } from "react-native";
 import Geolocation from '@react-native-community/geolocation';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
@@ -41,8 +40,19 @@ class QrCodeCamera extends Component {
         let longitude = position.coords.longitude;
         this.setState({ location: { latitude, longitude }})
       },
-      error => Alert.alert(error.message),
-      // { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
+      error => {
+        showMessage({
+          message: "Không thể định vị vị trí của bạn !",
+          type: 'danger',
+          description: "Hãy chắc chắn rằng bạn đang bật định vị",
+          duration: 5000,
+          floating: true,
+          icon: {
+            icon: 'danger', position: "right"
+          },
+        })
+      },
+      { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
   }
 
@@ -66,7 +76,7 @@ class QrCodeCamera extends Component {
 
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
-        if (response) {
+        if (response && this.state.location !== null) {
           this.props.navigation.navigate("detail", {product: response.data});
           this.saveHistory(productId);
         }

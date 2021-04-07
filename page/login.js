@@ -10,8 +10,8 @@ import { showMessage } from 'react-native-flash-message';
 
 export default class Login extends React.Component {
   state = {
-    name:"staff",
-    password:"991999",
+    name:"anhtu",
+    password:"123456",
     disable:true,
     display: false
   }
@@ -80,8 +80,7 @@ export default class Login extends React.Component {
                 color={BASIC_COLOR}
               />
             }
-            // errorStyle={{ color: 'red' }}
-            // errorMessage={this.state.nameError}
+            secureTextEntry={true}
             onChangeText={value => {
               this.setState({password: value})
             }}

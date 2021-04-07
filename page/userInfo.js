@@ -1,10 +1,16 @@
-import React, { useReducer, useState } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
-import Icon from 'react-native-ionicons';
 import * as ImagePicker from 'react-native-image-picker';
 import { Component } from 'react';
-import { ActionSheet, Root } from 'native-base'
+import { ActionSheet, Root } from 'native-base';
+import API from '../api/API';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
+import { showMessage } from "react-native-flash-message";
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Input, Button } from 'react-native-elements';
+import { BASIC_COLOR } from '../constants/Constant';
 
 class UserInfo extends Component {
 
@@ -12,7 +18,18 @@ class UserInfo extends Component {
     super(props)
     this.state = {
       resourcePath: {},
-      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Microsoft_Account.svg/1024px-Microsoft_Account.svg.png'
+      image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Microsoft_Account.svg/1024px-Microsoft_Account.svg.png',
+      info: {
+        username: 'anhtu',
+        email: 'nguyenanhtu@gmail.com',
+        address: 'Moscow',
+        phone: '123456789'
+      },
+      disabledChange: true,
+      displayButton: {
+        title: "Thay đổi thông tin",
+        icon: "edit"
+      }
     }
   }
 
@@ -37,6 +54,30 @@ class UserInfo extends Component {
         console.log('response', JSON.stringify(response));
       }
     });
+  }
+
+  getHeader = async() => {
+      
+    const token = "Bearer " + await getData(TOKEN_KEY);
+
+    const headers = {
+      'Authorization': token
+    }
+    
+    return headers
+  }
+
+  setUser = async () => {
+    let headers = await this.getHeader();
+
+    try {
+      const response = await API.get()
+    } catch (err) {
+      console.error(err);
+    }
+  }
+  componentDidMount = () => {
+
   }
 
   openLibrary = () => {
@@ -84,6 +125,28 @@ class UserInfo extends Component {
     )
   }
 
+  toggleButton = () => {
+    if (this.state.disabledChange) {
+      this.setState({
+        disabledChange: false,
+        displayButton: {
+          title: "Lưu thay đổi",
+          icon: "save"
+        }
+      })
+    } else {
+
+      console.log(this.state.info)
+      this.setState({
+        disabledChange: true,
+        displayButton: {
+          title: "Thay đổi thông tin",
+          icon: "edit"
+        }
+      })
+    }
+  }
+
   render() {
     return (
       <Root>
@@ -101,8 +164,87 @@ class UserInfo extends Component {
           </TouchableOpacity>
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
+            <Input
+              label="Tên đăng nhập"
+              placeholder='Tên đăng nhập'
+              leftIcon={
+                <Icon
+                  name='user'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.username}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              onChangeText={value => {
+                this.setState({info: {...this.state.info, username: value}})
+              }}
+              autoCapitalize="none"
+            />
 
-          <View style={styles.inputView} >
+            <Input
+              label="Email"
+              placeholder='Email'
+              leftIcon={
+                <Icon
+                  name='envelope'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.email}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              onChangeText={value => {
+                this.setState({info: {...this.state.info, email: value}})
+              }}
+              autoCapitalize="none"
+            />
+
+            <Input
+              label="Địa chỉ"
+              placeholder='Địa chỉ'
+              leftIcon={
+                <Icon
+                  name='map-marker'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.address}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              onChangeText={value => {
+                this.setState({info: {...this.state.info, address: value}})
+              }}
+              autoCapitalize="none"
+            />
+
+            <Input
+              label="Số điện thoại"
+              placeholder='Số điện thoại'
+              leftIcon={
+                <Icon
+                  name='phone'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.phone}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              onChangeText={value => {
+                this.setState({info: {...this.state.info, phone: value}})
+              }}
+              autoCapitalize="none"
+            />
+
+          {/* <View style={styles.inputView} >
               <View  
               style={styles.inputText}>
                   <Text style={styles.title} >Tên hiển thị:</Text> 
@@ -136,8 +278,26 @@ class UserInfo extends Component {
                   <Text style={styles.title} >Mã số thuế:</Text>
                   <Text>123456789</Text>    
               </View>
-          </View>
+          </View> */}
         </ScrollView>
+
+        <Button
+            icon={
+              <Icon
+                name={this.state.displayButton.icon}
+                size={25}
+                color={BASIC_COLOR}
+                style={{padding: 5}}
+              />
+            }
+            title={this.state.displayButton.title}
+            type='outline'
+            titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
+            buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
+            containerStyle={{paddingBottom: 25}}
+            onPress={() => this.toggleButton()}
+        />
+
         </View>
       </Root>
       
@@ -151,110 +311,42 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
   },
-  logo:{
-    resizeMode: "contain",
-    height: "30%",
-    width: "30%",
-    position: "absolute",
-    marginTop: "3%"
-  },
-  addLogo:{
-    resizeMode: "contain",
-    transform: [
-      {scale: 2}
-      ],
-    position: "absolute",
-    marginTop: "30%"
-  },
+  // logo:{
+  //   resizeMode: "contain",
+  //   height: "30%",
+  //   width: "30%",
+  //   position: "absolute",
+  //   marginTop: "3%"
+  // },
+  // addLogo:{
+  //   resizeMode: "contain",
+  //   transform: [
+  //     {scale: 2}
+  //     ],
+  //   position: "absolute",
+  //   marginTop: "30%"
+  // },
   shadow: {
     width: 1000,
     height: 1000,
-    backgroundColor: "#6FF6FF",
+    backgroundColor: BASIC_COLOR,
     borderRadius: 500,
-    marginTop: -800,
+    marginTop: -850,
   },
 
-  inputView:{
-    backgroundColor:"#fff",
-    borderWidth: 1,
-    borderRadius:15,
-    height:50,
-    marginBottom:5,
-    marginTop: 18,
-    justifyContent:"center",
-    padding:20
-  },
-  inputText:{
-    color:"black",
-    alignItems: "flex-start",
-    justifyContent: 'center',
-    paddingBottom: 5,
-  },
-  forgot:{
-    color:"#1CBCC7",
-    fontSize:13,
-    margin: 5
-  },
-  signupBtn:{
-    width:"50%",
-    backgroundColor:"#1CBCC7",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:20,
-    marginBottom:10
-  },
-  disable:{
-    width:"50%",
-    borderRadius:25,
-    backgroundColor:"#8E908A",
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
-  },
-  loginText:{
-    color:"white",
-    fontSize: 16
-  },
-  signupText:{
-    color:"white",
-    fontSize: 16
-  },
-  warning: {
-    color: "#F17575",
-    fontStyle: "italic",
-    textAlign: "left",
-    justifyContent: "flex-start",
-    fontSize: 12
-  },
-  hide: {
-    display: 'none'
-  },
-  errorText: {
-    color: 'red',
-    fontSize: 10,
-    marginBottom: -5,
-    textAlign: 'center'
-  },
   scroll: {
     width: "80%",
     marginBottom: 20,
     marginTop: 20
   },
-  title: {
-    fontSize: 12,
-    color: 'grey'
-  },
+
   avatar: {
     position: 'absolute',
     top: 20
   },
   image: {
-    height: 150,
-    width: 150,
+    height: 120,
+    width: 120,
     borderRadius: 100
   }
 });

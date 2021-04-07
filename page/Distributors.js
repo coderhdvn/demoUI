@@ -45,7 +45,7 @@ export default class Distributors extends React.Component {
       const headers = await this.getHeader();
       
       const productId = this.props.route.params.productId;
-      console.log(productId);
+
       try {
         const response = await API.get(`/logger/distributes/${productId}/10/0`, {headers});
 

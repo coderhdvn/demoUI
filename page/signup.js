@@ -50,7 +50,7 @@ export default class SignUp extends React.Component {
   onSubmit = async () => {
     let input = {
       name: this.state.name,
-      // email: this.state.email,
+      email: this.state.email,
       password: this.state.password
     }
     if (validate_before_submit(input)) {
