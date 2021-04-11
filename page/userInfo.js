@@ -5,7 +5,7 @@ import * as ImagePicker from 'react-native-image-picker';
 import { Component } from 'react';
 import { ActionSheet, Root } from 'native-base';
 import API from '../api/API';
-import {getData} from '../storage/AsyncStorage';
+import {getData, setData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from "react-native-flash-message";
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -24,13 +24,15 @@ class UserInfo extends Component {
       displayButton: {
         title: "Thay đổi thông tin",
         icon: "edit"
-      }
+      },
+      infoChange: {},
+      checkEditUsername: false
     }
   }
 
   launchCamera = () => {
     let options = {
-      storeageOptions: {
+      storageOptions: {
         skipBackup: true,
         path: 'images',
       },
@@ -49,38 +51,6 @@ class UserInfo extends Component {
         console.log('response', JSON.stringify(response));
       }
     });
-  }
-
-  getHeader = async() => {
-      
-    const token = "Bearer " + await getData(TOKEN_KEY);
-
-    const headers = {
-      'Authorization': token
-    }
-    
-    return headers
-  }
-
-  setUser = async () => {
-    let headers = await this.getHeader();
-
-    try {
-      const response = await API.get("/account/users/profile", {headers});
-      let user = response.data;
-      let info = {
-        id: user.id,
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-      }
-      this.setState({ info });
-    } catch (err) {
-      console.error(err);
-    }
-  }
-  componentDidMount = async () => {
-    await this.setUser();
   }
 
   openLibrary = () => {
@@ -128,46 +98,102 @@ class UserInfo extends Component {
     )
   }
 
-  changeInfo = async () => {
+  getHeader = async() => {
+      
+    const token = "Bearer " + await getData(TOKEN_KEY);
+
+    const headers = {
+      'Authorization': token
+    }
+    
+    return headers
+  }
+
+  setUser = async () => {
     let headers = await this.getHeader();
 
     try {
-      let user = this.state.info;
+      const response = await API.get("/account/users/profile", {headers});
+      let user = response.data;
       let info = {
+        id: user.id,
         name: user.name,
         email: user.email,
         phone: user.phone,
       }
-
-      await API.put(`/account/users/${user.id}`, info, {headers});
-
-      await this.setUser();
+      this.setState({ info, infoChange: info });
     } catch (err) {
       console.error(err);
     }
   }
 
-  toggleButton = async() => {
-    if (this.state.disabledChange) {
-      this.setState({
-        disabledChange: false,
-        displayButton: {
-          title: "Lưu thay đổi",
-          icon: "save"
-        }
-      })
-    } else {
-      // call API
-      await this.changeInfo();
+  checkEdit = () => {
+    let info = this.state.info;
+    let infoChange = this.state.infoChange;
+    
+    return (info.name !== infoChange.name || info.email !== infoChange.email || info.phone !== infoChange.phone)
+  }
 
-      this.setState({
-        disabledChange: true,
-        displayButton: {
-          title: "Thay đổi thông tin",
-          icon: "edit"
+  changeInfo = async () => {
+    let headers = await this.getHeader();
+    if (this.checkEdit()) {
+      try {
+        let user = this.state.infoChange;
+        let info = {
+          name: user.name,
+          email: user.email,
+          phone: user.phone,
         }
+  
+        await API.put(`/account/users/${user.id}`, info, {headers});
+  
+        showMessage({
+          message: "Thay đổi thông tin thành công !",
+          type: "success",
+          duration: 4000,
+          floating: true,
+          icon: {
+            icon: "success", position: "right"
+          },
+        })
+        this.setState({ 
+          disabledChange: true,
+          info: { ...info, id: this.state.info.id }
+        });
+
+
+      } catch (err) {
+        showMessage({
+          message: "Thay đổi thông tin không thành công !",
+          type: 'danger',
+          description: err.message,
+          duration: 4000,
+          floating: true,
+          icon: {
+            icon: 'danger', position: "right"
+          },
+        })
+      }
+    } else {
+      showMessage({
+        message: "Thay đổi thông tin không thành công !",
+        type: 'warning',
+        description: "Bạn chưa thay đổi thông tin nào.",
+        duration: 4000,
+        floating: true,
+        icon: {
+          icon: 'warning', position: "right"
+        },
       })
     }
+  }
+
+  logout = () => {
+    this.props.navigation.navigate("Login");
+  }
+
+  componentDidMount = async () => {
+    await this.setUser();
   }
 
   render() {
@@ -185,6 +211,23 @@ class UserInfo extends Component {
               style = {styles.image}
             />
           </TouchableOpacity>
+
+          <Button
+            icon={
+              <Icon
+                name='sign-out'
+                size={20}
+                color='white'
+                // style={{padding: 1}}
+              />
+            }
+            title="Đăng xuất"
+            type='outline'
+            titleStyle={{color: 'white', fontSize: 15, padding: 5}}
+            buttonStyle={{borderColor: BASIC_COLOR}}
+            containerStyle={{position: 'absolute', right: 0}}
+            onPress={() => this.logout()}
+          />
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
             <Input
@@ -198,11 +241,11 @@ class UserInfo extends Component {
                 />
               }
               disabled={this.state.disabledChange}
-              value={this.state.info.name}
+              value={this.state.infoChange.name}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.nameError}
               onChangeText={value => {
-                this.setState({info: {...this.state.info, name: value}})
+                this.setState({ infoChange: {...this.state.infoChange, name: value }})
               }}
               autoCapitalize="none"
             />
@@ -218,11 +261,11 @@ class UserInfo extends Component {
                 />
               }
               disabled={this.state.disabledChange}
-              value={this.state.info.email}
+              value={this.state.infoChange.email}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.nameError}
               onChangeText={value => {
-                this.setState({info: {...this.state.info, email: value}})
+                this.setState({ infoChange: {...this.state.infoChange, email: value }})
               }}
               autoCapitalize="none"
             />
@@ -238,70 +281,72 @@ class UserInfo extends Component {
                 />
               }
               disabled={this.state.disabledChange}
-              value={this.state.info.phone}
+              value={this.state.infoChange.phone}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.nameError}
               onChangeText={value => {
-                this.setState({info: {...this.state.info, phone: value}})
+                this.setState({ infoChange: {...this.state.infoChange, phone: value }})
               }}
               autoCapitalize="none"
             />
-
-          {/* <View style={styles.inputView} >
-              <View  
-              style={styles.inputText}>
-                  <Text style={styles.title} >Tên hiển thị:</Text> 
-                  <Text>Nhật Lâm</Text>   
-    
-              </View>
-          </View>
-          <View style={styles.inputView} >
-              <View  
-              style={styles.inputText}>
-                  <Text style={styles.title} > Email:</Text>  
-                  <Text>nhatlam@gmail.com</Text>  
-              </View>
-          </View><View style={styles.inputView} >
-              <View  
-              style={styles.inputText}>
-                  <Text style={styles.title} >Địa chỉ: </Text>    
-                  <Text>9/1 Trần Trọng Cung</Text>
-              </View>
-          </View>
-          <View style={styles.inputView} >
-              <View  
-              style={styles.inputText}>
-                  <Text style={styles.title} >Điện thoại:</Text>
-                  <Text>0905984573</Text>    
-              </View>
-          </View>
-          <View style={styles.inputView} >
-              <View  
-              style={styles.inputText}>
-                  <Text style={styles.title} >Mã số thuế:</Text>
-                  <Text>123456789</Text>    
-              </View>
-          </View> */}
         </ScrollView>
-
-        <Button
-            icon={
-              <Icon
-                name={this.state.displayButton.icon}
-                size={25}
-                color={BASIC_COLOR}
-                style={{padding: 5}}
+        {
+          this.state.disabledChange
+          ? <View style={{flexDirection: 'row'}}>
+              <Button
+                  icon={
+                    <Icon
+                      name="edit"
+                      size={25}
+                      color={BASIC_COLOR}
+                      style={{padding: 5}}
+                    />
+                  }
+                  title="Thay đổi thông tin"
+                  type='outline'
+                  titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
+                  buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
+                  containerStyle={{paddingBottom: 30}}
+                  onPress={() => this.setState({ disabledChange: false })}
               />
-            }
-            title={this.state.displayButton.title}
-            type='outline'
-            titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
-            buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
-            containerStyle={{paddingBottom: 25}}
-            onPress={() => this.toggleButton()}
-        />
-
-        </View>
+            </View>
+          : <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '90%', paddingBottom: 30}}>
+              <Button
+                icon={
+                  <Icon
+                    name="times"
+                    size={25}
+                    color='red'
+                    style={{padding: 5}}
+                  />
+                }
+                title="Hủy"
+                type='outline'
+                titleStyle={{color: 'red', fontSize: 20, padding: 5}}
+                buttonStyle={{borderRadius: 30, borderColor: 'white'}}
+                onPress={() => this.setState({
+                  disabledChange: true,
+                  infoChange: this.state.info
+                })}
+              />
+              <Button
+                icon={
+                  <Icon
+                    name="save"
+                    size={25}
+                    color={BASIC_COLOR}
+                    style={{padding: 5}}
+                  />
+                }
+                title="Lưu thay đổi"
+                type='outline'
+                titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
+                buttonStyle={{borderRadius: 30, borderColor: 'white'}}
+                onPress={() => this.changeInfo()}
+              />
+            </View>
+        }
+        </View>     
       </Root>
       
     )
