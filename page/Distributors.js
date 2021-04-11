@@ -30,11 +30,11 @@ export default class Distributors extends React.Component {
       return headers
     }
 
-    getCompany = async (distributorId) => {
+    getBranch = async (distributorId) => {
       const headers = await this.getHeader();
 
       try {
-        const response = await API.get(`/account/companies/${distributorId}`, {headers})
+        const response = await API.get(`/account/branches/${distributorId}`, {headers})
         return response.data
       } catch (err) {
         console.error(err.message);
@@ -52,18 +52,13 @@ export default class Distributors extends React.Component {
         let distributors = response.data;
 
         distributors.forEach(async item => {
-          let location = {
-            latitude: item.latitude,
-            longitude: item.longitude
-          }
 
-          let company = await this.getCompany(item.distributorId);
+          let branch = await this.getBranch(item.distributorId);
+          // console.log(company)
 
           let distributor = {
             id: item.id,
-            location,
-            company,
-            image: "https://cdn.logojoy.com/wp-content/uploads/2018/05/01104836/1751.png",
+            branch
           }
           this.setState({
             distributors: [...this.state.distributors, distributor]
@@ -78,11 +73,9 @@ export default class Distributors extends React.Component {
       this.setDistributors();
     }
 
-    onPressDistributor = async (id) => {
-      let distributor = this.state.distributors.filter(distributor => distributor.id === id)[0];
-
+    onPressDistributor = (company) => {
       this.setState({
-        click_company: distributor.company,
+        click_company: company,
         modalVisible: true
       });
     }
@@ -106,18 +99,18 @@ export default class Distributors extends React.Component {
             keyExtractor={(data) => data.id}
             renderItem={({item}) => {
               return (
-                  <TouchableOpacity style={styles.listView} onPress={() => this.onPressDistributor(item.id)}>
+                  <TouchableOpacity style={styles.listView} onPress={() => this.onPressDistributor(item.branch.company)}>
                     <View>
                       <Image
-                        source={{uri: item.image}}
+                        source={{uri: item.branch.image}}
                         style={styles.image}
                       />
                       
                     </View>
                     
                     <View style={styles.textView}>
-                      <Text style={styles.textName}>{item.company.name}</Text>
-                      <Text style={styles.textAddress}>{item.company.detailAddress}</Text>
+                      <Text style={styles.textName}>{item.branch.name}</Text>
+                      <Text style={styles.textAddress}>{item.branch.address}</Text>
                     </View>
                   </TouchableOpacity>
               )}
@@ -136,7 +129,7 @@ export default class Distributors extends React.Component {
               titleStyle={{color: 'white', fontSize: 20, padding: 10}}
               containerStyle={{backgroundColor: BASIC_COLOR, alignSelf: 'center', width: '100%'}}
               buttonStyle={{borderColor: BASIC_COLOR}}
-              onPress={() => {this.props.navigation.navigate('map')}}
+              onPress={() => {this.props.navigation.navigate('map', {distributors: this.state.distributors})}}
           />
           <Draggable x={Dimensions.get('window').width - 55} y={100}>
             <Button
@@ -163,8 +156,21 @@ export default class Distributors extends React.Component {
                         source={{uri: this.state.click_company.image}}
                         style={styles.imageInModal}
                       />
-                <Text style={styles.textModal}>Tên công ty: {this.state.click_company.name}</Text>
-                <Text style={styles.textModal}>Địa chỉ: {this.state.click_company.detailAddress}</Text>
+                <Text style={styles.textModalTitle}>Tên công ty:</Text>
+                <Text style={styles.textModalContent}>{this.state.click_company.name}</Text>
+
+                <Text style={styles.textModalTitle}>Địa chỉ:</Text>
+                <Text style={styles.textModalContent}>{this.state.click_company.detailAddress}</Text>
+
+                <Text style={styles.textModalTitle}>Email:</Text>
+                <Text style={styles.textModalContent}>{this.state.click_company.email}</Text>
+
+                <Text style={styles.textModalTitle}>Điện thoại:</Text>
+                <Text style={styles.textModalContent}>{this.state.click_company.phone}</Text>
+
+                <Text style={styles.textModalTitle}>Website:</Text>
+                <Text style={styles.textModalContent}>{this.state.click_company.website}</Text>
+
                 <Button
                   icon={
                     <Icon
@@ -252,13 +258,11 @@ const styles = StyleSheet.create({
   image: {
     height: 100,
     width: 100,
-    borderColor: BASIC_COLOR,
-    borderWidth: 1,
-    borderRadius: 100
+    borderRadius: 2,
   },
   textView: {
     flexShrink: 1,
-    marginLeft: 10
+    paddingLeft: 10
   },
   modalView: {
     flex: 1,
@@ -270,23 +274,33 @@ const styles = StyleSheet.create({
     borderRadius: 10, 
     padding: 10, 
     width: "90%", 
-    shadowColor: BASIC_COLOR,
+    shadowColor: "black",
     shadowOffset: {
-      width: 5,
-      height: 5
+      width: 100,
+      height: 200
     },
-    shadowOpacity: 0.9,
-    elevation: 20,
+    shadowOpacity: 10,
+    elevation: 10,
   },
-  textModal: {
-    color: BASIC_COLOR
+  textModalContent: {
+    fontWeight: 'bold',
+    alignSelf: 'center',
+    paddingBottom: 10
+  },
+  textModalTitle: {
+    borderTopWidth: 1,
+    borderColor: BASIC_COLOR,
+    paddingTop: 5,
+    paddingLeft: 5,
+    marginLeft: 10,
+    marginRight: 10
   },
   imageInModal: {
       height: 100,
       width: 100,
       borderColor: BASIC_COLOR,
-      borderWidth: 1,
       borderRadius: 100,
-      alignSelf: 'center'
+      alignSelf: 'center',
+      marginBottom: 10
   }
 });

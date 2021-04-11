@@ -19,12 +19,7 @@ class UserInfo extends Component {
     this.state = {
       resourcePath: {},
       image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Microsoft_Account.svg/1024px-Microsoft_Account.svg.png',
-      info: {
-        username: 'anhtu',
-        email: 'nguyenanhtu@gmail.com',
-        address: 'Moscow',
-        phone: '123456789'
-      },
+      info: {},
       disabledChange: true,
       displayButton: {
         title: "Thay đổi thông tin",
@@ -71,13 +66,21 @@ class UserInfo extends Component {
     let headers = await this.getHeader();
 
     try {
-      const response = await API.get()
+      const response = await API.get("/account/users/profile", {headers});
+      let user = response.data;
+      let info = {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      }
+      this.setState({ info });
     } catch (err) {
       console.error(err);
     }
   }
-  componentDidMount = () => {
-
+  componentDidMount = async () => {
+    await this.setUser();
   }
 
   openLibrary = () => {
@@ -125,7 +128,26 @@ class UserInfo extends Component {
     )
   }
 
-  toggleButton = () => {
+  changeInfo = async () => {
+    let headers = await this.getHeader();
+
+    try {
+      let user = this.state.info;
+      let info = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+      }
+
+      await API.put(`/account/users/${user.id}`, info, {headers});
+
+      await this.setUser();
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
+  toggleButton = async() => {
     if (this.state.disabledChange) {
       this.setState({
         disabledChange: false,
@@ -135,8 +157,9 @@ class UserInfo extends Component {
         }
       })
     } else {
+      // call API
+      await this.changeInfo();
 
-      console.log(this.state.info)
       this.setState({
         disabledChange: true,
         displayButton: {
@@ -175,11 +198,11 @@ class UserInfo extends Component {
                 />
               }
               disabled={this.state.disabledChange}
-              value={this.state.info.username}
+              value={this.state.info.name}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.nameError}
               onChangeText={value => {
-                this.setState({info: {...this.state.info, username: value}})
+                this.setState({info: {...this.state.info, name: value}})
               }}
               autoCapitalize="none"
             />
@@ -200,26 +223,6 @@ class UserInfo extends Component {
               errorMessage={this.state.nameError}
               onChangeText={value => {
                 this.setState({info: {...this.state.info, email: value}})
-              }}
-              autoCapitalize="none"
-            />
-
-            <Input
-              label="Địa chỉ"
-              placeholder='Địa chỉ'
-              leftIcon={
-                <Icon
-                  name='map-marker'
-                  size={24}
-                  color={BASIC_COLOR}
-                />
-              }
-              disabled={this.state.disabledChange}
-              value={this.state.info.address}
-              errorStyle={{ color: 'red' }}
-              errorMessage={this.state.nameError}
-              onChangeText={value => {
-                this.setState({info: {...this.state.info, address: value}})
               }}
               autoCapitalize="none"
             />

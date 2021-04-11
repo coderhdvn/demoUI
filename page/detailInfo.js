@@ -33,22 +33,6 @@ export default class DetailInfo extends React.Component {
       return headers
     }
 
-    cal_Review_Summary = (reviews) => {
-      if (reviews.length !== 0) {
-        let total = reviews.length;
-  
-        const sum = reviews.reduce((a, b) => a + b.rating, 0);
-
-        let avg = Math.round(sum / total);
-  
-        let reviewSummary = {total, avg}
-  
-        this.setState({ reviewSummary })
-      } else {
-        this.setState({ reviewSummary: {avg: 0, total: 0}});
-      } 
-    }
-
     getRating = (rating) => {
       this.setState({rating});
     }
@@ -109,8 +93,9 @@ export default class DetailInfo extends React.Component {
           });
   
           try{
-            let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
-            let producer = response.data.name;
+            let response = await API.get(`/account/branches/${this.state.product.producerId}`, {headers});
+            let producer = response.data.company.name;
+            console.log(this.state.product.producerId)
             this.setState({product: {...this.state.product, producer}})
           } catch (err) {
             console.error(err.message)
@@ -367,12 +352,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     top: 27,
     alignSelf: 'center',
-    transform: [
-      {
-        translateX: -7
-      }
-    ],
-    // width: "85%"
   },
   title: {
       color:"black", 

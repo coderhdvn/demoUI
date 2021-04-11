@@ -41,17 +41,18 @@ export default class DetailInfo extends React.Component {
                 image: 'https://lh5.googleusercontent.com/p/AF1QipN7TTlndraZOt7uVuYczqaOXTCoT_ejI8WViEQj=w426-h240-k-no'
             }
         ],
+        distributors: {},
         coordinates: [],
         markers: []
     }
 
     onCarouselItemChange = (index) => {
-        let location = this.state.contributors[index];
+        let location = this.state.distributors[index];
         this._map.animateToRegion({
-            latitude: location.coordinate.latitude,
-            longitude: location.coordinate.longitude,
-            latitudeDelta: 0.09,
-            longitudeDelta: 0.09
+            latitude: location.branch.latitude,
+            longitude: location.branch.longitude,
+            latitudeDelta: 0.005,
+            longitudeDelta: 0.005
         });
 
         this.state.markers[index].showCallout()
@@ -63,41 +64,54 @@ export default class DetailInfo extends React.Component {
 
     renderCarouselItem = ({item}) => (
         <View style={styles.cardContainer}>
-            <Text style={styles.cardTitle}>{item.name}</Text>
-            <Text style={styles.cardContent}>{item.address}</Text>
-            <Image style={styles.cardImage} source={{uri: item.image}} />
+            <Text style={styles.cardTitle}>{item.branch.name}</Text>
+            <Text style={styles.cardContent}>{item.branch.address}</Text>
+            <Image style={styles.cardImage} source={{uri: item.branch.image}} />
         </View>
     )
 
     componentDidMount = () => {
-        this.state.contributors.forEach(contributor => {
-            this.state.coordinates.push(contributor.coordinate)
-        });
+
+        let distributors = this.props.route.params.distributors;
+        let coordinates = [];
+        
+        distributors.forEach(distributor => {
+            let coords = {
+                latitude: distributor.branch.latitude,
+                longitude: distributor.branch.longitude
+            }
+            coordinates.push(coords);
+        })
+        this.setState({
+            distributors,
+            coordinates
+        })
     }
 
   render(){
         return ( 
-        <View style={styles.container}>    
+        <View style={styles.container}>  
+            {  this.state.coordinates.length !== 0 &&
             <MapView
                 provider={PROVIDER_GOOGLE}
                 ref={map => this._map = map}
                 style={styles.map}
                 initialRegion={{
-                latitude: this.state.contributors[0].coordinate.latitude,
-                longitude: this.state.contributors[0].coordinate.longitude,
-                latitudeDelta: 0.09,
-                longitudeDelta: 0.09
+                latitude: this.state.coordinates[0].latitude,
+                longitude: this.state.coordinates[0].longitude,
+                latitudeDelta: 0.005,
+                longitudeDelta: 0.005
             }}>
                 {
-                    this.state.contributors.map((contributor, index) => (
+                    this.state.distributors.map((distributor, index) => (
                         <Marker
-                            key={contributor.id}
+                            key={distributor.id}
                             ref={ref => this.state.markers[index] = ref}
                             onPress={() => this.onMarkerPress(index)}
-                            coordinate={contributor.coordinate}
+                            coordinate={{latitude: distributor.branch.latitude, longitude: distributor.branch.longitude}}
                         >
                             <Callout>
-                                <Text>{contributor.name}</Text>
+                                <Text>{distributor.branch.name}</Text>
                             </Callout>
                         </Marker>
                     ))
@@ -107,9 +121,10 @@ export default class DetailInfo extends React.Component {
                     strokeWidth={3}
                 />
             </MapView>
+            }
             <Carousel
               ref={(c) => { this._carousel = c; }}
-              data={this.state.contributors}
+              data={this.state.distributors}
               containerCustomStyle={styles.carousel}
               renderItem={this.renderCarouselItem}
               sliderWidth={Dimensions.get('window').width}
