@@ -35,9 +35,6 @@ export default class Login extends React.Component {
         icon: {
           icon: "success", position: "right"
         },
-        style: {
-          backgroundColor: BASIC_COLOR,
-        }
       })
     } catch (err) {
         console.error(err.message);

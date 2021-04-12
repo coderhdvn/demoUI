@@ -68,9 +68,6 @@ export default class SignUp extends React.Component {
           icon: {
             icon: "success", position: "right"
           },
-          style: {
-            backgroundColor: BASIC_COLOR,
-          }
         })
 
       } catch (err) {

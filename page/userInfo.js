@@ -30,6 +30,43 @@ class UserInfo extends Component {
     }
   }
 
+  setAvatar = async (imageUrl) => {
+    let headers = await this.getHeader();
+
+    try {
+      let user = this.state.info;
+      let info = {
+        name: user.name,
+        email: user.email,
+        phone: user.phone,
+        image: imageUrl
+      }
+
+      await API.put(`/account/users/${user.id}`, info, {headers});
+  
+        showMessage({
+          message: "Thay đổi ảnh đại diện !",
+          type: "success",
+          duration: 3000,
+          floating: true,
+          icon: {
+            icon: "success", position: "right"
+          },
+        })
+    } catch (err) {
+      showMessage({
+        message: "Thay đổi ảnh đại diện !",
+        type: 'danger',
+        description: err.message,
+        duration: 4000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }
+  }
+
   launchCamera = () => {
     let options = {
       storageOptions: {
@@ -49,6 +86,7 @@ class UserInfo extends Component {
       } else {
         this.setState({image: response.uri})
         console.log('response', JSON.stringify(response));
+        this.setAvatar(response.uri)
       }
     });
   }
@@ -75,14 +113,15 @@ class UserInfo extends Component {
         this.setState({
           image: response.uri
         });
+        this.setAvatar(response.uri)
       }
     });
   }
 
   changeAvatar = () => {
-    const BUTTONS = ['Take photo', 'Choose photo from library', 'Cancel'];
+    const BUTTONS = ['Chụp ảnh', 'Chọn ảnh từ thư viện', 'Hủy'];
     ActionSheet.show(
-      {options: BUTTONS, cancelButtonIndex: 2, title: 'Select a Photo'},
+      {options: BUTTONS, cancelButtonIndex: 2, title: 'Chọn 1 bức ảnh'},
       buttonIndex => {
         switch (buttonIndex) {
           case 0:
@@ -121,7 +160,7 @@ class UserInfo extends Component {
         email: user.email,
         phone: user.phone,
       }
-      this.setState({ info, infoChange: info });
+      this.setState({ info, infoChange: info, image: user.image });
     } catch (err) {
       console.error(err);
     }
@@ -143,6 +182,7 @@ class UserInfo extends Component {
           name: user.name,
           email: user.email,
           phone: user.phone,
+          image: this.state.image
         }
   
         await API.put(`/account/users/${user.id}`, info, {headers});
@@ -188,6 +228,10 @@ class UserInfo extends Component {
     }
   }
 
+  changePassword = () => {
+
+  }
+
   logout = () => {
     this.props.navigation.navigate("Login");
   }
@@ -210,6 +254,20 @@ class UserInfo extends Component {
               source = {{uri: this.state.image}}
               style = {styles.image}
             />
+            <Button
+            icon={
+              <Icon
+                name='camera'
+                size={20}
+                color='white'
+              />
+            }
+            type='outline'
+            titleStyle={{color: 'white', fontSize: 15, padding: 5}}
+            buttonStyle={{borderColor: 'rgba(255, 255, 255, 0)', borderRadius: 50}}
+            containerStyle={{position: 'absolute', right: 0, bottom: 0, backgroundColor: "rgba(255, 255, 255, 0.3)"}}
+            onPress={() => {this.changeAvatar()}}
+          />
           </TouchableOpacity>
 
           <Button
@@ -218,7 +276,6 @@ class UserInfo extends Component {
                 name='sign-out'
                 size={20}
                 color='white'
-                // style={{padding: 1}}
               />
             }
             title="Đăng xuất"
@@ -227,6 +284,21 @@ class UserInfo extends Component {
             buttonStyle={{borderColor: BASIC_COLOR}}
             containerStyle={{position: 'absolute', right: 0}}
             onPress={() => this.logout()}
+          />
+
+          <Button
+            icon={
+              <Icon
+                name='lock'
+                size={20}
+                color={BASIC_COLOR}
+              />
+            }
+            title="Đổi mật khẩu"
+            type='outline'
+            titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 5}}
+            buttonStyle={{borderColor: 'white'}}
+            onPress={() => this.changePassword()}
           />
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
@@ -289,40 +361,39 @@ class UserInfo extends Component {
               }}
               autoCapitalize="none"
             />
-        </ScrollView>
+
         {
           this.state.disabledChange
-          ? <View style={{flexDirection: 'row'}}>
+          ? <View style={{justifyContent: 'center', flexDirection: 'row'}}>
               <Button
                   icon={
                     <Icon
                       name="edit"
-                      size={25}
+                      size={22}
                       color={BASIC_COLOR}
                       style={{padding: 5}}
                     />
                   }
                   title="Thay đổi thông tin"
                   type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
+                  titleStyle={{color: BASIC_COLOR, fontSize: 18, padding: 5}}
                   buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
-                  containerStyle={{paddingBottom: 30}}
                   onPress={() => this.setState({ disabledChange: false })}
               />
             </View>
-          : <View style={{flexDirection: 'row', justifyContent: 'space-around', width: '90%', paddingBottom: 30}}>
+          : <View style={{flexDirection: 'row', justifyContent: 'space-around'}}>
               <Button
                 icon={
                   <Icon
                     name="times"
-                    size={25}
+                    size={22}
                     color='red'
                     style={{padding: 5}}
                   />
                 }
                 title="Hủy"
                 type='outline'
-                titleStyle={{color: 'red', fontSize: 20, padding: 5}}
+                titleStyle={{color: 'red', fontSize: 18, padding: 5}}
                 buttonStyle={{borderRadius: 30, borderColor: 'white'}}
                 onPress={() => this.setState({
                   disabledChange: true,
@@ -333,19 +404,22 @@ class UserInfo extends Component {
                 icon={
                   <Icon
                     name="save"
-                    size={25}
+                    size={22}
                     color={BASIC_COLOR}
                     style={{padding: 5}}
                   />
                 }
                 title="Lưu thay đổi"
                 type='outline'
-                titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 5}}
+                titleStyle={{color: BASIC_COLOR, fontSize: 18, padding: 5}}
                 buttonStyle={{borderRadius: 30, borderColor: 'white'}}
                 onPress={() => this.changeInfo()}
               />
             </View>
         }
+
+        </ScrollView>
+        
         </View>     
       </Root>
       
@@ -359,43 +433,32 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     alignItems: 'center',
   },
-  // logo:{
-  //   resizeMode: "contain",
-  //   height: "30%",
-  //   width: "30%",
-  //   position: "absolute",
-  //   marginTop: "3%"
-  // },
-  // addLogo:{
-  //   resizeMode: "contain",
-  //   transform: [
-  //     {scale: 2}
-  //     ],
-  //   position: "absolute",
-  //   marginTop: "30%"
-  // },
+
   shadow: {
     width: 1000,
     height: 1000,
     backgroundColor: BASIC_COLOR,
     borderRadius: 500,
-    marginTop: -850,
+    marginTop: -830,
   },
 
   scroll: {
-    width: "80%",
+    width: "90%",
     marginBottom: 20,
-    marginTop: 20
+    paddingTop: 15
   },
 
   avatar: {
     position: 'absolute',
-    top: 20
+    top: 20,
+    marginBottom: 20
   },
   image: {
-    height: 120,
-    width: 120,
-    borderRadius: 100
+    height: 130,
+    width: 130,
+    borderRadius: 100,
+    borderWidth: 2,
+    borderColor: 'black'
   }
 });
 
