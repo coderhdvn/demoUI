@@ -37,9 +37,17 @@ export default class Login extends React.Component {
         },
       })
     } catch (err) {
-        console.error(err.message);
+        showMessage({
+          message: "Đăng nhập không thành công !",
+          type: "danger",
+          description: "Tên đăng nhập hoặc mật khẩu không đúng",
+          duration: 4000,
+          floating: true,
+          icon: {
+            icon: "danger", position: "right"
+          },
+        })
     }
-    // this.props.navigation.navigate('detail');
   }
 
   render(){
@@ -49,7 +57,7 @@ export default class Login extends React.Component {
           <Image style={styles.logo} source={require('../images/LOGO.jpeg')} />  
           <View style={styles.contentView}>
           <Input
-            placeholder='User name'
+            placeholder='Tên đăng nhập'
             leftIcon={
               <Icon
                 name='user'
@@ -57,19 +65,16 @@ export default class Login extends React.Component {
                 color={BASIC_COLOR}
               />
             }
-            // errorStyle={{ color: 'red' }}
-            // errorMessage={this.state.nameError}
             onChangeText={value => {
               this.setState({name: value})
             }}
             autoCapitalize="none"
             inputStyle={{color: BASIC_COLOR}}
             value={this.state.name}
-            // inputContainerStyle={{backgroundColor: 'white'}}
           />  
 
           <Input
-            placeholder='Password'
+            placeholder='Mật khẩu'
             leftIcon={
               <Icon
                 name='key'
@@ -95,7 +100,7 @@ export default class Login extends React.Component {
                 color="white"
               />
             }
-            title='Sign In'
+            title='Đăng nhập'
             type='outline'
             titleStyle={{color: 'white', fontSize: 20, padding: 30}}
             buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
@@ -111,7 +116,7 @@ export default class Login extends React.Component {
                 color="white"
               />
             }
-            title='Sign Up'
+            title='Đăng ký'
             type='outline'
             titleStyle={{color: 'white', fontSize: 20, padding: 30}}
             buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
@@ -119,8 +124,8 @@ export default class Login extends React.Component {
             containerStyle={{padding: 10}}
         />
         </View>
-        <TouchableOpacity onPress={() => console.log('Forgot password')}>
-          <Text style={{color: 'white'}}>Forgot password?</Text>
+        <TouchableOpacity onPress={() => this.props.navigation.navigate("Reset Password")}>
+          <Text style={{color: 'white', borderBottomWidth: 1, borderColor: 'white'}}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         </ImageBackground>
       </View>

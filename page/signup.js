@@ -11,41 +11,92 @@ const USERNAME_LENGTH = 3;
 const USERNAME_ERROR = "Tên hiển thị phải từ 3 ký tự trở lên";
 const PASSWORD_LENGTH = 6;
 const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
-const EMAIL_ERROR = "Email không hợp lệ";
-const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp"
-
-const validate_username = (username) => {
-  return username.length >= USERNAME_LENGTH ? true : false;
-} 
-
-const validate_email = (email) => {
-  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  return reg.test(email);
-}
-
-const validate_password = (password) => {
-  return password.length >= PASSWORD_LENGTH ? true : false;
-} 
-
-const validate_confirm_password = (password, confirm_password) => {
-  return password === confirm_password;
-} 
-
-const validate_before_submit = (input) => {
-  return (input.name !== '' && input.password !== '') ? true : false
-}
+const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp";
 
 export default class SignUp extends React.Component {
   state = {
-    name:"anhtu",
-    email:"anhtu@gmail.com",
-    password:"123",
-    confirmPassword: "1234561",
+    name:"",
+    email:"",
+    password:"",
+    confirmPassword: "",
     nameError: '',
     emailError: '',
     passwordError: '',
     confirmPasswordError: ''
   }
+
+  validate_password = (password) => {
+    return password.length >= PASSWORD_LENGTH ? true : false;
+  } 
+  
+  validate_confirm_password = (password, confirm_password) => {
+    return password === confirm_password;
+  } 
+
+  check_duplicate_email = async (email) => {
+    try {
+      const response = await API.get(`account/users/email/${email}`);
+      return response.data;
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+  validate_email = (email) => {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    if (reg.test(email)) {
+      if (this.check_duplicate_email(email)) {
+        this.setState({
+          email: email,
+          emailError: ""
+        })
+      } else {
+        this.setState({
+          email: '',
+          emailError: "Email đã được sử dụng"
+        })
+      }
+    } else {
+      this.setState({
+        email: '',
+        emailError: "Email không hợp lệ"
+      })
+    }
+  }
+
+  check_duplicate_username = async (name) => {
+    try {
+      const response = await API.get(`/account/users/name/${name}`);
+      return response.data
+    } catch (err) {
+      console.error(err.message)
+    }
+  }
+
+  validate_username = (username) => {
+    if (username.length >= USERNAME_LENGTH) {
+        if (this.check_duplicate_username(username)) {
+          this.setState({
+            name: username,
+            nameError: ""
+          })
+        } else {
+          this.setState({
+            name: '',
+            nameError: "Tên đăng nhập đã tồn tại"
+          })
+        }
+    } else {
+      this.setState({
+        name: '',
+        nameError: USERNAME_ERROR
+      })
+    }
+  
+  } 
+
+  validate_before_submit = (input) => {
+    return (input.name !== '' && input.password !== '' && input.email !== '' && this.state.confirmPassword !== '') ? true : false
+  }  
 
   onSubmit = async () => {
     let input = {
@@ -53,7 +104,7 @@ export default class SignUp extends React.Component {
       email: this.state.email,
       password: this.state.password
     }
-    if (validate_before_submit(input)) {
+    if (this.validate_before_submit(input)) {
       try {
         const response = await API.post('/account/users', input);
         console.log(response.data);
@@ -71,7 +122,16 @@ export default class SignUp extends React.Component {
         })
 
       } catch (err) {
-        console.error(err.message)
+        showMessage({
+          message: "Đăng ký không thành công !",
+          type: 'danger',
+          description: err.message,
+          duration: 5000,
+          floating: true,
+          icon: {
+            icon: 'danger', position: "right"
+          },
+        })
       }
     } else {
       showMessage({
@@ -97,7 +157,7 @@ export default class SignUp extends React.Component {
       <View style = {styles.contentView}>
         <ScrollView>
           <Input
-            placeholder='User name'
+            placeholder='Tên đăng nhập'
             leftIcon={
               <Icon
                 name='user'
@@ -108,9 +168,7 @@ export default class SignUp extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.nameError}
             onChangeText={value => {
-              validate_username(value) 
-                ? this.setState({ name: value, nameError: ''}) 
-                : this.setState({ name: '', nameError: USERNAME_ERROR})
+              this.validate_username(value) 
             }}
             autoCapitalize="none"
           />  
@@ -127,13 +185,11 @@ export default class SignUp extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.emailError}
             onChangeText={value => {
-              validate_email(value) 
-                ? this.setState({ email: value, emailError: ''}) 
-                : this.setState({ email: '', emailError: EMAIL_ERROR})
+              this.validate_email(value) 
             }}
           />
           <Input
-            placeholder='Password'
+            placeholder='Mật khẩu'
             secureTextEntry={true}
             leftIcon={
               <Icon
@@ -146,13 +202,13 @@ export default class SignUp extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.passwordError}
             onChangeText={value => {
-              validate_password(value) 
+              this.validate_password(value) 
                 ? this.setState({ password: value, passwordError: ''}) 
                 : this.setState({ password: '', passwordError: PASSWORD_ERROR})
             }}
           />
           <Input
-            placeholder='Confirm password'
+            placeholder='Nhập lại mật khẩu'
             secureTextEntry={true}
             leftIcon={
               <Icon
@@ -165,7 +221,7 @@ export default class SignUp extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.confirmPasswordError}
             onChangeText={value => {
-              validate_confirm_password(value, this.state.password) 
+              this.validate_confirm_password(value, this.state.password) 
                 ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
                 : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
             }}
@@ -180,7 +236,7 @@ export default class SignUp extends React.Component {
                 color={BASIC_COLOR}
               />
             }
-            title='Sign Up'
+            title='Đăng ký'
             type='outline'
             titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 30}}
             buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}

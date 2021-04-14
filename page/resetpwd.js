@@ -1,146 +1,172 @@
 import React from 'react';
-import {setData} from '../storage/AsyncStorage';
-import {CODE_KEY} from '../constants/Constant';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image,  Alert, Modal, TouchableHighlight} from 'react-native';
+import { StyleSheet, View, Image } from 'react-native';
+import Icon from 'react-native-vector-icons/FontAwesome';
+import { Input, Button } from 'react-native-elements';
+import API from '../api/API';
+import { ScrollView } from 'react-native-gesture-handler';
+import { BASIC_COLOR } from '../constants/Constant';
+import { showMessage } from 'react-native-flash-message';
+
+const PASSWORD_LENGTH = 6;
+const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
+const EMAIL_ERROR = "Email không hợp lệ";
+const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp"
+
+const validate_email = (email) => {
+  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return reg.test(email);
+}
+
+const validate_password = (password) => {
+  return password.length >= PASSWORD_LENGTH ? true : false;
+}
+
+const validate_confirm_password = (password, confirm_password) => {
+  return password === confirm_password;
+} 
 export default class ResetPWD extends React.Component {
-  state={
-    password: "",
-    email: "",
-    show: false,
-    verify: false,
-    bg: true,
-    display: false,
-    click: false
+  state = {
+    email:"",
+    password:"",
+    confirmPassword: "",
+    emailError: '',
+    passwordError: '',
+    confirmPasswordError: ''
   }
-  render(){
-    return (
-      <View style={styles.container}>
-        <Image style={styles.logo} source={require('../images/img_398183.png')} />  
-        <View 
-        style={styles.inputView} 
-        visible={this.state.bg} >
-          <TextInput  
-            style={styles.inputText}
-            placeholder="Email đã đăng ký..." 
-            placeholderTextColor="#C9D9DA"
-            onChangeText={text => this.setState({email:text})}/>
-        </View>
 
-        <Modal
-        transparent={true}
-        visible={this.state.show}>
-          <View style={styles.popup}>
-            <Text style={styles.titlePopUp}>Nhập mã xác nhận</Text>
-            <TextInput 
-              style={styles.inputPopUp}
-              editable
-              onChangeText={text => {
-                if (text.length==6) {
-                  this.setState({verify: true})
-                  this.setState({show: false})
-                }
-              }}
-              maxLength={6}
-              keyboardType = 'numeric'
-              placeholderTextColor = "#DCD4D4"
-              placeholder="000000"></TextInput>
-          </View>
-        </Modal>
-
-        <Modal
-        transparent={true}
-        visible={this.state.verify}>
-          <View style={styles.popup}>
-          <Image style={styles.logo} source={require('../images/img_398183.png')} />  
-
-            <View style={styles.inputView} >
-              <TextInput
-                secureTextEntry  
-                style={styles.inputText}
-                placeholder="Mật khẩu mới..." 
-                placeholderTextColor="#C9D9DA"
-                onChangeText={text => this.setState({password:text})}/>
-            </View>
-
-            <View style={styles.inputView} >
-              <TextInput  
-                secureTextEntry
-                style={styles.inputText}
-                placeholder="Nhập lại mật khẩu..." 
-                placeholderTextColor="#C9D9DA"
-                onChangeText={text => {
-                  if(text != this.state.password && text.length >= this.state.password.length) {
-                    this.setState({display: true});
-                    this.setState({click: false});
-                    console.log("TEXT", text, this.state.display)
-    
-                  } else if(text == this.state.password && this.state.password.length != 0) {
-                    this.setState({display: false});
-                    this.setState({click: true});
-                  } 
-                }}/>
-            </View>
-            <Text style={this.state.display ? styles.warning : styles.hide}>Mật khẩu mới không khớp !!!</Text>
-
-            <TouchableOpacity style={this.state.click ? styles.signupBtn : styles.disable} onPress={()=>{
-              console.log("EMAIL", this.state.email)
-              console.log("PASSWORD", this.state.password)
-              this.props.navigation.navigate("Main")
-              // Call API here: /api/v1/user/login (POST)
-              // fetch('http://facebook.github.io/react-native/movies.json', {
-              //   method: 'POST',
-              //   headers: {
-              //     Accept: 'application/json',
-              //     'Content-Type': 'application/json'
-              //   },
-              //   body: JSON.stringify({
-              //     email: this.state.email,
-              //     password: this.state.password 
-              //   })
-              //   }).then(res => {
-              //     if(res && res.status == 200) {
-              //       this.props.navigation.navigate("Main")
-              //     }
-              //     else {
-              //       this.setState({fail: true})
-              //     }
-              //   });
-              }}>
-              <Text color="black">Đăng nhập</Text>
-            </TouchableOpacity>
-        </View>
-        </Modal>
-
-        <TouchableOpacity style={styles.signupBtn} onPress={() => {
-          this.setState({show: true})
-          this.setState({bg: false})
-          // Call API here: /api/v1/user/email (POST)
-          //this.props.navigation.navigate("ScanPage")
-          // fetch('http://facebook.github.io/react-native/movies.json', {
-          //       method: 'POST',
-          //       headers: {
-          //         Accept: 'application/json',
-          //         'Content-Type': 'application/json'
-          //       },
-          //       body: JSON.stringify({
-          //         email: this.state.email,
-          //         password: this.state.password 
-          //       })
-          //       }).then(res => {
-          //         if(res && res.status == 200) {
-          //           setData(CODE_KEY, res.json())
-          //         }
-          //         else {
-          //           this.setState({fail: true})
-          //         }
-          //       });
-          }}>
-          <Text style={styles.signupText}>Lấy lại mật khẩu</Text>
-        </TouchableOpacity>
+  onSubmit = async () => {
+    let input = {
+      email: this.state.email,
+      password: this.state.password
+    }
+    if (validate_before_submit(input)) {
+      try {
         
-      </View>
-    );
+        this.props.navigation.navigate("Login", {message: "Sign up success !", email: input.email});
+
+        showMessage({
+          message: "Lấy lại mật khẩu thành công!",
+          type: "success",
+          description: `Hãy kiểm tra tài khoản email: ${input.email} để xác nhận đổi mật khẩu`,
+          duration: 5000,
+          floating: true,
+          icon: {
+            icon: "success", position: "right"
+          },
+        })
+
+      } catch (err) {
+        showMessage({
+          message: "Lấy lại mật khẩu không thành công !",
+          type: 'danger',
+          description: "Hãy kiểm tra lại kết nối mạng",
+          duration: 5000,
+          floating: true,
+          icon: {
+            icon: 'danger', position: "right"
+          },
+        })
+      }
+    } else {
+      showMessage({
+        message: "Đăng ký không thành công !",
+        type: 'danger',
+        description: "Hãy kiểm tra lại thông tin",
+        duration: 5000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }
+
   }
+
+  render(){
+  return (
+    <View style={styles.container}>
+      <View style={styles.titleView}>
+        <Image style={styles.logo} source={require('../images/LOGO.jpeg')} /> 
+      </View>
+      <View style = {styles.contentView}>
+        <ScrollView>
+          <Input
+            placeholder='Email'
+            leftIcon={
+              <Icon
+                name='envelope'
+                size={24}
+                color={BASIC_COLOR}
+              />
+            }
+            autoCapitalize="none"
+            errorStyle={{ color: 'red' }}
+            errorMessage={this.state.emailError}
+            onChangeText={value => {
+              validate_email(value) 
+                ? this.setState({ email: value, emailError: ''}) 
+                : this.setState({ email: '', emailError: EMAIL_ERROR})
+            }}
+          />
+          <Input
+            placeholder='Nhập mật khẩu mới'
+            secureTextEntry={true}
+            leftIcon={
+              <Icon
+                name='key'
+                size={24}
+                color={BASIC_COLOR}
+              />
+            }
+            autoCapitalize="none"
+            errorStyle={{ color: 'red' }}
+            errorMessage={this.state.passwordError}
+            onChangeText={value => {
+              validate_password(value) 
+                ? this.setState({ password: value, passwordError: ''}) 
+                : this.setState({ password: '', passwordError: PASSWORD_ERROR})
+            }}
+          />
+          <Input
+            placeholder='Nhập lại mật khẩu'
+            secureTextEntry={true}
+            leftIcon={
+              <Icon
+                name='key'
+                size={24}
+                color={BASIC_COLOR}
+              />
+            }
+            autoCapitalize="none"
+            errorStyle={{ color: 'red' }}
+            errorMessage={this.state.confirmPasswordError}
+            onChangeText={value => {
+              validate_confirm_password(value, this.state.password) 
+                ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
+                : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
+            }}
+          />
+        </ScrollView>
+        <View style={{margin: 20}}>
+          <Button
+            icon={
+              <Icon
+                name="user-plus"
+                size={25}
+                color={BASIC_COLOR}
+              />
+            }
+            title='Lấy lại mật khẩu'
+            type='outline'
+            titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 30}}
+            buttonStyle={{borderRadius: 30, borderColor: BASIC_COLOR}}
+            onPress={this.onSubmit}
+          />
+        </View>
+      </View>
+    </View>
+  )
+}
 }
 
 const styles = StyleSheet.create({
@@ -148,80 +174,20 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     alignItems: 'center',
-  },
-  logo:{
-    resizeMode: "contain",
-    width: "30%",
-    height: "35%",
-  },
-  inputView:{
-    width:"80%",
-    backgroundColor:"#fff",
-    borderWidth: 1,
-    borderRadius:15,
-    height:50,
-    marginBottom:5,
-    marginTop: 18,
-    justifyContent:"center",
-    padding:20
-  },
-  inputText:{
-    height:50,
-    color:"black"
-  },
-  forgot:{
-    color:"#1CBCC7",
-    fontSize:13,
-    margin: 5
-  },
-  signupBtn:{
-    width:"50%",
+    justifyContent: 'center',
     borderWidth: 2,
-    borderColor: "#1CBCC7",
-    borderRadius:25,
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    margin:40,
+    borderColor: BASIC_COLOR,
+    borderRadius: 10,
+    margin: 15,
+    shadowColor: BASIC_COLOR,
+    shadowOffset: {
+      width: 5,
+      height: 5
+    },
+    shadowOpacity: 0.2,
+    elevation: 20,
   },
-  disable:{
-    width:"50%",
-    borderRadius:25,
-    backgroundColor:"#8E908A",
-    height:50,
-    alignItems:"center",
-    justifyContent:"center",
-    marginTop:40,
-    marginBottom:10
+  contentView: {
+    width: '95%',
   },
-  loginText:{
-    color:"white",
-    fontSize: 16
-  },
-  signupText:{
-    color:"#1CBCC7",
-    fontSize: 16
-  },
-  warning: {
-    color: "#F17575",
-    fontStyle: "italic",
-    textAlign: "left",
-    justifyContent: "flex-start",
-    fontSize: 12
-  },
-  popup: {
-    backgroundColor: "#fff",
-    flex: 1,
-    justifyContent: "center",
-    alignItems: "center",
-  },
-  inputPopUp: {
-    fontSize: 30
-  },
-  titlePopUp: {
-    fontSize: 20,
-  },
-  hide: {
-    display: 'none'
-  }
 });

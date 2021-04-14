@@ -11,37 +11,7 @@ import { Dimensions } from 'react-native';
 export default class DetailInfo extends React.Component {
     
     state = {
-        contributors: [
-            {
-                id: 1,
-                name: 'Siêu thị điện máy', 
-                address: 'Chung cư Hùng Vương, Lô G, Tản Đà, Phường 11, Quận 5, Thành phố Hồ Chí Minh, Vietnam',
-                coordinate: {latitude: 10.762622, longitude: 106.660172},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipMstLauTVkrxPUJpivVrGit61U9kpmIByCkf1Sc=w408-h261-k-no'
-            },
-            {
-                id: 2,
-                name: 'Chợ lớn', 
-                address: 'Công trường An Đông, Phường 9, Quận 5, Thành phố Hồ Chí Minh 700000, Vietnam',
-                coordinate: {latitude: 10.732622, longitude: 106.680172},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipNHBeSM6fMb3mT_tgm32QMtUeJYaWBhETouPasi=w480-h240-k-no'
-            },
-            {
-                id: 3,
-                name: 'Siêu thị bách hóa', 
-                address: '37 Bạch Vân, Phường 5, Quận 5, Thành phố Hồ Chí Minh, Vietnam',
-                coordinate: {latitude: 10.752622, longitude: 106.620172},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipOxSL1fGvGuOdrYkisuEH6o6pUOQoArkjtrlL7d=w408-h306-k-no'
-            },
-            {
-                id: 4,
-                name: 'Big C', 
-                address: '381 An D. Vương, Phường 3, Quận 5, Thành phố Hồ Chí Minh, Vietnam',
-                coordinate: {latitude: 10.782622, longitude: 106.610172},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipN7TTlndraZOt7uVuYczqaOXTCoT_ejI8WViEQj=w426-h240-k-no'
-            }
-        ],
-        distributors: {},
+        distributors: [],
         coordinates: [],
         markers: []
     }
