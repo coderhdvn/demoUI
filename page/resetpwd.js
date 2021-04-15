@@ -6,43 +6,47 @@ import API from '../api/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BASIC_COLOR } from '../constants/Constant';
 import { showMessage } from 'react-native-flash-message';
+import {PASSWORD_LENGTH} from '../constants/Constant';
+import {setData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 
-const PASSWORD_LENGTH = 6;
-const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
-const EMAIL_ERROR = "Email không hợp lệ";
-const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp"
-
-const validate_email = (email) => {
-  const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
-  return reg.test(email);
-}
-
-const validate_password = (password) => {
-  return password.length >= PASSWORD_LENGTH ? true : false;
-}
-
-const validate_confirm_password = (password, confirm_password) => {
-  return password === confirm_password;
-} 
 export default class ResetPWD extends React.Component {
   state = {
-    email:"",
-    password:"",
-    confirmPassword: "",
+    email:"anhtu@gmail.com",
+    password:"123456",
+    confirmPassword: "123456",
     emailError: '',
     passwordError: '',
     confirmPasswordError: ''
   }
+
+  validate_email = (email) => {
+    const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+    return reg.test(email);
+  }
+
+  validate_password = (password) => {
+    return password.length >= PASSWORD_LENGTH ? true : false;
+  }
+
+  validate_confirm_password = (password, confirm_password) => {
+    return password === confirm_password;
+  } 
+
+  validate_before_submit = (input) => {
+    return (input.password !== '' && input.email !== '' && this.state.confirmPassword !== '')
+  }  
 
   onSubmit = async () => {
     let input = {
       email: this.state.email,
       password: this.state.password
     }
-    if (validate_before_submit(input)) {
+    if (this.validate_before_submit(input)) {
       try {
         
-        this.props.navigation.navigate("Login", {message: "Sign up success !", email: input.email});
+        const token = await (await API.post("/reset_password", input)).data.token;
+        setData(TOKEN_KEY, token);
 
         showMessage({
           message: "Lấy lại mật khẩu thành công!",
@@ -55,11 +59,13 @@ export default class ResetPWD extends React.Component {
           },
         })
 
+        this.props.navigation.navigate('Main');
+
       } catch (err) {
         showMessage({
           message: "Lấy lại mật khẩu không thành công !",
           type: 'danger',
-          description: "Hãy kiểm tra lại kết nối mạng",
+          description: err.message,
           duration: 5000,
           floating: true,
           icon: {
@@ -69,7 +75,7 @@ export default class ResetPWD extends React.Component {
       }
     } else {
       showMessage({
-        message: "Đăng ký không thành công !",
+        message: "Lấy lại mật khẩu không thành công !",
         type: 'danger',
         description: "Hãy kiểm tra lại thông tin",
         duration: 5000,
@@ -103,9 +109,9 @@ export default class ResetPWD extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.emailError}
             onChangeText={value => {
-              validate_email(value) 
+              this.validate_email(value) 
                 ? this.setState({ email: value, emailError: ''}) 
-                : this.setState({ email: '', emailError: EMAIL_ERROR})
+                : this.setState({ email: '', emailError: "Email không hợp lệ"})
             }}
           />
           <Input
@@ -122,9 +128,9 @@ export default class ResetPWD extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.passwordError}
             onChangeText={value => {
-              validate_password(value) 
+              this.validate_password(value) 
                 ? this.setState({ password: value, passwordError: ''}) 
-                : this.setState({ password: '', passwordError: PASSWORD_ERROR})
+                : this.setState({ password: '', passwordError: `Mật khẩu phải từ ${PASSWORD_LENGTH} ký tự trở lên`})
             }}
           />
           <Input
@@ -141,9 +147,9 @@ export default class ResetPWD extends React.Component {
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.confirmPasswordError}
             onChangeText={value => {
-              validate_confirm_password(value, this.state.password) 
+              this.validate_confirm_password(value, this.state.password) 
                 ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
-                : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
+                : this.setState({ confirmPassword: '', confirmPasswordError: "Mật khẩu không trùng khớp"})
             }}
           />
         </ScrollView>

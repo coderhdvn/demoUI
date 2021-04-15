@@ -6,12 +6,7 @@ import API from '../api/API';
 import { ScrollView } from 'react-native-gesture-handler';
 import { BASIC_COLOR } from '../constants/Constant';
 import { showMessage } from 'react-native-flash-message';
-
-const USERNAME_LENGTH = 3;
-const USERNAME_ERROR = "Tên hiển thị phải từ 3 ký tự trở lên";
-const PASSWORD_LENGTH = 6;
-const PASSWORD_ERROR = "Mật khẩu phải từ 6 ký tự trở lên";
-const CONFIRM_PASSWORD_ERROR = "Mật khẩu không trùng khớp";
+import { USERNAME_LENGTH, PASSWORD_LENGTH } from '../constants/Constant';
 
 export default class SignUp extends React.Component {
   state = {
@@ -26,7 +21,7 @@ export default class SignUp extends React.Component {
   }
 
   validate_password = (password) => {
-    return password.length >= PASSWORD_LENGTH ? true : false;
+    return password.length >= PASSWORD_LENGTH
   } 
   
   validate_confirm_password = (password, confirm_password) => {
@@ -41,10 +36,10 @@ export default class SignUp extends React.Component {
       console.error(err.message);
     }
   }
-  validate_email = (email) => {
+  validate_email = async (email) => {
     const reg = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
     if (reg.test(email)) {
-      if (this.check_duplicate_email(email)) {
+      if (await this.check_duplicate_email(email)) {
         this.setState({
           email: email,
           emailError: ""
@@ -68,13 +63,22 @@ export default class SignUp extends React.Component {
       const response = await API.get(`/account/users/name/${name}`);
       return response.data
     } catch (err) {
-      console.error(err.message)
+      showMessage({
+        message: "Lỗi !",
+        type: 'danger',
+        description: err.message,
+        duration: 5000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
     }
   }
 
-  validate_username = (username) => {
+  validate_username = async (username) => {
     if (username.length >= USERNAME_LENGTH) {
-        if (this.check_duplicate_username(username)) {
+        if (await this.check_duplicate_username(username)) {
           this.setState({
             name: username,
             nameError: ""
@@ -88,14 +92,14 @@ export default class SignUp extends React.Component {
     } else {
       this.setState({
         name: '',
-        nameError: USERNAME_ERROR
-      })
+        nameError: `Tên hiển thị phải từ ${USERNAME_LENGTH} ký tự trở lên`
+      }) 
     }
   
   } 
 
   validate_before_submit = (input) => {
-    return (input.name !== '' && input.password !== '' && input.email !== '' && this.state.confirmPassword !== '') ? true : false
+    return (input.name !== '' && input.password !== '' && input.email !== '' && this.state.confirmPassword !== '')
   }  
 
   onSubmit = async () => {
@@ -125,7 +129,7 @@ export default class SignUp extends React.Component {
         showMessage({
           message: "Đăng ký không thành công !",
           type: 'danger',
-          description: err.message,
+          description: "Hãy kiểm tra lại kết nối mạng",
           duration: 5000,
           floating: true,
           icon: {
@@ -167,9 +171,7 @@ export default class SignUp extends React.Component {
             }
             errorStyle={{ color: 'red' }}
             errorMessage={this.state.nameError}
-            onChangeText={value => {
-              this.validate_username(value) 
-            }}
+            onChangeText={ value => this.validate_username(value) }
             autoCapitalize="none"
           />  
           <Input
@@ -204,7 +206,7 @@ export default class SignUp extends React.Component {
             onChangeText={value => {
               this.validate_password(value) 
                 ? this.setState({ password: value, passwordError: ''}) 
-                : this.setState({ password: '', passwordError: PASSWORD_ERROR})
+                : this.setState({ password: '', passwordError: `Mật khẩu phải từ ${PASSWORD_LENGTH} ký tự trở lên`})
             }}
           />
           <Input
@@ -223,7 +225,7 @@ export default class SignUp extends React.Component {
             onChangeText={value => {
               this.validate_confirm_password(value, this.state.password) 
                 ? this.setState({ confirmPassword: value, confirmPasswordError: ''}) 
-                : this.setState({ confirmPassword: '', confirmPasswordError: CONFIRM_PASSWORD_ERROR})
+                : this.setState({ confirmPassword: '', confirmPasswordError: "Mật khẩu không trùng khớp"})
             }}
           />
         </ScrollView>

@@ -50,6 +50,12 @@ export default class Login extends React.Component {
     }
   }
 
+  UNSAFE_componentWillReceiveProps = () => {
+    if (this.props.route.params.name) {
+      this.setState({ name: this.props.route.params.name })
+    }
+  }
+
   render(){
     return (
       <View style={styles.container}>
