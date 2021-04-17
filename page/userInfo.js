@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, View, TouchableOpacity, Image } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import * as ImagePicker from 'react-native-image-picker';
 import { Component } from 'react';
@@ -9,53 +9,42 @@ import {getData, setData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from "react-native-flash-message";
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Input, Button } from 'react-native-elements';
+import { Input, Button, Text } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
+import axios from 'axios';
 
 class UserInfo extends Component {
 
   constructor(props) {
     super(props)
     this.state = {
-      resourcePath: {},
       image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d3/Microsoft_Account.svg/1024px-Microsoft_Account.svg.png',
       info: {},
       disabledChange: true,
-      displayButton: {
-        title: "Thay đổi thông tin",
-        icon: "edit"
-      },
       infoChange: {},
-      checkEditUsername: false
     }
   }
 
-  setAvatar = async (imageUrl) => {
+  setAvatar = async (image) => {
     let headers = await this.getHeader();
-
     try {
-      let user = this.state.info;
-      let info = {
-        name: user.name,
-        email: user.email,
-        phone: user.phone,
-        image: imageUrl
-      }
+      let imageName = image.fileName;
+      let uri = image.uri;
 
-      await API.put(`/account/users/${user.id}`, info, {headers});
-  
-        showMessage({
-          message: "Thay đổi ảnh đại diện !",
-          type: "success",
-          duration: 3000,
-          floating: true,
-          icon: {
-            icon: "success", position: "right"
-          },
-        })
+      const getUrl = await API.put(`/uploadserver/put_image/${imageName}`, null, {headers});
+
+      await axios.create({baseURL: getUrl.data}).put("", {image: uri});
+
+      //edit imageName in database
+      this.setState({
+        infoChange: { ...this.state.infoChange, image: imageName },
+        image: uri
+      });
+      await this.changeInfo();
+
     } catch (err) {
       showMessage({
-        message: "Thay đổi ảnh đại diện !",
+        message: "Thay đổi ảnh đại diện không thành công!",
         type: 'danger',
         description: err.message,
         duration: 4000,
@@ -84,9 +73,7 @@ class UserInfo extends Component {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        this.setState({image: response.uri})
-        console.log('response', JSON.stringify(response));
-        this.setAvatar(response.uri)
+        this.setAvatar(response)
       }
     });
   }
@@ -109,11 +96,7 @@ class UserInfo extends Component {
         console.log('User tapped custom button: ', response.customButton);
         alert(response.customButton);
       } else {
-        console.log('response', JSON.stringify(response));
-        this.setState({
-          image: response.uri
-        });
-        this.setAvatar(response.uri)
+        this.setAvatar(response);
       }
     });
   }
@@ -137,6 +120,19 @@ class UserInfo extends Component {
     )
   }
 
+  getImage = async (imageName) => {
+    let headers = await this.getHeader();
+    try {
+      const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
+
+      const response = await axios.create({baseURL: getUrl.data}).get("");
+      let image = response.data.image;
+      this.setState({image});
+    } catch (err) {
+      console.log("avatar not found")
+    }
+  }
+
   getHeader = async() => {
       
     const token = "Bearer " + await getData(TOKEN_KEY);
@@ -156,11 +152,16 @@ class UserInfo extends Component {
       let user = response.data;
       let info = {
         id: user.id,
+        display_name: user.displayName,
         name: user.name,
         email: user.email,
         phone: user.phone,
+        image: user.image
       }
-      this.setState({ info, infoChange: info, image: user.image });
+      if (user.image) {
+        this.getImage(user.image)
+      }
+      this.setState({ info, infoChange: info });
     } catch (err) {
       console.error(err);
     }
@@ -170,7 +171,11 @@ class UserInfo extends Component {
     let info = this.state.info;
     let infoChange = this.state.infoChange;
     
-    return (info.name !== infoChange.name || info.email !== infoChange.email || info.phone !== infoChange.phone)
+    return (info.name !== infoChange.name 
+      || info.email !== infoChange.email 
+      || info.phone !== infoChange.phone 
+      || info.image !== infoChange.image 
+      || info.display_name !== infoChange.display_name)
   }
 
   changeInfo = async () => {
@@ -179,10 +184,11 @@ class UserInfo extends Component {
       try {
         let user = this.state.infoChange;
         let info = {
-          name: user.name,
+          displayName: user.display_name,
           email: user.email,
           phone: user.phone,
-          image: this.state.image
+          image: user.image,
+          company: null,
         }
   
         await API.put(`/account/users/${user.id}`, info, {headers});
@@ -232,6 +238,10 @@ class UserInfo extends Component {
 
   }
 
+  changeUsername = () => {
+
+  }
+
   logout = () => {
     this.props.navigation.navigate("Login");
   }
@@ -245,7 +255,6 @@ class UserInfo extends Component {
       <Root>
         <View style={styles.container}>
           <View style={styles.shadow}></View>
-          {/* <Icon name="contact" style={styles.addLogo}  size={50} onPress={() => this.getImageFromGallery()}></Icon> */}
           <TouchableOpacity 
             onPress={() => {this.changeAvatar()}}
             style={styles.avatar}
@@ -269,6 +278,22 @@ class UserInfo extends Component {
             onPress={() => {this.changeAvatar()}}
           />
           </TouchableOpacity>
+
+          <Button
+            icon={
+              <Icon
+                name='user'
+                size={20}
+                color='white'
+              />
+            }
+            title={this.state.infoChange.name}
+            type='outline'
+            titleStyle={{color: 'white', fontSize: 15, padding: 5}}
+            buttonStyle={{borderColor: BASIC_COLOR}}
+            containerStyle={{position: 'absolute', left: 0}}
+            onPress={() => this.changeUsername()}
+          />
 
           <Button
             icon={
@@ -303,8 +328,8 @@ class UserInfo extends Component {
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
             <Input
-              label="Tên đăng nhập"
-              placeholder='Tên đăng nhập'
+              label="Họ và tên"
+              placeholder='Họ và tên'
               leftIcon={
                 <Icon
                   name='user'
@@ -313,11 +338,11 @@ class UserInfo extends Component {
                 />
               }
               disabled={this.state.disabledChange}
-              value={this.state.infoChange.name}
+              value={this.state.infoChange.display_name}
               errorStyle={{ color: 'red' }}
               errorMessage={this.state.nameError}
               onChangeText={value => {
-                this.setState({ infoChange: {...this.state.infoChange, name: value }})
+                this.setState({ infoChange: {...this.state.infoChange, display_name: value }})
               }}
               autoCapitalize="none"
             />
@@ -450,8 +475,8 @@ const styles = StyleSheet.create({
 
   avatar: {
     position: 'absolute',
-    top: 20,
-    marginBottom: 20
+    top: 30,
+    // marginBottom: 10
   },
   image: {
     height: 130,
