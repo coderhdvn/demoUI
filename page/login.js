@@ -109,9 +109,23 @@ export default class Login extends React.Component {
             title='Đăng nhập'
             type='outline'
             titleStyle={{color: 'white', fontSize: 20, padding: 30}}
-            buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
+            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1}}
             onPress={this.onSubmit}
-            containerStyle={{padding: 10}}
+            containerStyle={{padding: 5}}
+        />
+        <Button
+            icon={
+              <Icon
+                name="google"
+                size={30}
+                color="white"
+              />
+            }
+            title='Đăng nhập với google'
+            titleStyle={{color: 'white', fontSize: 20, padding: 10}}
+            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: '#e31212'}}
+            onPress={() => this.props.navigation.navigate("LoginWithGoogle")}
+            containerStyle={{padding: 5}}
         />
         <Text style={{color: 'white', alignSelf: 'center'}}>----- OR -----</Text>
         <Button
@@ -125,12 +139,14 @@ export default class Login extends React.Component {
             title='Đăng ký'
             type='outline'
             titleStyle={{color: 'white', fontSize: 20, padding: 30}}
-            buttonStyle={{borderRadius: 10, borderColor: 'white', borderWidth: 1}}
+            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1}}
             onPress={() => this.props.navigation.navigate("Sign Up")}
-            containerStyle={{padding: 10}}
+            containerStyle={{padding: 5}}
         />
         </View>
-        <TouchableOpacity onPress={() => this.props.navigation.navigate("Reset Password")}>
+        <TouchableOpacity onPress={() => {
+          this.props.navigation.navigate("Reset Password")
+          }}>
           <Text style={{color: 'white', borderBottomWidth: 1, borderColor: 'white'}}>Quên mật khẩu?</Text>
         </TouchableOpacity>
         </ImageBackground>

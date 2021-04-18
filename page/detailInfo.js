@@ -142,10 +142,10 @@ export default class DetailInfo extends React.Component {
       }
     }
 
-    componentDidMount = async()  => {
-        await this.setProduct();
-        await this.setFeedbacks(this.state.product.templateId);
-    }
+    // componentDidMount = async()  => {
+    //     await this.setProduct();
+    //     await this.setFeedbacks(this.state.product.templateId);
+    // }
 
     UNSAFE_componentWillReceiveProps = async() => {
       await this.setProduct();
