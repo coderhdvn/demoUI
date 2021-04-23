@@ -71,10 +71,8 @@ export default class DetailInfo extends React.Component {
       }
     }
 
-    setProduct = async () => {
+    setProduct = async (product) => {
       const headers = await this.getHeader();
-      if (this.props.route.params) {
-          const product = this.props.route.params.product;
 
           let expDate = (new Date(product.expDate)).toLocaleDateString();
           let mfgDate = (new Date(product.mfgDate)).toLocaleDateString();
@@ -92,15 +90,14 @@ export default class DetailInfo extends React.Component {
             visible: true
           });
   
-          try{
-            let response = await API.get(`/account/branches/${this.state.product.producerId}`, {headers});
-            let producer = response.data.company.name;
-            console.log(this.state.product.producerId)
-            this.setState({product: {...this.state.product, producer}})
-          } catch (err) {
-            console.error(err.message)
-          }
-      }
+          // try{
+          //   let response = await API.get(`/account/branches/${this.state.product.producerId}`, {headers});
+          //   let producer = response.data.company.name;
+          //   console.log(this.state.product.producerId)
+          //   this.setState({product: {...this.state.product, producer}})
+          // } catch (err) {
+          //   console.error(err.message)
+          // }
     }
 
     setFeedbacks = async (templateId) => {
@@ -142,14 +139,18 @@ export default class DetailInfo extends React.Component {
       }
     }
 
-    // componentDidMount = async()  => {
-    //     await this.setProduct();
-    //     await this.setFeedbacks(this.state.product.templateId);
-    // }
+    componentDidMount = async()  => {
+      if (this.props.route.params) {
+        await this.setProduct(this.props.route.params.product);
+        await this.setFeedbacks(this.state.product.templateId);
+      }
+    }
 
     UNSAFE_componentWillReceiveProps = async() => {
-      await this.setProduct();
-      await this.setFeedbacks(this.state.product.templateId);
+      if (this.props.route.params) {
+        await this.setProduct(this.props.route.params.product);
+        await this.setFeedbacks(this.state.product.templateId);
+      }
     }
 
   render(){

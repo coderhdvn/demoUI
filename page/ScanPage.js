@@ -106,8 +106,8 @@ class QrCodeCamera extends Component {
     };
   }
 
-  pressFolder() {
-    console.log('folder');
+  pressSearchProduct() {
+    this.props.navigation.navigate("Search Product");
   }
 
   pressGallery() {
@@ -183,9 +183,9 @@ class QrCodeCamera extends Component {
         )
         }
         <View style={styles.listView}> 
-            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressFolder()}>
-              <Icon name="save" style={styles.icon} size={40}></Icon>
-              <Text style={styles.textIcon}>Đã lưu</Text>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressSearchProduct()}>
+              <Icon name="search" style={styles.icon} size={40}></Icon>
+              <Text style={styles.textIcon}>Tìm kiếm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressGallery()}>
               <Icon name="image" style={styles.icon} size={40}></Icon>

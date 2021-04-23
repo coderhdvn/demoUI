@@ -15,7 +15,8 @@ import History from './history';
 import { NavigationContainer } from '@react-navigation/native';
 import Main from './main';
 import Distributors from './Distributors';
-import LoginWithGoogle from './LoginWithGoogle'
+import LoginWithGoogle from './LoginWithGoogle';
+import SearchProduct from './SearchProduct';
 
 const Stack = createStackNavigator();
 
@@ -36,6 +37,7 @@ class Account extends React.Component {
                 <Stack.Screen name="history" component={History} />
                 <Stack.Screen name="Main" component={Main} />
                 <Stack.Screen name="LoginWithGoogle" component={LoginWithGoogle} />
+                <Stack.Screen name="Search Product" component={SearchProduct} />
             </Stack.Navigator>
         </NavigationContainer>
       )}

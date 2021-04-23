@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, Text, View, Image } from 'react-native';
 import MapView, {Callout, Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
 import Carousel from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/FontAwesome';
@@ -7,7 +7,6 @@ import { Input, Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
 import Draggable from 'react-native-draggable';
 import { Dimensions } from 'react-native';
-
 export default class DetailInfo extends React.Component {
     
     state = {
@@ -88,7 +87,8 @@ export default class DetailInfo extends React.Component {
                 }
                 <Polyline 
                     coordinates={this.state.coordinates}
-                    strokeWidth={3}
+                    strokeWidth={5}
+                    geodesic={false}
                 />
             </MapView>
             }
