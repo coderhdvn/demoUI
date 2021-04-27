@@ -92,7 +92,6 @@ class QrCodeCamera extends Component {
         },
       })
     }
-    this.setState({scan: true});
   }
 
   makeSlideOutTranslation(translationType, fromValue) {
@@ -107,6 +106,7 @@ class QrCodeCamera extends Component {
   }
 
   pressSearchProduct() {
+    this.setState({ scan: false })
     this.props.navigation.navigate("Search Product");
   }
 
@@ -115,12 +115,13 @@ class QrCodeCamera extends Component {
   }
 
   pressHistory() {
-    console.log('history');
+    this.setState({ scan: false })
     this.props.navigation.navigate('history');
   }
 
   componentDidMount = async () => {
     await this.getLocation();
+  
   }
 
   render() {
@@ -128,7 +129,7 @@ class QrCodeCamera extends Component {
       <View style={{flex:1}}>
         {this.state.scan ? (
         <QRCodeScanner
-          // cameraTimeout={10000} 
+          cameraTimeout={10000} 
           reactivate={true}
           showMarker={true}
           onRead={this.onSuccess.bind(this)}
@@ -169,15 +170,16 @@ class QrCodeCamera extends Component {
             <Button
                   icon={
                     <Icon
-                      name="spinner"
+                      name="camera"
                       size={40}
                       color={BASIC_COLOR}
                     />
                   }
-                  title='Đang quét'
+                  title='Nhấn để bật camera'
                   type='outline'
                   titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 10}}
                   buttonStyle={{borderColor: 'white'}}
+                  onPress={() => this.setState({ scan: true })}
                 />
           </View>
         )

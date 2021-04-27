@@ -10,58 +10,70 @@ import { Dimensions } from 'react-native';
 import Geolocation from '@react-native-community/geolocation';
 import { showMessage } from "react-native-flash-message";
 import { ActivityIndicator } from 'react-native';
+import API from '../api/API';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
 
 export default class SearchProduct extends React.Component {
     
     state = {
         location: {latitude: 55.7887626, longitude: 37.7916801},
         search: '',
-        searchList: [
-            {
-                id: 1,
-                name: 'Cellphones',
-                address: '349 QL13, Hiệp Bình Phước, Thủ Đức, Thành phố Hồ Chí Minh, Vietnam',
-                location: {latitude: 55.789066, longitude: 37.791363},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipOjNTm271c-6rFgqTQKalVDtBcPlsPb2ummN9-X=w426-h240-k-no'
-            },
-            {
-                id: 2,
-                name: 'Viettel',
-                address: '90 Nguyễn Oanh, Phường 7, Gò Vấp, Thành phố Hồ Chí Minh, Vietnam',
-                location: {latitude: 55.789364, longitude: 37.793365},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipNndHUFg2cuhpsBbRuIzp8rEaqXryI1pcA-TRaT=w408-h544-k-no'
-            },
-            {
-                id: 3,
-                name: 'Thế Giới Di Động',
-                address: '137 QL13, Hiệp Bình Chánh, Thủ Đức, Thành phố Hồ Chí Minh, Vietnam',
-                location: {latitude: 55.789764, longitude: 37.799362},
-                image: 'https://lh5.googleusercontent.com/p/AF1QipMFLGLc_t2FvSz4ZY6V-sBeA4yMvnuUapLWailJ=w426-h240-k-no'
-            },
-        ],
+        searchList: [],
         markers: [],
-        showSearch: false
+        showSearch: false,
+        showLoading: false,
+        latitudeDelta: 0.1,
+        longitudeDelta: 0.1
     }
 
-    searchProduct() {
-        console.log(this.state.search);
-        this.setState({showSearch: true})
+    getHeader = async() => {
+      
+        const token = "Bearer " + await getData(TOKEN_KEY);
+    
+        const headers = {
+          'Authorization': token
+        }
+        
+        return headers
+      }
+
+    async searchProduct() {
+        this.setState({
+            showLoading: true
+        });
+
+        let headers = await this.getHeader();
+
+        try {
+            let location = this.state.location;
+            let search = this.state.search.toLowerCase();
+            const response = await API.get(`/product/products/${search}/near/${location.latitude}/${location.longitude}`, {headers});
+            this.setState({ 
+                searchList: response.data,
+                showSearch: true,
+                showLoading: false,
+            });
+        } catch (err) {
+            console.error(err.message)
+        }
     }
 
     updateSearch = (search) => {
         this.setState({ 
             search,
-            showSearch: false 
+            showSearch: false,
+            showLoading: false
         })
     }
 
     onCarouselItemChange = (index) => {
-        let location = this.state.searchList[index].location;
+        let location = this.state.searchList[index];
         this._map.animateToRegion({
             latitude: location.latitude,
             longitude: location.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01
+            latitudeDelta: this.state.latitudeDelta,
+            longitudeDelta: this.state.longitudeDelta
         });
 
         this.state.markers[index].showCallout()
@@ -75,7 +87,10 @@ export default class SearchProduct extends React.Component {
         <View style={styles.cardContainer}>
             <Text style={styles.cardTitle}>{item.name}</Text>
             <Text style={styles.cardContent}>{item.address}</Text>
-            <Image style={styles.cardImage} source={{uri: item.image}} />
+            {
+                item.image !== '' && 
+                <Image style={styles.cardImage} source={{uri: item.image}}/>
+            }
         </View>
     )
 
@@ -117,19 +132,23 @@ export default class SearchProduct extends React.Component {
                     initialRegion={{
                     latitude: this.state.location.latitude,
                     longitude: this.state.location.longitude,
-                    latitudeDelta: 0.01,
-                    longitudeDelta: 0.01
+                    latitudeDelta: this.state.latitudeDelta,
+                    longitudeDelta: this.state.longitudeDelta
                 }}>
                     <Marker
                         coordinate={this.state.location}
                         title="Bạn ở đây"
                         pinColor={BASIC_COLOR}
-                    />
+                    >
+                        <Callout>
+                            <Text style={{color: BASIC_COLOR, fontWeight: 'bold'}}>Bạn ở đây</Text>
+                        </Callout>
+                    </Marker>
                     <Circle
                         center={this.state.location}
                         radius={15}
-                        strokeColor="white"
-                        fillColor={BASIC_COLOR}
+                        strokeColor={BASIC_COLOR}
+                        fillColor="rgba(75, 201, 210, 0.3)"
                     />
 
                 {   this.state.showSearch &&
@@ -138,7 +157,7 @@ export default class SearchProduct extends React.Component {
                             key={item.id}
                             ref={ref => this.state.markers[index] = ref}
                             onPress={() => this.onMarkerPress(index)}
-                            coordinate={item.location}
+                            coordinate={{ latitude: item.latitude, longitude: item.longitude }}
                         >
                             <Callout>
                                 <Text>{item.name}</Text>
@@ -154,14 +173,21 @@ export default class SearchProduct extends React.Component {
                     value={this.state.search}
                     containerStyle={{backgroundColor: BASIC_COLOR}}
                     inputContainerStyle={{backgroundColor: 'white'}}
+                    inputStyle={{color: BASIC_COLOR}}
                     leftIconContainerStyle={{padding: 5}}
                     lightTheme={true}
                     searchIcon={{
                         onPress: () => this.searchProduct(),
-                        size: 35
+                        size: 35,
+                        color: BASIC_COLOR
                     }}
                     clearIcon={{
-                        size: 25
+                        size: 25,
+                        color: 'red'
+                    }}
+                    showLoading={this.state.showLoading}
+                    loadingProps={{
+                        color: BASIC_COLOR
                     }}
                 />
                 {
