@@ -10,38 +10,25 @@ import { FlatList, ScrollView } from 'react-native-gesture-handler';
 
 export default class ChatService extends Component {
     state = {
-        message: '',
+        content: '',
         avatar: 'https://scontent-amt2-1.xx.fbcdn.net/v/t1.6435-9/122469842_1457455527781397_7485145288424862265_n.jpg?_nc_cat=106&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=3IHWvoCH3YYAX9L8l99&_nc_ht=scontent-amt2-1.xx&oh=ade32b8984a234d5773f5d43150f2a61&oe=60AF4293',
-        receive_message: [
-            {"id":"4baab773-2af4-4fb6-8172-d39cbfcfc828",
-            "chatId":"1_2",
-            "senderId":"1",
-            "recipientId":"2",
-            "senderName":"anhtu",
-            "recipientName":"lam",
-            "content":"okie lun k maf",
-            "timestamp":'16:24:09, 2/5/2021',
-            "status":"RECEIVED",
-            },
-            {"id":"4baab773-2af4-4fb6-8172-d39cbfcfc825",
-            "chatId":"1_2",
-            "senderId":"1",
-            "recipientId":"2",
-            "senderName":"anhtu",
-            "recipientName":"lam",
-            "content":"okie lun k mafdfdfdfdsfdsfsdfdfdfdfdfdfdfdfdfdfdfdfdfdfdf",
-            "timestamp":'16:24:09, 2/5/2021',
-            "status":"RECEIVED",
-            },
-            
-            
-        ],
-        stompClient: ''
+        messages: [],
+        stompClient: '',
+        
+        send: {
+            senderId: 2,
+            recipientId: 1,
+            senderName: 'lamthon',
+            recipientName: 'anhtu'
+        }
     }
 
     getMessage(messageOutput){
+        let time = new Date(messageOutput.timestamp).toLocaleTimeString();
+        let day = new Date(messageOutput.timestamp).toDateString();
+        let messages = { ...messageOutput, time, day }
         this.setState({
-            receive_message: [...this.state.receive_message, messageOutput]
+            messages: [...this.state.messages, messages]
         });
     }
 
@@ -55,7 +42,7 @@ export default class ChatService extends Component {
         let stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
         console.log("Connected: " + frame);
-        stompClient.subscribe(`/user/2/queue/messages`, (messageOutput) => {
+        stompClient.subscribe(`/user/${props.state.send.senderId}/queue/messages`, (messageOutput) => {
             props.getMessage(JSON.parse(messageOutput.body));
         })
         });
@@ -68,24 +55,62 @@ export default class ChatService extends Component {
         this.props.navigation.navigate('Main');
     }
 
+    sendMessage() {
+        let message = {
+            ...this.state.send, 
+            content: this.state.content, 
+        }
+
+        this.state.stompClient.send("/app/chat", JSON.stringify(message), {});
+        
+        let id = Math.random().toString(36).substr(2, 9);
+        let time = new Date().toLocaleTimeString();
+        let day = new Date().toDateString();
+        this.setState({
+            content: '',
+            messages: [...this.state.messages, 
+                { ...message, id, time, day, senderId: 2}
+            ]
+        })
+    }
+
     renderMessages = (item) => (
-        <View style={styles.messages}>
-            <View>
-                <Image
-                    source={{uri: this.state.avatar}}
-                    style={{height: 40, width: 40, borderRadius: 50}}
-                />
-                <Text style={{ color: BASIC_COLOR, fontSize: 10, textAlign: 'center' }}>{item.senderName}</Text>
+        <>
+            <View style={{paddingTop: 10, paddingBottom: 5}}>
+                <Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>{item.day}</Text>
             </View>
-            <View style={styles.messageContent}>
-                <Text style={{ color: BASIC_COLOR }}>
-                    {item.content}
-                </Text>
-                <Text style={{ color: 'gray', fontSize: 10, textAlign: 'right' }}>
-                    {item.timestamp}
-                </Text>
-            </View>
-        </View>
+            {
+                item.senderId !== this.state.send.senderId
+                ? <View style={styles.messagesRight}>
+                    <View>
+                        <Image
+                            source={{uri: this.state.avatar}}
+                            style={{height: 40, width: 40, borderRadius: 50}}
+                        />
+                        <Text style={{ color: BASIC_COLOR, fontSize: 10, textAlign: 'center' }}>{item.senderName}</Text>
+                    </View>
+                    <View style={styles.messageContentLeft}>
+                        <Text style={{ color: BASIC_COLOR }}>
+                            {item.content}
+                        </Text>
+                        <Text style={{ color: 'gray', fontSize: 10, textAlign: 'right' }}>
+                            {item.time}
+                        </Text>
+                    </View>
+                </View>
+                : <View style={styles.messagesLeft}>
+                    <View style={styles.messageContentRight}>
+                        <Text style={{ color: 'white' }}>
+                            {item.content}
+                        </Text>
+                        <Text style={{ color: 'white', fontSize: 10, textAlign: 'right' }}>
+                            {item.time}
+                        </Text>
+                    </View>
+                </View>
+            }
+            
+        </>
     )
 
     render(){
@@ -100,7 +125,7 @@ export default class ChatService extends Component {
                 />
 
                     <FlatList
-                       data={this.state.receive_message} 
+                       data={this.state.messages} 
                        keyExtractor={item => item.id}
                        renderItem={({item}) => this.renderMessages(item)}
                        showsVerticalScrollIndicator={false}
@@ -120,23 +145,28 @@ export default class ChatService extends Component {
                             buttonStyle={{borderColor: 'white'}}
                         />
                         <TextInput
-                            onChangeText={(value) => this.setState({ message: value })}
-                            value={this.state.message}
+                            onChangeText={(value) => this.setState({ content: value })}
+                            value={this.state.content}
                             style={styles.textInput}
                             placeholder="Nhập ở đây..."
                         />
-                        <Button
-                            icon={
-                            <Icon
-                                name="paper-plane"
-                                size={30}
-                                color={BASIC_COLOR}
+                        {
+                            this.state.content !== '' &&
+                            <Button
+                                icon={
+                                <Icon
+                                    name="paper-plane"
+                                    size={30}
+                                    color={BASIC_COLOR}
+                                />
+                                }
+                                type='outline'
+                                titleStyle={{color: 'white', fontSize: 20, padding: 30}}
+                                buttonStyle={{borderColor: 'white'}}
+                                onPress={this.sendMessage.bind(this)}
                             />
-                            }
-                            type='outline'
-                            titleStyle={{color: 'white', fontSize: 20, padding: 30}}
-                            buttonStyle={{borderColor: 'white'}}
-                        />
+                        }
+                        
                     
                 </View>
                 
@@ -161,7 +191,7 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         borderRadius: 40,
         borderColor: BASIC_COLOR,
-        margin: 5,
+        margin: 7,
         flex: 1,
         padding: 7
     },
@@ -170,16 +200,23 @@ const styles = StyleSheet.create({
         borderWidth: 1,
         justifyContent: 'space-between' 
     },
-    messages: {
+    messagesRight: {
         width: '70%',
         flexDirection: 'row',
-        padding: 5,
+        padding: 3,
         alignItems: 'center'
     },
-    messageContent: {
+    messageContentLeft: {
         backgroundColor: 'white',
-        borderRadius: 10,
+        borderRadius: 20,
         padding: 10,
         marginLeft: 10
+    },
+    messageContentRight: {
+        backgroundColor: BASIC_COLOR,
+        borderRadius: 20,
+        padding: 10,
+        marginLeft: 60,
+        alignSelf: 'flex-end',
     }
   });
