@@ -39,7 +39,9 @@
     "react-native-safe-area-context": "^3.1.9",
     "react-native-screens": "^2.15.0",
     "react-native-snap-carousel": "^3.9.1",
-    "react-native-webview": "^11.4.0"
+    "react-native-webview": "^11.4.0",
+    "sockjs-client": "^1.5.1",
+    "webstomp-client": "^1.2.6"
   },
   "devDependencies": {
     "@babel/core": "7.12.9",

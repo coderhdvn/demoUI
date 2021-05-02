@@ -129,7 +129,7 @@ class QrCodeCamera extends Component {
       <View style={{flex:1}}>
         {this.state.scan ? (
         <QRCodeScanner
-          cameraTimeout={10000} 
+          // cameraTimeout={10000} 
           reactivate={true}
           showMarker={true}
           onRead={this.onSuccess.bind(this)}

@@ -17,6 +17,7 @@ import Main from './main';
 import Distributors from './Distributors';
 import LoginWithGoogle from './LoginWithGoogle';
 import SearchProduct from './SearchProduct';
+import Chat from './ChatService';
 
 const Stack = createStackNavigator();
 
@@ -38,6 +39,7 @@ class Account extends React.Component {
                 <Stack.Screen name="Main" component={Main} />
                 <Stack.Screen name="LoginWithGoogle" component={LoginWithGoogle} />
                 <Stack.Screen name="Search Product" component={SearchProduct} />
+                <Stack.Screen name="Chat" component={Chat} />
             </Stack.Navigator>
         </NavigationContainer>
       )}
