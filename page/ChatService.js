@@ -7,6 +7,10 @@ import Stomp from "webstomp-client";
 import React, { Component } from 'react';
 import { TextInput } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import {getData} from '../storage/AsyncStorage';
+import {TOKEN_KEY} from '../constants/Constant';
+import { showMessage } from 'react-native-flash-message';
+import axios from 'axios';
 
 export default class ChatService extends Component {
     state = {
@@ -14,26 +18,72 @@ export default class ChatService extends Component {
         avatar: 'https://scontent-amt2-1.xx.fbcdn.net/v/t1.6435-9/122469842_1457455527781397_7485145288424862265_n.jpg?_nc_cat=106&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=3IHWvoCH3YYAX9L8l99&_nc_ht=scontent-amt2-1.xx&oh=ade32b8984a234d5773f5d43150f2a61&oe=60AF4293',
         messages: [],
         stompClient: '',
-        
-        send: {
+        data: {
             senderId: 2,
             recipientId: 1,
             senderName: 'lamthon',
             recipientName: 'anhtu'
-        }
+        },
+        currentDay: "",
+        connected: false
     }
 
+    getDayTime(timestamp) {
+        let date = new Date(timestamp);
+        let time = `${date.getHours()}:${('0' + date.getMinutes()).slice(-2)}`;
+        let day = `${('0'+date.getDate()).slice(-2)}/${('0'+(date.getMonth()+1)).slice(-2)}/${date.getFullYear()}`;
+        return [time, day];
+    }
+
+    getHeader = async() => {
+      
+        // const token = "Bearer " + await getData(TOKEN_KEY);
+        const token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY0ODEzNzY5MCwiaWF0IjoxNjE2NjAxNjkwfQ.ezk9cf5ZaCMRDl_ZdLgLwd3zlTCr5_gM1t4kc4tm9BAgpF7ubmUOs3lvLs-3GiLdZR0XFNZtAq7bcgaQ_potBw"
+  
+        const headers = {
+          'Authorization': token
+        }
+        
+        return headers
+      }
+
     getMessage(messageOutput){
-        let time = new Date(messageOutput.timestamp).toLocaleTimeString();
-        let day = new Date(messageOutput.timestamp).toDateString();
+        let [time, day] = this.getDayTime(messageOutput.timestamp);
         let messages = { ...messageOutput, time, day }
         this.setState({
             messages: [...this.state.messages, messages]
         });
     }
 
-    componentDidMount(){
+    async getMessageFromDB() {
+        const headers = await this.getHeader();
+
+        try {
+            const response = await axios.get(`http://192.168.1.183:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
+            let messages = response.data.map(item => {
+                let [time, day] = this.getDayTime(item.timestamp);
+                return {...item, time, day}
+            });
+            console.log(messages);
+            
+            this.setState({ messages })
+        } catch (err) {
+            showMessage({
+                message: "Lỗi kết nối !",
+                type: 'danger',
+                description: "Hãy kiểm tra lại kết nối mạng",
+                duration: 5000,
+                floating: true,
+                icon: {
+                  icon: 'danger', position: "right"
+                },
+              })
+        }
+    }
+
+    async componentDidMount(){
         this.connect();
+        await this.getMessageFromDB();
     }
 
     connect(){
@@ -42,7 +92,8 @@ export default class ChatService extends Component {
         let stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
         console.log("Connected: " + frame);
-        stompClient.subscribe(`/user/${props.state.send.senderId}/queue/messages`, (messageOutput) => {
+        props.setState({ connected: true });
+        stompClient.subscribe(`/user/${props.state.data.senderId}/queue/messages`, (messageOutput) => {
             props.getMessage(JSON.parse(messageOutput.body));
         })
         });
@@ -56,32 +107,55 @@ export default class ChatService extends Component {
     }
 
     sendMessage() {
-        let message = {
-            ...this.state.send, 
-            content: this.state.content, 
+        if (this.state.connected) {
+            let message = {
+                ...this.state.send, 
+                content: this.state.content, 
+            }
+    
+            this.state.stompClient.send("/app/chat", JSON.stringify(message), {});
+            
+            let id = Math.random().toString(36).substr(2, 9);
+            let [time , day] = this.getDayTime(new Date())
+            this.setState({
+                content: '',
+                messages: [...this.state.messages, 
+                    { ...message, id, time, day, senderId: this.state.data.senderId}
+                ]
+            })
+        } else {
+            showMessage({
+                message: "Gửi tin nhắn không thành công !",
+                type: 'danger',
+                description: "Hãy kiểm tra lại kết nối mạng",
+                duration: 5000,
+                floating: true,
+                icon: {
+                  icon: 'danger', position: "right"
+                },
+              })
         }
+    }
 
-        this.state.stompClient.send("/app/chat", JSON.stringify(message), {});
-        
-        let id = Math.random().toString(36).substr(2, 9);
-        let time = new Date().toLocaleTimeString();
-        let day = new Date().toDateString();
-        this.setState({
-            content: '',
-            messages: [...this.state.messages, 
-                { ...message, id, time, day, senderId: 2}
-            ]
-        })
+    renderDay = day => {
+        if (day !== this.state.currentDay) {
+            this.state.currentDay = day;
+            return (
+                <View style={{ paddingTop: 10}}>
+                    <Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>{day}</Text>
+                </View>
+            )
+        }
     }
 
     renderMessages = (item) => (
-        <>
-            <View style={{paddingTop: 10, paddingBottom: 5}}>
-                <Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>{item.day}</Text>
-            </View>
+        <View style={{paddingLeft: 10, paddingRight: 10}}>
             {
-                item.senderId !== this.state.send.senderId
-                ? <View style={styles.messagesRight}>
+                this.renderDay(item.day)
+            }
+            {
+                item.senderId != this.state.data.senderId
+                ? <View style={styles.messagesLeft}>
                     <View>
                         <Image
                             source={{uri: this.state.avatar}}
@@ -93,24 +167,24 @@ export default class ChatService extends Component {
                         <Text style={{ color: BASIC_COLOR }}>
                             {item.content}
                         </Text>
-                        <Text style={{ color: 'gray', fontSize: 10, textAlign: 'right' }}>
+                        <Text style={{ color: 'gray', fontSize: 9, textAlign: 'right' }}>
                             {item.time}
                         </Text>
                     </View>
                 </View>
-                : <View style={styles.messagesLeft}>
+                : <View style={styles.messagesRight}>
                     <View style={styles.messageContentRight}>
                         <Text style={{ color: 'white' }}>
                             {item.content}
                         </Text>
-                        <Text style={{ color: 'white', fontSize: 10, textAlign: 'right' }}>
+                        <Text style={{ color: '#85ffed', fontSize: 9, textAlign: 'right' }}>
                             {item.time}
                         </Text>
                     </View>
                 </View>
             }
             
-        </>
+        </View>
     )
 
     render(){
@@ -129,7 +203,8 @@ export default class ChatService extends Component {
                        keyExtractor={item => item.id}
                        renderItem={({item}) => this.renderMessages(item)}
                        showsVerticalScrollIndicator={false}
-                       contentContainerStyle={{ flexGrow: 1, justifyContent: 'flex-end', padding: 5}}
+                        inverted
+                       contentContainerStyle={{flexDirection: "column-reverse"}}
                     />
 
                 <View style={styles.input}>
@@ -184,7 +259,7 @@ const styles = StyleSheet.create({
     },
     input: {
         flexDirection: 'row',
-        justifyContent: 'space-between',
+        justifyContent: 'space-around',
         backgroundColor: 'white',
         alignItems: 'center'
     },
@@ -196,22 +271,17 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 7
     },
-    content: {
-        flex: 1,
-        borderWidth: 1,
-        justifyContent: 'space-between' 
-    },
-    messagesRight: {
+    messagesLeft: {
         width: '70%',
         flexDirection: 'row',
-        padding: 3,
         alignItems: 'center'
     },
     messageContentLeft: {
         backgroundColor: 'white',
         borderRadius: 20,
         padding: 10,
-        marginLeft: 10
+        marginLeft: 10,
+        marginBottom: 5
     },
     messageContentRight: {
         backgroundColor: BASIC_COLOR,
@@ -219,5 +289,6 @@ const styles = StyleSheet.create({
         padding: 10,
         marginLeft: 60,
         alignSelf: 'flex-end',
+        marginBottom: 5
     }
   });
