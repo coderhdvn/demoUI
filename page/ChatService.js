@@ -149,6 +149,7 @@ export default class ChatService extends Component {
                             value={this.state.content}
                             style={styles.textInput}
                             placeholder="Nhập ở đây..."
+                            autoCapitalize="none"
                         />
                         {
                             this.state.content !== '' &&

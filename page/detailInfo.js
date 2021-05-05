@@ -90,14 +90,15 @@ export default class DetailInfo extends React.Component {
             visible: true
           });
   
-          // try{
-          //   let response = await API.get(`/account/branches/${this.state.product.producerId}`, {headers});
-          //   let producer = response.data.company.name;
-          //   console.log(this.state.product.producerId)
-          //   this.setState({product: {...this.state.product, producer}})
-          // } catch (err) {
-          //   console.error(err.message)
-          // }
+          try{
+            let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
+            console.log(response.data)
+            let producer = response.data.name;
+            console.log(this.state.product.producerId)
+            this.setState({product: {...this.state.product, producer}})
+          } catch (err) {
+            console.error(err.message)
+          }
     }
 
     setFeedbacks = async (templateId) => {
@@ -128,7 +129,6 @@ export default class DetailInfo extends React.Component {
 
             let response = await API.get(`/account/users/${customerId}`, {headers});
             const customerName = response.data.name;
-
             review = {...review, customerName};
 
             this.setState({reviews: [...this.state.reviews, review].sort((a, b) => {return b.created_at - a.created_at})});

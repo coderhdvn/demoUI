@@ -101,16 +101,16 @@ export default class Distributors extends React.Component {
               return (
                   <TouchableOpacity style={styles.listView} onPress={() => this.onPressDistributor(item.branch.company)}>
                     <View>
-                      <Image
+                      {/* <Image
                         source={{uri: item.branch.image}}
                         style={styles.image}
-                      />
+                      /> */}
                       
                     </View>
                     
                     <View style={styles.textView}>
-                      <Text style={styles.textName}>{item.branch.name}</Text>
-                      <Text style={styles.textAddress}>{item.branch.address}</Text>
+                      <Text style={styles.textName}>name</Text>
+                      <Text style={styles.textAddress}>address</Text>
                     </View>
                   </TouchableOpacity>
               )}
