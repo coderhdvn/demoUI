@@ -2,7 +2,7 @@ import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
 import { FlatList, TouchableOpacity } from 'react-native-gesture-handler';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { Button } from 'react-native-elements';
+import { Button, Overlay } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
 import Draggable from 'react-native-draggable';
 import { Dimensions } from 'react-native';
@@ -54,7 +54,6 @@ export default class Distributors extends React.Component {
         distributors.forEach(async item => {
 
           let branch = await this.getBranch(item.distributorId);
-          // console.log(company)
 
           let distributor = {
             id: item.id,
@@ -73,11 +72,44 @@ export default class Distributors extends React.Component {
       this.setDistributors();
     }
 
-    onPressDistributor = (company) => {
-      this.setState({
-        click_company: company,
-        modalVisible: true
-      });
+    onPressDistributor = async (company_id) => {
+      const headers = await this.getHeader();
+      try {
+        const response = await API.get(`/account/companies/${company_id}`, {headers});
+        let company = {
+          id: response.data.id,
+          name: response.data.name,
+          email: response.data.email,
+          phone: response.data.phone,
+          detailAddress: response.data.detailAddress,
+          image: response.data.image,
+          website: response.data.website
+        }
+        this.setState({
+          click_company: company,
+          modalVisible: true
+        });
+      } catch (err) {
+        console.error(err.message)
+      }
+    }
+
+    onPressChat = async (recipient) => {
+      this.setState({ modalVisible: false });
+      const headers = await this.getHeader();
+      try {
+        const response = await API.get("/account/users/profile", {headers});
+        let data = {
+          recipientId: recipient.id,
+          recipientName: recipient.name,
+          recipientAvatar: recipient.image,
+          senderId: response.data.id,
+          senderName: response.data.name
+        }
+        this.props.navigation.navigate('Chat', {data});
+      } catch (err) {
+        console.error(err.message)
+      }
     }
 
   render(){
@@ -99,20 +131,46 @@ export default class Distributors extends React.Component {
             keyExtractor={(data) => data.id}
             renderItem={({item}) => {
               return (
-                  <TouchableOpacity style={styles.listView} onPress={() => this.onPressDistributor(item.branch.company)}>
+                  <View style={styles.listView}>
                     <View>
-                      {/* <Image
+                      <Image
                         source={{uri: item.branch.image}}
                         style={styles.image}
-                      /> */}
-                      
+                      />
+                      <Button
+                          icon={
+                            <Icon
+                              name="building"
+                              size={17}
+                              color={BASIC_COLOR}
+                            />
+                          }
+                          title='Xem công ty'
+                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
+                          buttonStyle={{backgroundColor: 'white'}}
+                          onPress={() => {this.onPressDistributor(item.branch.company_id)}}
+                      />
                     </View>
+                      <View style={styles.textView}>
+                        <Text style={styles.textName}>{item.branch.name}</Text>
+                        <Text style={styles.textAddress}>{item.branch.address}</Text>
+                        <Button
+                          icon={
+                            <Icon
+                              name="comments"
+                              size={20}
+                              color={BASIC_COLOR}
+                            />
+                          }
+                          title='Liên hệ với chúng tôi'
+                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
+                          buttonStyle={{backgroundColor: 'white'}}
+                          onPress={() => {this.onPressChat(item.branch)}}
+                      />
+                        
+                      </View>
                     
-                    <View style={styles.textView}>
-                      <Text style={styles.textName}>name</Text>
-                      <Text style={styles.textAddress}>address</Text>
-                    </View>
-                  </TouchableOpacity>
+                  </View>
               )}
             }
           />
@@ -145,17 +203,31 @@ export default class Distributors extends React.Component {
               />
           </Draggable>
           
-          <Modal
-            visible={this.state.modalVisible}
-            animationType="slide"
-            transparent={true}
+          <Overlay
+            isVisible={this.state.modalVisible}
+            overlayStyle={styles.modalView}
           >
-            <View style={styles.modalView}>
-              <View style={styles.viewInModal}>
-                <Image
+              <>
+                  <View>
+                      <Image
                         source={{uri: this.state.click_company.image}}
                         style={styles.imageInModal}
                       />
+                      <Button
+                          icon={
+                            <Icon
+                              name="comments"
+                              size={20}
+                              color={BASIC_COLOR}
+                            />
+                          }
+                          title='Liên hệ với chúng tôi'
+                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
+                          buttonStyle={{backgroundColor: 'white'}}
+                          onPress={() => {this.onPressChat(this.state.click_company)}}
+                      />
+                  </View>
+                
                 <Text style={styles.textModalTitle}>Tên công ty:</Text>
                 <Text style={styles.textModalContent}>{this.state.click_company.name}</Text>
 
@@ -186,9 +258,8 @@ export default class Distributors extends React.Component {
                   onPress={() => this.setState({modalVisible: false})}
                   containerStyle={{padding: 5}}
                 />
-              </View>
-            </View>
-          </Modal>
+                </>
+          </Overlay>
 
         </View>
       </View>
@@ -253,7 +324,7 @@ const styles = StyleSheet.create({
   listView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    margin: 15
+    margin: 10,
   },
   image: {
     height: 100,
@@ -265,22 +336,9 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   modalView: {
-    flex: 1,
     justifyContent: 'center',
     alignSelf: 'center',
-  },
-  viewInModal: {
-    backgroundColor: "#f7f7f7", 
-    borderRadius: 10, 
-    padding: 10, 
-    width: "90%", 
-    shadowColor: "black",
-    shadowOffset: {
-      width: 100,
-      height: 200
-    },
-    shadowOpacity: 10,
-    elevation: 10,
+    width: '80%'
   },
   textModalContent: {
     fontWeight: 'bold',
@@ -301,6 +359,5 @@ const styles = StyleSheet.create({
       borderColor: BASIC_COLOR,
       borderRadius: 100,
       alignSelf: 'center',
-      marginBottom: 10
   }
 });

@@ -48,7 +48,12 @@ export default class Login extends React.Component {
           },
         })
     }
-    // this.props.navigation.navigate('Chat');
+    // this.props.navigation.navigate('Chat', {data: {
+    //   senderId: 2,
+    //   recipientId: 1,
+    //   senderName: 'lamthon',
+    //   recipientName: 'anhtu'
+    // }});
   }
 
   UNSAFE_componentWillReceiveProps = () => {

@@ -18,12 +18,7 @@ export default class ChatService extends Component {
         avatar: 'https://scontent-amt2-1.xx.fbcdn.net/v/t1.6435-9/122469842_1457455527781397_7485145288424862265_n.jpg?_nc_cat=106&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=3IHWvoCH3YYAX9L8l99&_nc_ht=scontent-amt2-1.xx&oh=ade32b8984a234d5773f5d43150f2a61&oe=60AF4293',
         messages: [],
         stompClient: '',
-        data: {
-            senderId: 2,
-            recipientId: 1,
-            senderName: 'lamthon',
-            recipientName: 'anhtu'
-        },
+        data: '',
         currentDay: "",
         connected: false
     }
@@ -37,8 +32,7 @@ export default class ChatService extends Component {
 
     getHeader = async() => {
       
-        // const token = "Bearer " + await getData(TOKEN_KEY);
-        const token = "Bearer eyJhbGciOiJIUzUxMiJ9.eyJzdWIiOiJhZG1pbiIsImV4cCI6MTY0ODEzNzY5MCwiaWF0IjoxNjE2NjAxNjkwfQ.ezk9cf5ZaCMRDl_ZdLgLwd3zlTCr5_gM1t4kc4tm9BAgpF7ubmUOs3lvLs-3GiLdZR0XFNZtAq7bcgaQ_potBw"
+        const token = "Bearer " + await getData(TOKEN_KEY);
   
         const headers = {
           'Authorization': token
@@ -64,7 +58,6 @@ export default class ChatService extends Component {
                 let [time, day] = this.getDayTime(item.timestamp);
                 return {...item, time, day}
             });
-            console.log(messages);
             
             this.setState({ messages })
         } catch (err) {
@@ -82,7 +75,11 @@ export default class ChatService extends Component {
     }
 
     async componentDidMount(){
+        let data = this.props.route.params.data;
+        this.setState({ data })
+
         this.connect();
+
         await this.getMessageFromDB();
     }
 
@@ -102,14 +99,17 @@ export default class ChatService extends Component {
         })
     }
 
-    pressHome = () => {
+    pressBack = () => {
         this.props.navigation.navigate('Main');
     }
 
     sendMessage() {
         if (this.state.connected) {
             let message = {
-                ...this.state.send, 
+                senderId: this.state.data.senderId,
+                senderName: this.state.data.senderName,
+                recipientId: this.state.data.recipientId,
+                recipientName: this.state.data.recipientName, 
                 content: this.state.content, 
             }
     
@@ -138,7 +138,7 @@ export default class ChatService extends Component {
     }
 
     renderDay = day => {
-        if (day !== this.state.currentDay) {
+        if (this.state.currentDay !== day) {
             this.state.currentDay = day;
             return (
                 <View style={{ paddingTop: 10}}>
@@ -149,7 +149,9 @@ export default class ChatService extends Component {
     }
 
     renderMessages = (item) => (
-        <View style={{paddingLeft: 10, paddingRight: 10}}>
+        <View 
+            style={{paddingLeft: 10, paddingRight: 10}}
+        >
             {
                 this.renderDay(item.day)
             }
@@ -158,10 +160,9 @@ export default class ChatService extends Component {
                 ? <View style={styles.messagesLeft}>
                     <View>
                         <Image
-                            source={{uri: this.state.avatar}}
+                            source={{uri: this.state.data.recipientAvatar}}
                             style={{height: 40, width: 40, borderRadius: 50}}
                         />
-                        <Text style={{ color: BASIC_COLOR, fontSize: 10, textAlign: 'center' }}>{item.senderName}</Text>
                     </View>
                     <View style={styles.messageContentLeft}>
                         <Text style={{ color: BASIC_COLOR }}>
@@ -191,21 +192,65 @@ export default class ChatService extends Component {
         return (
             <View style={styles.container}>
                 <Header
-                    centerComponent={{ text: 'Chat', style: { color: '#fff', fontSize: 20 } }}
-                    rightComponent={{ icon: 'home', color: 'white', size: 30, onPress: this.pressHome}}
+                    leftComponent={
+                        <Button
+                            icon={
+                                <Icon
+                                    name="arrow-left"
+                                    size={20}
+                                    color='white'
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: BASIC_COLOR}}
+                            onPress={this.pressBack}
+                        />
+                    }
+                    centerComponent={
+                        <View style={{flexDirection: 'row', alignItems: 'center'}}>
+                            <Image
+                                source={{uri: this.state.data.recipientAvatar}}
+                                style={{height: 40, width: 40, borderRadius: 50}}
+                            />
+                            <Text style={{ color: 'white', padding: 5, fontSize: 17 }}>{this.state.data.recipientName}</Text>
+                        </View>
+                    }
+                    rightComponent={
+                        <Button
+                            icon={
+                                <Icon
+                                    name="home"
+                                    size={25}
+                                    color='white'
+                                />
+                            }
+                            buttonStyle={{ backgroundColor: BASIC_COLOR}}
+                            onPress={() => this.props.navigation.navigate("Main")}
+                        />
+                    }
                     containerStyle={{
                         backgroundColor: BASIC_COLOR
                     }}
                 />
-
-                    <FlatList
-                       data={this.state.messages} 
-                       keyExtractor={item => item.id}
-                       renderItem={({item}) => this.renderMessages(item)}
-                       showsVerticalScrollIndicator={false}
-                        inverted
-                       contentContainerStyle={{flexDirection: "column-reverse"}}
-                    />
+                        
+                        {
+                            this.state.messages.length !== 0
+                            ? <FlatList
+                                data={this.state.messages} 
+                                keyExtractor={item => item.id}
+                                renderItem={({item}) => this.renderMessages(item)}
+                                showsVerticalScrollIndicator={false}
+                                    inverted
+                                contentContainerStyle={{flexDirection: "column-reverse"}}
+                            />
+                            : <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
+                                <Image
+                                    source={{uri: this.state.data.recipientAvatar}}
+                                    style={{height: 100, width: 100, borderRadius: 50}}
+                                />
+                                <Text style={{ padding: 5, fontSize: 17 }}>{this.state.data.recipientName}</Text>
+                            </View>
+                        }
+                         
 
                 <View style={styles.input}>
                         <Button
