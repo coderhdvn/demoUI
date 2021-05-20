@@ -1,12 +1,10 @@
 import { BASIC_COLOR } from '../constants/Constant';
-import { Input, Button, Header, ListItem } from 'react-native-elements';
+import { Button, Header } from 'react-native-elements';
 import Icon from 'react-native-vector-icons/FontAwesome';
-import { View, Text, StyleSheet, Image } from 'react-native';
+import { View, Text, StyleSheet, Image, TextInput, FlatList } from 'react-native';
 import SockJS from 'sockjs-client';
 import Stomp from "webstomp-client";
 import React, { Component } from 'react';
-import { TextInput } from 'react-native';
-import { FlatList, ScrollView } from 'react-native-gesture-handler';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from 'react-native-flash-message';
@@ -17,10 +15,35 @@ export default class ChatService extends Component {
         content: '',
         avatar: 'https://scontent-amt2-1.xx.fbcdn.net/v/t1.6435-9/122469842_1457455527781397_7485145288424862265_n.jpg?_nc_cat=106&ccb=1-3&_nc_sid=09cbfe&_nc_ohc=3IHWvoCH3YYAX9L8l99&_nc_ht=scontent-amt2-1.xx&oh=ade32b8984a234d5773f5d43150f2a61&oe=60AF4293',
         messages: [],
+        groupMessages: [],
         stompClient: '',
         data: '',
         currentDay: "",
         connected: false
+    }
+
+    groupBy(array, property) {
+        let group = [];
+        let result = []
+        let currentItem = array[0];
+        array.forEach(item => {
+            if (currentItem[property] === item[property]) {
+                group.push(item);
+            }
+            else {
+                result.push(group);
+                group = [item];
+                currentItem = item;
+            }
+        });
+        result.push(group);
+        return result;
+    }
+
+    setMessageForShowing(messages) {
+        let groupMessages = this.groupBy(messages, 'day');
+        this.setState({ messages, groupMessages });
+        console.log(this.state.groupMessages)
     }
 
     getDayTime(timestamp) {
@@ -44,9 +67,7 @@ export default class ChatService extends Component {
     getMessage(messageOutput){
         let [time, day] = this.getDayTime(messageOutput.timestamp);
         let messages = { ...messageOutput, time, day }
-        this.setState({
-            messages: [...this.state.messages, messages]
-        });
+        this.setMessageForShowing(messages);
     }
 
     async getMessageFromDB() {
@@ -59,7 +80,8 @@ export default class ChatService extends Component {
                 return {...item, time, day}
             });
             
-            this.setState({ messages })
+            this.setMessageForShowing(messages);
+
         } catch (err) {
             showMessage({
                 message: "Lỗi kết nối !",
@@ -110,18 +132,21 @@ export default class ChatService extends Component {
                 senderName: this.state.data.senderName,
                 recipientId: this.state.data.recipientId,
                 recipientName: this.state.data.recipientName, 
-                content: this.state.content, 
+                content: this.state.content,
+                timestamp: new Date() 
             }
+            console.log(message)
     
             this.state.stompClient.send("/app/chat", JSON.stringify(message), {});
             
             let id = Math.random().toString(36).substr(2, 9);
             let [time , day] = this.getDayTime(new Date())
+            let messages = [...this.state.messages, { ...message, id, time, day, senderId: this.state.data.senderId }];
+            
+            this.setMessageForShowing(messages);
+
             this.setState({
-                content: '',
-                messages: [...this.state.messages, 
-                    { ...message, id, time, day, senderId: this.state.data.senderId}
-                ]
+                content: ''
             })
         } else {
             showMessage({
@@ -148,13 +173,24 @@ export default class ChatService extends Component {
         }
     }
 
+    renderGroupMessages = (item) => (
+        <View style={{ paddingTop: 10}}>
+            
+            <Text style={{ color: 'gray', fontSize: 12, textAlign: 'center' }}>{item[0].day}</Text>
+               
+            <FlatList
+                data={item} 
+                keyExtractor={item => item.id}
+                renderItem={({item}) => this.renderMessages(item)}
+                showsVerticalScrollIndicator={false}
+            />
+        </View>
+    )
+
     renderMessages = (item) => (
         <View 
             style={{paddingLeft: 10, paddingRight: 10}}
         >
-            {
-                this.renderDay(item.day)
-            }
             {
                 item.senderId != this.state.data.senderId
                 ? <View style={styles.messagesLeft}>
@@ -235,11 +271,11 @@ export default class ChatService extends Component {
                         {
                             this.state.messages.length !== 0
                             ? <FlatList
-                                data={this.state.messages} 
-                                keyExtractor={item => item.id}
-                                renderItem={({item}) => this.renderMessages(item)}
+                                data={this.state.groupMessages} 
+                                keyExtractor={item => item[0].id}
+                                renderItem={({item}) => this.renderGroupMessages(item)}
                                 showsVerticalScrollIndicator={false}
-                                    inverted
+                                inverted
                                 contentContainerStyle={{flexDirection: "column-reverse"}}
                             />
                             : <View style={{justifyContent: 'center', alignItems: 'center', flex: 1}}>
