@@ -24,7 +24,7 @@ export default class ChatService extends Component {
 
     groupBy(array, property) {
         let group = [];
-        let result = []
+        let result = [];
         let currentItem = array[0];
         array.forEach(item => {
             if (currentItem[property] === item[property]) {
@@ -43,7 +43,6 @@ export default class ChatService extends Component {
     setMessageForShowing(messages) {
         let groupMessages = this.groupBy(messages, 'day');
         this.setState({ messages, groupMessages });
-        console.log(this.state.groupMessages)
     }
 
     getDayTime(timestamp) {
@@ -66,7 +65,8 @@ export default class ChatService extends Component {
 
     getMessage(messageOutput){
         let [time, day] = this.getDayTime(messageOutput.timestamp);
-        let messages = { ...messageOutput, time, day }
+        let message = { ...messageOutput, time, day };
+        let messages = [...this.state.messages, message];
         this.setMessageForShowing(messages);
     }
 
