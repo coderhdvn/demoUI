@@ -49,10 +49,11 @@ export default class Login extends React.Component {
         })
     }
     // this.props.navigation.navigate('Chat', {data: {
-    //   senderId: 2,
-    //   recipientId: 1,
-    //   senderName: 'lamthon',
-    //   recipientName: 'anhtu'
+    //   senderId: "9da9f85e-430f-4933-9b91-0baf13738fe5",
+    //   recipientId: "fdeb74ff-fc7d-4862-bd9c-e11eab3b43eb",
+    //   senderName: 'anhtu',
+    //   recipientName: 'admin',
+    //   recipientAvatar: "https://lh3.googleusercontent.com/a-/AOh14GgEAEEDHP5exiCuaAN6hHu0NQo1_hJPrklmisW4Yw=s96-c?fbclid=IwAR0FSGYhGggk7l9CeNGMMz8mtASt5e9KqmZy0XAoAzabYh1f8gf4cGjNw6g"
     // }});
   }
 

@@ -8,10 +8,11 @@ import Icon from 'react-native-vector-icons/FontAwesome';
 import Geolocation from '@react-native-community/geolocation';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
-import {TOKEN_KEY} from '../constants/Constant';
+import {TOKEN_KEY, ONESIGNAL_APP_ID} from '../constants/Constant';
 import { showMessage } from "react-native-flash-message";
 import { TouchableOpacity } from "react-native-gesture-handler";
 import { Button } from 'react-native-elements';
+import OneSignal from 'react-native-onesignal';
 
 const SCREEN_HEIGHT = Dimensions.get("window").height;
 const SCREEN_WIDTH = Dimensions.get("window").width;
@@ -119,9 +120,45 @@ class QrCodeCamera extends Component {
     this.props.navigation.navigate('history');
   }
 
+  updateOneSignalId = async (OneSignalId) => {
+    const headers = await this.getHeader();
+
+    try {
+      const response = await API.put(`/account/users/onesignal/${OneSignalId}`, null, {headers});
+      // console.log(response.data);
+    } catch (err) {
+      console.error(err.message);
+    }
+  }
+
+  initNotification = async () => {
+    OneSignal.setLogLevel(6, 0);
+    OneSignal.setAppId(ONESIGNAL_APP_ID);
+    
+    let deviceState = await OneSignal.getDeviceState();
+    await this.updateOneSignalId(deviceState.userId);
+
+    OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
+      console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
+      let notification = notificationReceivedEvent.getNotification();
+
+      showMessage({
+        message: 'Thông báo',
+        type: 'info',
+        description: `${notification.title}: ${notification.body}`,
+        duration: 5000,
+        floating: true,
+        icon: {
+          icon: 'info', position: "right"
+        },
+      })
+    });
+
+  }
+
   componentDidMount = async () => {
     await this.getLocation();
-  
+    await this.initNotification();
   }
 
   render() {
