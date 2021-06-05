@@ -72,12 +72,13 @@ class QrCodeCamera extends Component {
   onSuccess = async (e) => {
     let productId = e.data;
     this.setState({scan: false});
-
+    console.log(e);
     let headers = await this.getHeader();
 
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
-        if (response && this.state.location !== null) {
+        console.log(response)
+        if (response /*&& this.state.location !== null*/) {
           this.props.navigation.navigate("detail", {product: response.data});
           this.saveHistory(productId);
         }
@@ -166,10 +167,10 @@ class QrCodeCamera extends Component {
       <View style={{flex:1}}>
         {this.state.scan ? (
         <QRCodeScanner
-          // cameraTimeout={10000} 
+          //cameraTimeout={5000} 
           reactivate={true}
           showMarker={true}
-          onRead={this.onSuccess.bind(this)}
+          onRead={(e)=>{this.onSuccess(e)}}
           cameraStyle={{ height: SCREEN_HEIGHT }}
           customMarker={
             <View style={styles.rectangleContainer}>
