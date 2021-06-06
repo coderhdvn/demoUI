@@ -3,64 +3,56 @@ import React from 'react';
 import { Button } from 'react-native';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Image } from 'react-native';
 import { FlatList, ScrollView } from 'react-native-gesture-handler';
+import API from '../api/API';
+import {TOKEN_KEY} from '../constants/Constant';
+import {getData} from '../storage/AsyncStorage';
 
 export default class History extends React.Component {
     
     state = {
-        list: [
-            {
-                id: '1',
-                title: 'Thông báo 1',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '2',
-                title: 'Thông báo 2',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '3',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '4',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '5',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '6',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '7',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            },
-            {
-                id: '8',
-                title: 'Thông báo 3',
-                date: '01/01/2020',
-                image: 'https://fdn2.gsmarena.com/vv/pics/apple/apple-iphone-x-new-1.jpg'
-            }
-        ]
+        list: []
     }
 
     onPressItem = (item) => {
-        console.log(item)
+        this.props.navigation.navigate('detail', {product: item});
+    }
+
+    getHeader = async() => {
+      
+        const token = "Bearer " + await getData(TOKEN_KEY);
+  
+        const headers = {
+          'Authorization': token
+        }
+        
+        return headers
+    }
+  
+    loadHistory = async () => {
+        const headers = await this.getHeader();
+        try {
+            const response = await API.get(`/logger/consumes/customer`, {headers})
+            let loggers = response.data 
+            let products = []
+            loggers.forEach(async logger => {
+                const product = await API.get(`/product/products/` + logger.productId, {headers})
+                let item = product.data
+                item.historyId = logger.id
+                item.date = logger.createdAt
+                console.log("hihi",item);
+                this.setState({
+                    list: [...this.state.list, item]
+                  })
+            });
+            return products
+          } catch (err) {
+            console.error(err.message);
+            return []
+          }
+    }
+
+    componentDidMount = () => {
+        this.loadHistory();
     }
 
   render(){
@@ -80,18 +72,18 @@ export default class History extends React.Component {
                 style={styles.listView}
                 data={this.state.list}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item.id}
+                keyExtractor={(item) => item.historyId}
                 renderItem={({item}) => {
                     return <TouchableOpacity onPress={() => this.onPressItem(item)}>
                         <View style={styles.list}>
                             <View style={styles.viewText}>
-                                <Text style={styles.titleList}>{item.title}</Text>
-                                <Text>{item.date}</Text>
+                                <Text style={styles.titleList}>{item.template.name}</Text>
+                                <Text>{new Date(item.date).getDay()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
                             </View>
                             <View>
                                 <Image 
                                     style={styles.image}
-                                    source={{uri: item.image}}
+                                    source={{uri: item.template.imageUrl}}
                                 />
                             </View>
                         </View>
@@ -139,7 +131,6 @@ const styles = StyleSheet.create({
     title: {
         fontSize: 25,
         color: '#22595C',
-        alignSelf: 'center'
     },
     listView: {
         marginLeft: 10,
