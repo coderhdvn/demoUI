@@ -6,7 +6,7 @@ import {WebView} from 'react-native-webview';
 class LoginWithGoogle extends Component {
     render() {
         return <WebView
-            source={{ uri: 'http://192.168.1.183:8082/oauth2/authorize/google?redirect_uri=http://192.168.1.183:8082/login/oauth2/code/google' }}
+            source={{ uri: 'http://192.168.4.25:8082/oauth2/authorize/google?redirect_uri=http://192.168.4.25:8082/login/oauth2/code/google' }}
         />
     }
 }

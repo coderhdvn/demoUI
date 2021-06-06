@@ -72,9 +72,9 @@ export default class ChatService extends Component {
 
     async getMessageFromDB() {
         const headers = await this.getHeader();
-
         try {
-            const response = await axios.get(`http://192.168.1.183:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
+            const response = await axios.get(`http://192.168.4.25:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
+            console.log("response", response.data);
             let messages = response.data.map(item => {
                 let [time, day] = this.getDayTime(item.timestamp);
                 return {...item, time, day}
@@ -98,6 +98,7 @@ export default class ChatService extends Component {
 
     async componentDidMount(){
         let data = this.props.route.params.data;
+        console.log("data nek",data);
         this.setState({ data })
 
         this.connect();
@@ -107,7 +108,7 @@ export default class ChatService extends Component {
 
     connect(){
         let props = this;
-        const socket = new SockJS('http://192.168.1.183:8084/ws');
+        const socket = new SockJS('http://192.168.4.25:8084/ws');
         let stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
         console.log("Connected: " + frame);
@@ -133,10 +134,10 @@ export default class ChatService extends Component {
                 recipientId: this.state.data.recipientId,
                 recipientName: this.state.data.recipientName, 
                 content: this.state.content,
+                status: "FROM_APP",
                 timestamp: new Date() 
             }
-            console.log(message)
-    
+            console.log("message", message);
             this.state.stompClient.send("/app/chat", JSON.stringify(message), {});
             
             let id = Math.random().toString(36).substr(2, 9);
@@ -150,7 +151,7 @@ export default class ChatService extends Component {
             })
         } else {
             showMessage({
-                message: "Gửi tin nhắn không thành công !",
+                message: "Gửi tin nhắn không thành công!",
                 type: 'danger',
                 description: "Hãy kiểm tra lại kết nối mạng",
                 duration: 5000,

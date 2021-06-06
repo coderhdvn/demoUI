@@ -175,9 +175,9 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                {/* <Text style={{ fontSize: 30, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '100%', textAlign: 'center' }}>
+                <Text style={{ fontSize: 20, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '70%', textAlign: 'center' }}>
                   QR CODE SCANNER
-                </Text> */}
+                </Text>
               </View>
 
               <View style={{ flexDirection: "row" }}>
