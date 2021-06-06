@@ -39,7 +39,6 @@ export default class History extends React.Component {
                 let item = product.data
                 item.historyId = logger.id
                 item.date = logger.createdAt
-                console.log("hihi",item);
                 this.setState({
                     list: [...this.state.list, item]
                   })
@@ -78,7 +77,7 @@ export default class History extends React.Component {
                         <View style={styles.list}>
                             <View style={styles.viewText}>
                                 <Text style={styles.titleList}>{item.template.name}</Text>
-                                <Text>{new Date(item.date).getDay()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
+                                <Text>{new Date(item.date*1000).getDate()}/{new Date(item.date*1000).getMonth()}/{new Date(item.date*1000).getFullYear()}</Text>
                             </View>
                             <View>
                                 <Image 

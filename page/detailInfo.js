@@ -74,15 +74,13 @@ export default class DetailInfo extends React.Component {
     setProduct = async (product) => {
       const headers = await this.getHeader();
 
-          let expDate = (new Date(product.expDate)).toLocaleDateString();
-          let mfgDate = (new Date(product.mfgDate)).toLocaleDateString();
-          this.setState({
+         this.setState({
             product: {
               productId: product.id,
               templateId: product.template.id,
               name: product.template.name,
-              expDate,
-              mfgDate,
+              expDate: product.expDate*1000,
+              mfgDate: product.mfgDate*1000,
               producerId: product.template.producerId,
               description: product.template.description,
               image: product.template.imageUrl
@@ -92,9 +90,7 @@ export default class DetailInfo extends React.Component {
   
           try{
             let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
-            console.log(response.data)
             let producer = response.data.name;
-            console.log(this.state.product.producerId)
             this.setState({product: {...this.state.product, producer}})
           } catch (err) {
             console.error(err.message)
@@ -178,10 +174,10 @@ export default class DetailInfo extends React.Component {
                       <Text style={styles.textContent}>{this.state.product.producer}</Text>
 
                       <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
+                      <Text style={styles.textContent}>{new Date(this.state.product.mfgDate).getDate()}/{new Date(this.state.product.mfgDate).getMonth()}/{new Date(this.state.product.mfgDate).getFullYear()}</Text>
 
                       <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.expDate}</Text>
+                      <Text style={styles.textContent}>{new Date(this.state.product.expDate).getDate()}/{new Date(this.state.product.expDate).getMonth()}/{new Date(this.state.product.expDate).getFullYear()}</Text>
                     </Wrap>
                   </View>
                 </View>
