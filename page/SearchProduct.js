@@ -17,7 +17,7 @@ import {TOKEN_KEY} from '../constants/Constant';
 export default class SearchProduct extends React.Component {
     
     state = {
-        location: {latitude: 55.7887626, longitude: 37.7916801},
+        location: {latitude: 10.762691093961827, longitude: 106.68154866846568},
         search: '',
         searchList: [],
         markers: [],
@@ -49,6 +49,7 @@ export default class SearchProduct extends React.Component {
             let location = this.state.location;
             let search = this.state.search.toLowerCase();
             const response = await API.get(`/product/products/${search}/near/${location.latitude}/${location.longitude}`, {headers});
+            console.log("search list",response.data);
             this.setState({ 
                 searchList: response.data,
                 showSearch: true,
@@ -117,7 +118,7 @@ export default class SearchProduct extends React.Component {
         )
       }
       componentDidMount() {
-        // this.getLocation();
+         this.getLocation();
       }
 
   render(){

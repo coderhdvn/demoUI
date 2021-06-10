@@ -20,7 +20,10 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 class QrCodeCamera extends Component {
   state = {
     scan: true,
-    location: null
+    location: {
+      latitude: 0,
+      longitude: 0
+    }
   }
 
   getHeader = async() => {
@@ -42,16 +45,16 @@ class QrCodeCamera extends Component {
         this.setState({ location: { latitude, longitude }})
       },
       error => {
-        showMessage({
-          message: "Không thể định vị vị trí của bạn !",
-          type: 'danger',
-          description: "Hãy chắc chắn rằng bạn đang bật định vị",
-          duration: 5000,
-          floating: true,
-          icon: {
-            icon: 'danger', position: "right"
-          },
-        })
+        // showMessage({
+        //   message: "Không thể định vị vị trí của bạn !",
+        //   type: 'danger',
+        //   description: "Hãy chắc chắn rằng bạn đang bật định vị",
+        //   duration: 5000,
+        //   floating: true,
+        //   icon: {
+        //     icon: 'danger', position: "right"
+        //   },
+        // })
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
@@ -64,7 +67,7 @@ class QrCodeCamera extends Component {
       longitude: this.state.location.longitude
     }
     let headers = await this.getHeader();
-
+    console.log("body nek", body);
     const response = await API.post('/logger/consumes', body, {headers});
     console.log(response.data);
   }
@@ -79,8 +82,8 @@ class QrCodeCamera extends Component {
       const response = await API.get(`/product/products/${productId}`, {headers});
         console.log(response)
         if (response /*&& this.state.location !== null*/) {
-          this.props.navigation.navigate("detail", {product: response.data});
           this.saveHistory(productId);
+          this.props.navigation.navigate("detail", {product: response.data});
         }
     } catch (err) {
       showMessage({

@@ -153,9 +153,7 @@ export default class DetailInfo extends React.Component {
 
     return (
       <View style={styles.container}>
-        <View style={styles.shadow}>
-          <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
-        </View>
+      
         <View style={styles.titleView}>
           <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
         </View>
@@ -174,10 +172,10 @@ export default class DetailInfo extends React.Component {
                       <Text style={styles.textContent}>{this.state.product.producer}</Text>
 
                       <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{new Date(this.state.product.mfgDate).getDate()}/{new Date(this.state.product.mfgDate).getMonth()}/{new Date(this.state.product.mfgDate).getFullYear()}</Text>
+                      <Text style={styles.textContent}>{new Date(this.state.product.mfgDate*1000).getDay()}/{new Date(this.state.product.mfgDate).getMonth()}/{new Date(this.state.product.mfgDate).getFullYear()}</Text>
 
                       <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{new Date(this.state.product.expDate).getDate()}/{new Date(this.state.product.expDate).getMonth()}/{new Date(this.state.product.expDate).getFullYear()}</Text>
+                      <Text style={styles.textContent}>{new Date(this.state.product.expDate*1000).getDay()}/{new Date(this.state.product.expDate).getMonth()}/{new Date(this.state.product.expDate).getFullYear()}</Text>
                     </Wrap>
                   </View>
                 </View>
@@ -328,31 +326,16 @@ const styles = StyleSheet.create({
     backgroundColor: BASIC_COLOR,
 },
   titleView: {
-    alignSelf: 'center',
-    backgroundColor: 'white',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 5
-    },
-    shadowOpacity: 0.2,
-    elevation: 20,
+    elevation: 10,
     borderRadius: 5,
-    marginTop: 20,
-    marginBottom: 27,
+    marginTop: 10,
+    marginBottom: 10,
     width: "85%"
   },
-  shadow: {
-    backgroundColor: 'black',
-    opacity: 0.4,
-    borderRadius: 5,
-    position: 'absolute',
-    top: 27,
-    alignSelf: 'center',
-  },
+
   title: {
       color:"black", 
-      fontSize:22, 
+      fontSize: 22, 
       width: "100%", 
       textAlign: "center", 
       fontWeight: "300", 
