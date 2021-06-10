@@ -166,6 +166,8 @@ export default class DetailInfo extends React.Component {
                   </View>
                   <View style={{width: '60%', alignSelf: 'center'}}>
                     <Wrap>                   
+                      <Text style={styles.textTitle}>Mã số :</Text> 
+                      <Text style={styles.textContent}>{this.state.product.id}</Text>
                       <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
                       <Text style={styles.textContent}>{this.state.product.name}</Text>
                       <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
