@@ -30,6 +30,19 @@ export default class Distributors extends React.Component {
       return headers
     }
 
+    getImage = async (imageName) => {
+      let headers = await this.getHeader();
+      try {
+        const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
+  
+        const response = await axios.create({baseURL: getUrl.data}).get("");
+        let image = response.data.image;
+        return image;
+      } catch (err) {
+        console.log("image not found")
+      }
+    }
+
     getBranch = async (distributorId) => {
       const headers = await this.getHeader();
 
@@ -55,9 +68,11 @@ export default class Distributors extends React.Component {
 
           let branch = await this.getBranch(item.distributorId);
 
+          let image = await this.getImage(branch.image);
+
           let distributor = {
             id: item.id,
-            branch
+            branch: {...branch, image: image}
           }
           this.setState({
             distributors: [...this.state.distributors, distributor]
@@ -76,13 +91,16 @@ export default class Distributors extends React.Component {
       const headers = await this.getHeader();
       try {
         const response = await API.get(`/account/companies/${company_id}`, {headers});
+
+        let image = await this.getImage(response.data.image);
+
         let company = {
           id: response.data.id,
           name: response.data.name,
           email: response.data.email,
           phone: response.data.phone,
           detailAddress: response.data.detailAddress,
-          image: response.data.image,
+          image: image,
           website: response.data.website
         }
         this.setState({

@@ -33,6 +33,19 @@ export default class DetailInfo extends React.Component {
       return headers
     }
 
+    getImage = async (imageName) => {
+      let headers = await this.getHeader();
+      try {
+        const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
+  
+        const response = await axios.create({baseURL: getUrl.data}).get("");
+        let image = response.data.image;
+        return image;
+      } catch (err) {
+        console.log("image not found")
+      }
+    }
+
     getRating = (rating) => {
       this.setState({rating});
     }
@@ -74,6 +87,8 @@ export default class DetailInfo extends React.Component {
     setProduct = async (product) => {
       const headers = await this.getHeader();
 
+      let image = await this.getImage(product.template.imageUrl);
+
          this.setState({
             product: {
               productId: product.id,
@@ -83,7 +98,7 @@ export default class DetailInfo extends React.Component {
               mfgDate: product.mfgDate*1000,
               producerId: product.template.producerId,
               description: product.template.description,
-              image: product.template.imageUrl
+              image: image
             },
             visible: true
           });
