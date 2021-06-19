@@ -20,8 +20,8 @@ export default class DetailInfo extends React.Component {
         this._map.animateToRegion({
             latitude: location.branch.latitude,
             longitude: location.branch.longitude,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005
+            latitudeDelta: 0.01,
+            longitudeDelta: 0.01
         });
 
         this.state.markers[index].showCallout()
@@ -68,8 +68,8 @@ export default class DetailInfo extends React.Component {
                 initialRegion={{
                 latitude: this.state.coordinates[0].latitude,
                 longitude: this.state.coordinates[0].longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
+                latitudeDelta: 0.05,
+                longitudeDelta: 0.05
             }}>
                 {
                     this.state.distributors.map((distributor, index) => (

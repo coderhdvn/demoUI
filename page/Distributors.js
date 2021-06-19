@@ -9,7 +9,7 @@ import { Dimensions } from 'react-native';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
-import { Modal } from 'react-native';
+import axios from 'axios';
 
 export default class Distributors extends React.Component {
     
@@ -39,7 +39,7 @@ export default class Distributors extends React.Component {
         let image = response.data.image;
         return image;
       } catch (err) {
-        console.log("image not found")
+        console.log("image not found");
       }
     }
 
