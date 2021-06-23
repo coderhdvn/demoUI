@@ -51,6 +51,12 @@ export default class DetailInfo extends React.Component {
       this.setState({rating});
     }
 
+    getDay(timestamp) {
+      let date = new Date(timestamp);
+      let day = `${('0'+date.getDate()).slice(-2)}/${('0'+(date.getMonth()+1)).slice(-2)}/${date.getFullYear()}`;
+      return day;
+    }
+
     onSaveReview = async() => {
 
       const headers = await this.getHeader();
@@ -95,8 +101,8 @@ export default class DetailInfo extends React.Component {
               productId: product.id,
               templateId: product.template.id,
               name: product.template.name,
-              expDate: product.expDate*1000,
-              mfgDate: product.mfgDate*1000,
+              expDate: this.getDay(product.expDate),
+              mfgDate: this.getDay(product.mfgDate),
               producerId: product.template.producerId,
               description: product.template.description,
               image: image
@@ -129,7 +135,7 @@ export default class DetailInfo extends React.Component {
 
         if (feedbacks) {
           feedbacks.map(async feedback  => {
-            let date = (new Date(feedback.created_at)).toLocaleDateString();
+            let date = this.getDay(feedback.created_at);
 
             let review = {
               content: feedback.content,
@@ -183,17 +189,17 @@ export default class DetailInfo extends React.Component {
                   <View style={{width: '60%', alignSelf: 'center'}}>
                     <Wrap>                   
                       <Text style={styles.textTitle}>Mã số :</Text> 
-                      <Text style={styles.textContent}>{this.state.product.id}</Text>
+                      <Text style={styles.textContent}>{this.state.product.productId}</Text>
                       <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
                       <Text style={styles.textContent}>{this.state.product.name}</Text>
                       <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
                       <Text style={styles.textContent}>{this.state.product.producer}</Text>
 
                       <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{new Date(this.state.product.mfgDate*1000).getDay()}/{new Date(this.state.product.mfgDate).getMonth()}/{new Date(this.state.product.mfgDate).getFullYear()}</Text>
+                      <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
 
                       <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{new Date(this.state.product.expDate*1000).getDay()}/{new Date(this.state.product.expDate).getMonth()}/{new Date(this.state.product.expDate).getFullYear()}</Text>
+                      <Text style={styles.textContent}>{this.state.product.expDate}</Text>
                     </Wrap>
                   </View>
                 </View>
@@ -348,7 +354,9 @@ const styles = StyleSheet.create({
     borderRadius: 5,
     marginTop: 10,
     marginBottom: 10,
-    width: "85%"
+    width: "80%",
+    backgroundColor: 'white',
+    alignSelf: 'center'
   },
 
   title: {

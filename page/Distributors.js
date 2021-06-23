@@ -172,7 +172,7 @@ export default class Distributors extends React.Component {
                       <View style={styles.textView}>
                         <Text style={styles.textName}>{item.branch.name}</Text>
                         <Text style={styles.textAddress}>{item.branch.address}</Text>
-                        {/* <Button
+                        <Button
                           icon={
                             <Icon
                               name="comments"
@@ -184,7 +184,7 @@ export default class Distributors extends React.Component {
                           titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
                           buttonStyle={{backgroundColor: 'white'}}
                           onPress={() => {this.onPressChat(item.branch)}}
-                      /> */}
+                      />
                         
                       </View>
                     
