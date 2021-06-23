@@ -182,14 +182,13 @@ export default class DetailInfo extends React.Component {
         <View style={styles.contentView}>
           { this.state.visible ? (
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
+                
                 <View style={{flexDirection: 'row'}}>
                   <View style={{width: '40%', alignSelf: 'center'}}>
                     <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.product.image}} />
                   </View>
                   <View style={{width: '60%', alignSelf: 'center'}}>
                     <Wrap>                   
-                      <Text style={styles.textTitle}>Mã số :</Text> 
-                      <Text style={styles.textContent}>{this.state.product.productId}</Text>
                       <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
                       <Text style={styles.textContent}>{this.state.product.name}</Text>
                       <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
@@ -203,6 +202,11 @@ export default class DetailInfo extends React.Component {
                     </Wrap>
                   </View>
                 </View>
+
+                <View style={{ alignItems: 'center', padding: 10}}>
+                  <Text style={styles.textTitle}>Mã số : {this.state.product.productId}</Text> 
+                </View>
+
                 <Wrap>
                   <Button 
                         title="Xem danh sách nhà phân phối"
