@@ -49,6 +49,7 @@ class App extends React.Component {
   
   
   componentDidMount() {
+    console.disableYellowBox = true;
     getData(TOKEN_KEY).then(token => {
       if(token != null) {
         this.setState({isToken: true})

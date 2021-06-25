@@ -38,10 +38,10 @@ export default class DetailInfo extends React.Component {
       let headers = await this.getHeader();
       try {
         const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
-  
-        const response = await axios.create({baseURL: getUrl.data}).get("");
-        let image = response.data.image;
-        return image;
+        return getUrl.data
+        // const response = await axios.create({baseURL: getUrl.data}).get("");
+        // let image = response.data.image;
+        // return image;
       } catch (err) {
         console.log("image not found")
       }
@@ -194,7 +194,6 @@ export default class DetailInfo extends React.Component {
                             enableRating={false}
                           />
                         </View>
-                        <Text style={{marginLeft: 10}}>{this.state.reviewSummary.total} đánh giá</Text>
                       </View>
                       
                       <Text style={styles.textTitle}>Nhà sản xuất: {this.state.product.producer}</Text> 
@@ -205,7 +204,8 @@ export default class DetailInfo extends React.Component {
                   </View>    
 
                 <View style={{ alignItems: 'center', padding: 7, backgroundColor: 'white', borderRadius: 50, borderColor: BASIC_COLOR, borderWidth: 1}}>
-                  <Text style={styles.textTitle}>Mã số : {this.state.product.productId}</Text> 
+                  <Text style={styles.textTitle}>Mã số :</Text> 
+                  <Text style={styles.textTitle}>{this.state.product.productId}</Text> 
                 </View>
                   <Button 
                         title="Xem danh sách nhà phân phối"
@@ -380,7 +380,6 @@ const styles = StyleSheet.create({
   },
   textTitle: {
     fontSize: 13,
-    fontStyle: 'italic',
     marginBottom: 2
   },
   textContent: {

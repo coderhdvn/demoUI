@@ -73,7 +73,7 @@ export default class ChatService extends Component {
     async getMessageFromDB() {
         const headers = await this.getHeader();
         try {
-            const response = await axios.get(`http://192.168.4.25:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
+            const response = await axios.get(`http://192.168.4.111:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
             console.log("response", response.data);
             let messages = response.data.map(item => {
                 let [time, day] = this.getDayTime(item.timestamp);
@@ -108,7 +108,7 @@ export default class ChatService extends Component {
 
     connect(){
         let props = this;
-        const socket = new SockJS('http://192.168.4.25:8084/ws');
+        const socket = new SockJS('http://192.168.4.111:8084/ws');
         let stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
         console.log("Connected: " + frame);

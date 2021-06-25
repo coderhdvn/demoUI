@@ -30,7 +30,7 @@ class UserInfo extends Component {
     try {
       let imageName = image.fileName;
       let uri = image.uri;
-
+      
       const getUrl = await API.put(`/uploadserver/put_image/${imageName}`, null, {headers});
 
       await axios.create({baseURL: getUrl.data}).put("", {image: uri});
