@@ -117,7 +117,6 @@ export default class Distributors extends React.Component {
       const headers = await this.getHeader();
       try {
         const response = await API.get("/account/users/profile", {headers});
-        console.log(response.data);
         let data = {
           recipientId: recipient.id,
           recipientName: recipient.name,

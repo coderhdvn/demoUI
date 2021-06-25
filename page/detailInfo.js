@@ -175,39 +175,38 @@ export default class DetailInfo extends React.Component {
 
     return (
       <View style={styles.container}>
-      
-        <View style={styles.titleView}>
-          <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
-        </View>
         <View style={styles.contentView}>
           { this.state.visible ? (
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                
-                <View style={{flexDirection: 'row'}}>
-                  <View style={{width: '40%', alignSelf: 'center'}}>
-                    <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.product.image}} />
-                  </View>
-                  <View style={{width: '60%', alignSelf: 'center'}}>
-                    <Wrap>                   
-                      <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.name}</Text>
-                      <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.producer}</Text>
-
-                      <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
-
-                      <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.expDate}</Text>
-                    </Wrap>
-                  </View>
+                <View style={{backgroundColor: 'rgb(0, 0, 0)'}}>
+                    <Image style={{resizeMode: 'contain', width: '100%', height: 200}} source={{uri: this.state.product.image}} />
                 </View>
+                  
+                <View style={{padding: 7}}>
+                <View style={{padding: 5}}>              
+                      <Text style={styles.textContent}>{this.state.product.name}</Text>
 
-                <View style={{ alignItems: 'center', padding: 10}}>
+                      <View style={{paddingTop: 5, paddingBottom: 5, flexDirection: 'row'}}>
+                        <View>
+                          <Rating
+                            rating={this.state.reviewSummary.avg}
+                            size={20}
+                            enableRating={false}
+                          />
+                        </View>
+                        <Text style={{marginLeft: 10}}>{this.state.reviewSummary.total} đánh giá</Text>
+                      </View>
+                      
+                      <Text style={styles.textTitle}>Nhà sản xuất: {this.state.product.producer}</Text> 
+
+                      <Text style={styles.textTitle}>Ngày sản xuất: {this.state.product.mfgDate}</Text> 
+
+                      <Text style={styles.textTitle}>Hạn sử dụng: {this.state.product.expDate}</Text> 
+                  </View>    
+
+                <View style={{ alignItems: 'center', padding: 7, backgroundColor: 'white', borderRadius: 50, borderColor: BASIC_COLOR, borderWidth: 1}}>
                   <Text style={styles.textTitle}>Mã số : {this.state.product.productId}</Text> 
                 </View>
-
-                <Wrap>
                   <Button 
                         title="Xem danh sách nhà phân phối"
                         type="outline"
@@ -220,42 +219,36 @@ export default class DetailInfo extends React.Component {
                           />
                         }
                         titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                        buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
+                        buttonStyle={{borderColor: 'white'}}
                         onPress={() => {
                             this.props.navigation.navigate("distributors", {productId: this.state.product.productId})
                           }}
                   />
-                </Wrap>
                 
                   <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR}}>Mô tả</Text>
                   <Text>{this.state.product.description}</Text>
-                
-              <View style={styles.cardSummary}>
-                <Text style={styles.textTitle}>Đánh giá sản phẩm</Text> 
-                <Text style={{fontSize: 40, fontWeight: 'bold'}}>{this.state.reviewSummary.avg}</Text>
-                <Rating
-                  rating={this.state.reviewSummary.avg}
-                  size={30}
-                  enableRating={false}
-                />
-                <Text>{this.state.reviewSummary.total} đánh giá</Text>
-                <Button
-                  icon={
-                    <Icon
-                      name="pencil"
-                      size={20}
-                      color={BASIC_COLOR}
-                    />
-                  }
-                  title='Thêm đánh giá'
-                  type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                  buttonStyle={{borderColor: 'white'}}
-                  onPress={() => this.setState({modalVisible: true})}
-                  containerStyle={{padding: 5}}
-                />
-              </View>
-              {
+              
+              { this.state.reviewSummary.total !== 0 &&
+              <View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
+                  <Button
+                    icon={
+                      <Icon
+                        name="pencil"
+                        size={20}
+                        color={BASIC_COLOR}
+                      />
+                    }
+                    title='Thêm đánh giá'
+                    type='outline'
+                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                    buttonStyle={{borderColor: 'white'}}
+                    onPress={() => this.setState({modalVisible: true})}
+                  />
+                </View>
+
+                {
                 this.state.modalVisible &&
                 <View style={styles.modal}>
                   <Text style={{fontSize: 18, padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR, marginBottom: 10}}>Đánh giá của bạn</Text>
@@ -291,9 +284,7 @@ export default class DetailInfo extends React.Component {
                   />
                 </View>
               }
-              { this.state.reviewSummary.total !== 0 &&
-              <View>
-                <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
+                
                   {this.state.reviews.map((item, index) => {
                     return (
                       <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
@@ -311,7 +302,7 @@ export default class DetailInfo extends React.Component {
                     })
                   }
 
-                  <Button
+                  {/* <Button
                     icon={
                       <Icon
                         name="caret-down"
@@ -325,9 +316,10 @@ export default class DetailInfo extends React.Component {
                     buttonStyle={{borderColor: 'white'}}
                     onPress={() => {}}
                     containerStyle={{padding: 10}}
-                  />
+                  /> */}
               </View>
               }
+                </View>
             
             </ScrollView> ) : (
               <TouchableOpacity style={{flex: 1, justifyContent: 'center'}} 
@@ -351,15 +343,20 @@ export default class DetailInfo extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BASIC_COLOR,
+    backgroundColor: 'white',
 },
   titleView: {
-    elevation: 10,
-    borderRadius: 5,
-    marginTop: 10,
-    marginBottom: 10,
-    width: "80%",
+    // elevation: 10,
+    // borderRadius: 5,
+    // marginTop: 10,
+    // marginBottom: 10,
+    // width: "80%",
+    // backgroundColor: 'white',
+    // alignSelf: 'center'
     backgroundColor: 'white',
+    borderBottomWidth: 1,
+    borderColor: BASIC_COLOR,
+    width: '90%',
     alignSelf: 'center'
   },
 
@@ -370,26 +367,24 @@ const styles = StyleSheet.create({
       textAlign: "center", 
       fontWeight: "300", 
       padding: 10,
-      fontStyle:'italic',
+      // fontStyle:'italic',
   },
 
   contentView: {
-    backgroundColor: "#fff",
-    borderTopRightRadius: 30,
+    backgroundColor: "white",
+    // borderTopRightRadius: 30,
     flex: 1,
   },
   scrollView: {
-    marginLeft: 10,
-    marginRight: 10,
     flex: 1
   },
   textTitle: {
     fontSize: 13,
     fontStyle: 'italic',
+    marginBottom: 2
   },
   textContent: {
     fontSize: 18,
-    paddingBottom: 15
   },
   cardSummary: {
     borderWidth:1, 
