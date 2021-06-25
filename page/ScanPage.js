@@ -178,8 +178,8 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{ fontSize: 20, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '70%', textAlign: 'center' }}>
-                  QR CODE SCANNER
+                <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', padding: 10, width: '100%', textAlign: 'center' }}>
+                Di chuyển vùng quét vào vị trí mã QR 
                 </Text>
               </View>
 
@@ -280,7 +280,7 @@ const styles = {
     backgroundColor: overlayColor,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -50
+    marginBottom: -80
   },
 
   bottomOverlay: {

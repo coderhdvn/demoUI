@@ -66,8 +66,7 @@ export default class Login extends React.Component {
   render(){
     return (
       <View style={styles.container}>
-        <ImageBackground source={{uri: "https://i.pinimg.com/564x/a5/9c/bf/a59cbfbbcc2c5d232acbaaf011a453a7.jpg"}} style={styles.backgroundImage} >
-          <Image style={styles.logo} source={require('../images/LOGO.jpeg')} />  
+        <ImageBackground source={require('../images/bg_3.jpg')} style={styles.backgroundImage} >
           <View style={styles.contentView}>
           <Input
             placeholder='Tên đăng nhập'
@@ -128,7 +127,7 @@ export default class Login extends React.Component {
                 color="white"
               />
             }
-            title='Đăng nhập với google'
+            title='Google'
             titleStyle={{color: 'white', fontSize: 20, padding: 10}}
             buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: '#e31212'}}
             onPress={() => this.props.navigation.navigate("LoginWithGoogle")}
@@ -173,6 +172,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contentView: {
+    marginTop: '25%',
+    paddingTop: '5%',
     width: '85%',
     backgroundColor: 'white',
     borderRadius: 10
