@@ -179,7 +179,7 @@ class QrCodeCamera extends Component {
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
                 <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', padding: 10, width: '100%', textAlign: 'center' }}>
-                Di chuyển vùng quét vào vị trí mã QR 
+                Di chuyển vùng quét đến vị trí mã QR 
                 </Text>
               </View>
 

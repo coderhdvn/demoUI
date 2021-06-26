@@ -34,10 +34,10 @@ export default class Distributors extends React.Component {
       let headers = await this.getHeader();
       try {
         const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
-  
-        const response = await axios.create({baseURL: getUrl.data}).get("");
-        let image = response.data.image;
-        return image;
+        return getUrl.data
+        // const response = await axios.create({baseURL: getUrl.data}).get("");
+        // let image = response.data.image;
+        // return image;
       } catch (err) {
         console.log("image not found");
       }
@@ -62,13 +62,19 @@ export default class Distributors extends React.Component {
       try {
         const response = await API.get(`/logger/distributes/${productId}/10/0`, {headers});
 
+
         let distributors = response.data;
+
 
         distributors.forEach(async item => {
 
-          let branch = await this.getBranch(item.distributorId);
+          let branch = await this.getBranch(item.branchId);
+
+          console.log("branch", branch);
 
           let image = await this.getImage(branch.image);
+
+          console.log("image", image);
 
           let distributor = {
             id: item.id,
@@ -292,7 +298,7 @@ const styles = StyleSheet.create({
   },
   contentView: {
     backgroundColor: "#fff",
-    borderTopRightRadius: 30,
+    borderTopRightRadius: 20,
     flex: 1,
   },
   titleView: {
@@ -306,15 +312,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 20,
     borderRadius: 5,
-    marginTop: 20,
-    marginBottom: 27
+    marginTop: 10,
+    marginBottom: 17
   },
   shadow: {
     backgroundColor: 'black',
     opacity: 0.4,
     borderRadius: 5,
     position: 'absolute',
-    top: 27,
+    top: 17,
     alignSelf: 'center',
     transform: [
       {
@@ -327,17 +333,18 @@ const styles = StyleSheet.create({
     fontSize:20, 
     width: "100%", 
     textAlign: "center", 
-    fontWeight: "300", 
     padding: 10,
   },
   textName: {
     fontSize: 20,
     textAlign: "center", 
     padding: 5,
-    fontWeight: 'bold'
+    marginTop: "5%"
   },
   textAddress: {
     fontSize: 15,
+    textAlign: "center",
+    marginBottom: "12%"
   },
   listView: {
     flexDirection: 'row',
