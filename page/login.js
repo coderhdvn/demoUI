@@ -66,7 +66,7 @@ export default class Login extends React.Component {
   render(){
     return (
       <View style={styles.container}>
-        <ImageBackground source={require('../images/bg_3.jpg')} style={styles.backgroundImage} >
+        <ImageBackground source={require('../images/bg_9.jpg')} style={styles.backgroundImage} >
           <View style={styles.contentView}>
           <Input
             placeholder='Tên đăng nhập'
