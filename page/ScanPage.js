@@ -178,7 +178,7 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', padding: 10, width: '100%', textAlign: 'center' }}>
+                <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', width: '100%', textAlign: 'center' }}>
                 Di chuyển vùng quét đến vị trí mã QR 
                 </Text>
               </View>
@@ -245,14 +245,14 @@ class QrCodeCamera extends Component {
   }
 }
 
-const overlayColor = "rgba(0,0,0,0.5)"; // this gives us a black color with a 50% transparency
+const overlayColor = "rgba(0,0,0,0.5)"; 
 
-const rectDimensions = SCREEN_WIDTH * 0.65; // this is equivalent to 255 from a 393 device width
-const rectBorderWidth = SCREEN_WIDTH * 0.005; // this is equivalent to 2 from a 393 device width
+const rectDimensions = SCREEN_WIDTH * 0.65; 
+const rectBorderWidth = SCREEN_WIDTH * 0.005; 
 const rectBorderColor = 'white';
 
-const scanBarWidth = SCREEN_WIDTH * 0.4; // this is equivalent to 180 from a 393 device width
-const scanBarHeight = SCREEN_WIDTH * 0.005; //this is equivalent to 1 from a 393 device width
+const scanBarWidth = SCREEN_WIDTH * 0.4; 
+const scanBarHeight = SCREEN_WIDTH * 0.005;
 const scanBarColor = BASIC_COLOR;
 
 const styles = {
@@ -280,7 +280,6 @@ const styles = {
     backgroundColor: overlayColor,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -80
   },
 
   bottomOverlay: {

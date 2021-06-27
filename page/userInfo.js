@@ -47,7 +47,7 @@ class UserInfo extends Component {
         message: "Thay đổi ảnh đại diện không thành công!",
         type: 'danger',
         description: err.message,
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"
@@ -186,7 +186,7 @@ class UserInfo extends Component {
       showMessage({
         message: "Thay đổi avatar thành công !",
         type: "success",
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: "success", position: "right"
@@ -198,7 +198,7 @@ class UserInfo extends Component {
         message: "Thay đổi avatar không thành công !",
         type: 'danger',
         description: err.message,
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"
@@ -224,7 +224,7 @@ class UserInfo extends Component {
         showMessage({
           message: "Thay đổi thông tin thành công !",
           type: "success",
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: "success", position: "right"
@@ -241,7 +241,7 @@ class UserInfo extends Component {
           message: "Thay đổi thông tin không thành công !",
           type: 'danger',
           description: err.message,
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"
@@ -253,7 +253,7 @@ class UserInfo extends Component {
         message: "Thay đổi thông tin không thành công !",
         type: 'warning',
         description: "Bạn chưa thay đổi thông tin nào.",
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'warning', position: "right"

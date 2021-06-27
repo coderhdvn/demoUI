@@ -172,7 +172,7 @@ export default class SearchProduct extends React.Component {
                     placeholder="Tìm kiếm sản phẩm..."
                     onChangeText={this.updateSearch}
                     value={this.state.search}
-                    containerStyle={{backgroundColor: BASIC_COLOR}}
+                    containerStyle={{backgroundColor: "white", borderWidth: 1}}
                     inputContainerStyle={{backgroundColor: 'white'}}
                     inputStyle={{color: BASIC_COLOR}}
                     leftIconContainerStyle={{padding: 5}}

@@ -29,8 +29,8 @@ export default class Login extends React.Component {
       showMessage({
         message: "Đăng nhập thành công !",
         type: "success",
-        description: `Đăng nhập thành công với tài khoản: ${input.username}`,
-        duration: 4000,
+        description: `Tài khoản: ${input.username}`,
+        duration: 3000,
         floating: true,
         icon: {
           icon: "success", position: "right"
@@ -41,7 +41,7 @@ export default class Login extends React.Component {
           message: "Đăng nhập không thành công !",
           type: "danger",
           description: "Tên đăng nhập hoặc mật khẩu không đúng",
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: "danger", position: "right"
