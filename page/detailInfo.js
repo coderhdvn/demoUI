@@ -228,7 +228,7 @@ export default class DetailInfo extends React.Component {
                   <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR}}>Mô tả</Text>
                   <Text>{this.state.product.description}</Text>
               
-              { this.state.reviewSummary.total !== 0 &&
+              {
               <View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                   <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
