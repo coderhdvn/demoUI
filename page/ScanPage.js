@@ -219,7 +219,7 @@ class QrCodeCamera extends Component {
                   title='Nhấn để bật camera'
                   type='outline'
                   titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 10}}
-                  buttonStyle={{borderColor: 'white'}}
+                  buttonStyle={{borderColor: BASIC_COLOR}}
                   onPress={() => this.setState({ scan: true })}
                 />
           </View>

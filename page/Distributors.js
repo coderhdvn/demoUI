@@ -140,12 +140,8 @@ export default class Distributors extends React.Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.shadow}>
-          <Text style={styles.title}>DANH SÁCH NHÀ PHÂN PHỐI</Text>
-        </View>
-        <View style={styles.titleView}>
-          <Text style={styles.title}>DANH SÁCH NHÀ PHÂN PHỐI</Text>
-        </View>
+        
+          <Text style={styles.title}>QUÁ TRÌNH VẬN CHUYỂN</Text>
 
         <View style={styles.contentView}>
           <FlatList
@@ -294,7 +290,7 @@ export default class Distributors extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BASIC_COLOR,
+    backgroundColor: "gray"
   },
   contentView: {
     backgroundColor: "#fff",
@@ -329,8 +325,9 @@ const styles = StyleSheet.create({
     ]
   },
   title: {
-    color:"black", 
-    fontSize:20, 
+    color:"white", 
+    fontSize:18, 
+    fontWeight: "100",
     width: "100%", 
     textAlign: "center", 
     padding: 10,
@@ -349,6 +346,8 @@ const styles = StyleSheet.create({
   listView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
     margin: 10,
   },
   image: {

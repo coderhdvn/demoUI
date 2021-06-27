@@ -61,7 +61,7 @@ export default class History extends React.Component {
             <View style={styles.shadow}>
             </View>
             <View style={styles.circle}>
-                <Text style={styles.title}>Lịch sử</Text>
+                <Text style={styles.title}>   Lịch sử</Text>
             </View>
             
         </View>
@@ -106,7 +106,7 @@ const styles = StyleSheet.create({
         flex: 1,
     },
     titleView: {
-        height: "17%",
+        height: "10%",
         flexDirection: 'column',
         justifyContent: 'center'
     },

@@ -339,20 +339,7 @@ class UserInfo extends Component {
             onPress={() => this.logout()}
           />
 
-          <Button
-            icon={
-              <Icon
-                name='lock'
-                size={20}
-                color={BASIC_COLOR}
-              />
-            }
-            title="Đổi mật khẩu"
-            type='outline'
-            titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 5}}
-            buttonStyle={{borderColor: 'white'}}
-            onPress={() => this.changePassword()}
-          />
+      
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
             <Input
@@ -498,14 +485,16 @@ const styles = StyleSheet.create({
   scroll: {
     width: "90%",
     marginBottom: 20,
+    marginTop: 25,
     paddingTop: 15
   },
 
   avatar: {
     position: 'absolute',
     top: 30,
-    // marginBottom: 10
+    marginBottom: 20
   },
+
   image: {
     height: 130,
     width: 130,

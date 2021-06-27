@@ -208,7 +208,7 @@ export default class DetailInfo extends React.Component {
                   <Text style={styles.textTitle}>{this.state.product.productId}</Text> 
                 </View>
                   <Button 
-                        title="Xem danh sách nhà phân phối"
+                        title="Xem quá trình vận chuyển"
                         type="outline"
                         icon={
                           <Icon
