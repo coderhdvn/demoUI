@@ -40,7 +40,7 @@ class UserInfo extends Component {
         infoChange: { ...this.state.infoChange, image: imageName },
         image: uri
       });
-      await this.changeInfo();
+      await this.saveAvatar(imageName);
 
     } catch (err) {
       showMessage({
@@ -178,6 +178,35 @@ class UserInfo extends Component {
       || info.display_name !== infoChange.display_name)
   }
 
+  saveAvatar = async (image) => {
+    let headers = await this.getHeader();
+    try {
+      await API.put(`account/users/avatar/${image}`, null, {headers});
+
+      showMessage({
+        message: "Thay đổi avatar thành công !",
+        type: "success",
+        duration: 4000,
+        floating: true,
+        icon: {
+          icon: "success", position: "right"
+        },
+      })
+    }
+    catch (err) {
+      showMessage({
+        message: "Thay đổi avatar không thành công !",
+        type: 'danger',
+        description: err.message,
+        duration: 4000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }
+  }
+
   changeInfo = async () => {
     let headers = await this.getHeader();
     if (this.checkEdit()) {
@@ -187,7 +216,6 @@ class UserInfo extends Component {
           displayName: user.display_name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
           company: null,
         }
   
