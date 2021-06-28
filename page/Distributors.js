@@ -185,7 +185,7 @@ export default class Distributors extends React.Component {
                           title='Liên hệ với chúng tôi'
                           titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
                           buttonStyle={{backgroundColor: 'white'}}
-                          onPress={() => {this.onPressChat(item.branch)}}
+                          onPress={() => {this.onPressChat(this.state.click_company)}}
                       />
                         
                       </View>
