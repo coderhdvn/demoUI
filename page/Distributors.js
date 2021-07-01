@@ -64,21 +64,24 @@ export default class Distributors extends React.Component {
 
 
         let distributors = response.data;
-
+        distributors = distributors.sort((a,b)=>{
+          if (a['createdAt']>b['createdAt']) return 1;
+          if (a['createdAt']==b['createdAt']) return 0;
+          if (a['createdAt']<b['createdAt']) return -1;
+        });
 
         distributors.forEach(async item => {
 
           let branch = await this.getBranch(item.branchId);
 
-          console.log("branch", branch);
 
           let image = await this.getImage(branch.image);
 
-          console.log("image", image);
 
           let distributor = {
             id: item.id,
-            branch: {...branch, image: image}
+            branch: {...branch, image: image},
+            metadata: item
           }
           this.setState({
             distributors: [...this.state.distributors, distributor]
@@ -152,43 +155,29 @@ export default class Distributors extends React.Component {
             renderItem={({item}) => {
               return (
                   <View style={styles.listView}>
-                    <View>
-                      <Image
-                        source={{uri: item.branch.image}}
-                        style={styles.image}
-                      />
-                      <Button
-                          icon={
-                            <Icon
-                              name="building"
-                              size={17}
-                              color={BASIC_COLOR}
-                            />
-                          }
-                          title='Xem công ty'
-                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
+                   
+                      <View>
+                        <Button                        
+                          title={item.branch.name}
+                          titleStyle={{color: BASIC_COLOR, fontSize: 20}}
                           buttonStyle={{backgroundColor: 'white'}}
                           onPress={() => {this.onPressDistributor(item.branch.company_id)}}
-                      />
-                    </View>
-                      <View style={styles.textView}>
-                        <Text style={styles.textName}>{item.branch.name}</Text>
-                        <Text style={styles.textAddress}>{item.branch.address}</Text>
-                        <Button
-                          icon={
-                            <Icon
-                              name="comments"
-                              size={20}
-                              color={BASIC_COLOR}
-                            />
-                          }
-                          title='Liên hệ với chúng tôi'
-                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
-                          buttonStyle={{backgroundColor: 'white'}}
-                          onPress={() => {this.onPressChat(this.state.click_company)}}
-                      />
+                        />
+                        <View style={{flexDirection: 'row'}}>
+                          <Text style={{paddingLeft: 5}}>Địa điểm: </Text>
+                          <Text style={{paddingLeft: 40}}>{item.branch.address}</Text>      
+                        </View>
+                        <View style={{flexDirection: 'row'}}>
+                          <Text style={{paddingLeft: 5}}>Thời gian:  </Text>
+                          <Text style={{paddingLeft: 32}}>{new Date(item.metadata.createdAt).getDate()}/{new Date(item.metadata.createdAt).getMonth()}/{new Date(item.metadata.createdAt).getFullYear()}
+                          </Text>      
+                        </View>
                         
                       </View>
+                        <Image
+                          source={{uri: item.branch.image}}
+                          style={styles.image}
+                        />
                     
                   </View>
               )}
@@ -365,11 +354,11 @@ const styles = StyleSheet.create({
     width: '80%'
   },
   textModalContent: {
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    paddingBottom: 10
+    alignSelf: 'flex-start',
+    padding: 10
   },
   textModalTitle: {
+    fontWeight: 'bold',
     borderTopWidth: 1,
     borderColor: BASIC_COLOR,
     paddingTop: 5,

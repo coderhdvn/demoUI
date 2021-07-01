@@ -119,17 +119,18 @@ export default class Login extends React.Component {
             onPress={this.onSubmit}
             containerStyle={{padding: 5}}
         />
+      
         <Button
             icon={
               <Icon
                 name="google"
                 size={30}
-                color="white"
+                color="darkred"
               />
             }
-            title='Google'
-            titleStyle={{color: 'white', fontSize: 20, padding: 10}}
-            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: '#e31212'}}
+            title='Đăng nhập với Google'
+            titleStyle={{color: 'darkred', fontSize: 15, padding: 10, fontWeight: "500"}}
+            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: 'none'}}
             onPress={() => this.props.navigation.navigate("LoginWithGoogle")}
             containerStyle={{padding: 5}}
         />

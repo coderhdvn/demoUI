@@ -196,42 +196,50 @@ export default class DetailInfo extends React.Component {
                         </View>
                       </View>
                       
-                      <Text style={styles.textTitle}>Nhà sản xuất: {this.state.product.producer}</Text> 
+                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{fontWeight: "bold"}}>Nhà sản xuất: </Text> 
+                        <Text>{this.state.product.producer}</Text> 
+                      </View>
 
-                      <Text style={styles.textTitle}>Ngày sản xuất: {this.state.product.mfgDate}</Text> 
+                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{fontWeight: "bold"}}>Ngày sản xuất: </Text> 
+                        <Text>{this.state.product.mfgDate}</Text> 
+                      </View>
 
-                      <Text style={styles.textTitle}>Hạn sử dụng: {this.state.product.expDate}</Text> 
+                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                        <Text style={{fontWeight: "bold"}}>Hạn sử dụng: </Text> 
+                        <Text>{this.state.product.expDate}</Text> 
+                      </View>
+
+                      <Text style={{fontWeight: "bold"}}>Mô tả: </Text>
+                      <Text>{this.state.product.description}</Text>
+
                   </View>    
-
-                <View style={{ alignItems: 'center', padding: 7, backgroundColor: 'white', borderRadius: 50, borderColor: BASIC_COLOR, borderWidth: 1}}>
-                  <Text style={styles.textTitle}>Mã số :</Text> 
-                  <Text style={styles.textTitle}>{this.state.product.productId}</Text> 
-                </View>
+                 
+                  
                   <Button 
                         title="Xem quá trình vận chuyển"
-                        type="outline"
                         icon={
                           <Icon
                             name="list-alt"
                             size={25}
-                            color={BASIC_COLOR}
+                            color={'white'}
                             style={{padding: 2}}
                           />
                         }
-                        titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                        buttonStyle={{borderColor: 'white'}}
+                        titleStyle={{color: 'white', fontSize: 15, padding: 10}}
+                        buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10, marginHorizontal: 35}}
                         onPress={() => {
                             this.props.navigation.navigate("distributors", {productId: this.state.product.productId})
                           }}
                   />
-                
-                  <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR}}>Mô tả</Text>
-                  <Text>{this.state.product.description}</Text>
+              
+              
               
               {
               <View>
                 <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
-                  <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
+                  <Text style={{fontSize: 15, fontWeight: 'bold', padding: 5}}>Đánh giá:</Text>
                   <Button
                     icon={
                       <Icon
@@ -242,7 +250,7 @@ export default class DetailInfo extends React.Component {
                     }
                     title='Thêm đánh giá'
                     type='outline'
-                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                    titleStyle={{color: BASIC_COLOR, fontSize: 13, padding: 10}}
                     buttonStyle={{borderColor: 'white'}}
                     onPress={() => this.setState({modalVisible: true})}
                   />
@@ -290,19 +298,25 @@ export default class DetailInfo extends React.Component {
                       <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                           <Text style={{fontSize: 18, padding: 5}}>{item.customerName}</Text>
-                          <Text style={{fontSize: 13, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>
+                          <View style={{marginTop: 10}}>
+                            <Rating
+                              rating={item.rating}
+                              size={15}
+                              
+                          />  
+                          </View>                       
                         </View>
-                        <Rating
-                          rating={item.rating}
-                          size={25}
-                        />  
-                        <Text style={{padding: 5}}>{item.content}</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                          <Text style={{padding: 5}}>{item.content}</Text>
+                          <Text style={{fontSize: 13, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>      
+                        </View>
+                  
                       </View>
                     )
                     })
                   }
 
-                  {/* <Button
+                  <Button
                     icon={
                       <Icon
                         name="caret-down"
@@ -316,7 +330,7 @@ export default class DetailInfo extends React.Component {
                     buttonStyle={{borderColor: 'white'}}
                     onPress={() => {}}
                     containerStyle={{padding: 10}}
-                  /> */}
+                  />
               </View>
               }
                 </View>
@@ -384,6 +398,8 @@ const styles = StyleSheet.create({
   },
   textContent: {
     fontSize: 18,
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   cardSummary: {
     borderWidth:1, 
