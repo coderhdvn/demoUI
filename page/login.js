@@ -10,8 +10,8 @@ import { showMessage } from 'react-native-flash-message';
 
 export default class Login extends React.Component {
   state = {
-    name:"",
-    password:"",
+    name:"nhatlam",
+    password:"123456",
     disable:true,
     display: false
   }
@@ -29,7 +29,6 @@ export default class Login extends React.Component {
       showMessage({
         message: "Đăng nhập thành công !",
         type: "success",
-        description: `Tài khoản: ${input.username}`,
         duration: 3000,
         floating: true,
         icon: {
@@ -40,7 +39,6 @@ export default class Login extends React.Component {
         showMessage({
           message: "Đăng nhập không thành công !",
           type: "danger",
-          description: "Tên đăng nhập hoặc mật khẩu không đúng",
           duration: 3000,
           floating: true,
           icon: {

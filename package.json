@@ -26,6 +26,7 @@
     "react-native-barcode-mask": "^1.2.4",
     "react-native-camera": "^3.40.0",
     "react-native-draggable": "^3.3.0",
+    "react-native-dropdown-picker": "^5.1.21",
     "react-native-elements": "^3.1.0",
     "react-native-flash-message": "^0.1.23",
     "react-native-gesture-handler": "^1.9.0",

@@ -154,7 +154,7 @@ export default class ChatService extends Component {
                 message: "Gửi tin nhắn không thành công!",
                 type: 'danger',
                 description: "Hãy kiểm tra lại kết nối mạng",
-                duration: 5000,
+                duration: 3000,
                 floating: true,
                 icon: {
                   icon: 'danger', position: "right"

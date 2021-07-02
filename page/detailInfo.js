@@ -82,7 +82,7 @@ export default class DetailInfo extends React.Component {
           message: "Đánh giá không thành công !",
           type: 'danger',
           description: "Bạn không thể đánh giá 0 sao",
-          duration: 5000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"
@@ -196,17 +196,17 @@ export default class DetailInfo extends React.Component {
                         </View>
                       </View>
                       
-                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                      <View style={styles.content}>
                         <Text style={{fontWeight: "bold"}}>Nhà sản xuất: </Text> 
                         <Text>{this.state.product.producer}</Text> 
                       </View>
 
-                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                      <View style={styles.content}>
                         <Text style={{fontWeight: "bold"}}>Ngày sản xuất: </Text> 
                         <Text>{this.state.product.mfgDate}</Text> 
                       </View>
 
-                      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                      <View style={styles.content}>
                         <Text style={{fontWeight: "bold"}}>Hạn sử dụng: </Text> 
                         <Text>{this.state.product.expDate}</Text> 
                       </View>
@@ -383,7 +383,11 @@ const styles = StyleSheet.create({
       padding: 10,
       // fontStyle:'italic',
   },
-
+  content: {
+    flexDirection: "row", 
+    justifyContent: "space-between",
+    paddingBottom: 5,
+  },
   contentView: {
     backgroundColor: "white",
     // borderTopRightRadius: 30,

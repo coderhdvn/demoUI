@@ -67,7 +67,6 @@ class QrCodeCamera extends Component {
       longitude: this.state.location.longitude
     }
     let headers = await this.getHeader();
-    console.log("body nek", body);
     const response = await API.post('/logger/consumes', body, {headers});
     console.log(response.data);
   }
@@ -75,15 +74,18 @@ class QrCodeCamera extends Component {
   onSuccess = async (e) => {
     let productId = e.data;
     this.setState({scan: false});
-    console.log(e);
     let headers = await this.getHeader();
-
+    console.log("productId", productId);
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
-        console.log(response)
-        if (response /*&& this.state.location !== null*/) {
+        if (response.data == " ") {
           this.saveHistory(productId);
           this.props.navigation.navigate("detail", {product: response.data});
+        }
+        else {
+          let batchId = productId
+          const batch = await API.get(`/product/batch/${batchId}`, {headers});
+          this.props.navigation.navigate("batch", {batch: batch.data});
         }
     } catch (err) {
       showMessage({
