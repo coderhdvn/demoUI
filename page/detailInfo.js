@@ -21,7 +21,9 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
-      visible: false
+      visible: false,
+      showMore: false,
+      countFeedbacks: 0
     }
 
     getHeader = async() => {
@@ -123,10 +125,8 @@ export default class DetailInfo extends React.Component {
     setFeedbacks = async (templateId) => {
       const headers = await this.getHeader();
 
-      this.setState({reviews: []});
-
       try {
-        let response = await API.get(`/product/feedbacks/${templateId}`, {headers});
+        let response = await API.get(`/product/feedbacks/${templateId}/${this.state.countFeedbacks}/4`, {headers});
 
         let avg = response.data.average_rate;
         let total = response.data.num_feedbacks;
@@ -134,6 +134,17 @@ export default class DetailInfo extends React.Component {
 
         let feedbacks = response.data.feedbacks;
 
+        if (feedbacks.length === 4) {
+          feedbacks.pop();
+          this.setState({
+            showMore: true,
+            countFeedbacks: this.state.countFeedbacks + 3
+          })
+        } else {
+          this.setState({
+            showMore: false 
+          })
+        }
         if (feedbacks) {
           feedbacks.map(async feedback  => {
             let date = this.getDay(feedback.created_at);
@@ -316,22 +327,24 @@ export default class DetailInfo extends React.Component {
                     )
                     })
                   }
-
-                  <Button
-                    icon={
-                      <Icon
-                        name="caret-down"
-                        size={20}
-                        color={BASIC_COLOR}
-                      />
-                    }
-                    title='Xem thêm đánh giá'
-                    type='outline'
-                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                    buttonStyle={{borderColor: 'white'}}
-                    onPress={() => {}}
-                    containerStyle={{padding: 10}}
-                  />
+                  { this.state.showMore &&
+                    <Button
+                      icon={
+                        <Icon
+                          name="caret-down"
+                          size={20}
+                          color={BASIC_COLOR}
+                        />
+                      }
+                      title='Xem thêm đánh giá'
+                      type='outline'
+                      titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                      buttonStyle={{borderColor: 'white'}}
+                      onPress={() => {this.setFeedbacks(this.state.product.templateId)}}
+                      containerStyle={{padding: 10}}
+                    />
+                  }
+                  
               </View>
               }
                 </View>
