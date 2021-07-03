@@ -12,7 +12,8 @@ export default class DetailInfo extends React.Component {
     state = {
         distributors: [],
         coordinates: [],
-        markers: []
+        markers: [],
+        scale: 0
     }
 
     onCarouselItemChange = (index) => {
@@ -20,8 +21,8 @@ export default class DetailInfo extends React.Component {
         this._map.animateToRegion({
             latitude: location.branch.latitude,
             longitude: location.branch.longitude,
-            latitudeDelta: 0.01,
-            longitudeDelta: 0.01
+            latitudeDelta: this.state.scale/3,
+            longitudeDelta: this.state.scale/3
         });
 
         this.state.markers[index].showCallout()
@@ -29,6 +30,26 @@ export default class DetailInfo extends React.Component {
 
     onMarkerPress = (index) => {
         this._carousel.snapToItem(index)
+    }
+
+    maxDistance = (coordinates) => {
+        let x0 = coordinates[0].latitude;
+        let y0 = coordinates[0].longitude;
+        let distances = [];
+        for (let i = 1; i<coordinates.length; i++) {
+            let x = coordinates[i].latitude;
+            let y = coordinates[i].longitude;
+            let distance = Math.sqrt(Math.pow((x-x0), 2) + Math.pow((y-y0), 2));
+            distances.push(distance);
+        }
+        return Math.max(...distances);
+    }
+
+    setScale = (coordinates) => {
+        let maxDistance = this.maxDistance(coordinates);
+        let scale = maxDistance * 0.1 / 0.036;
+        this.setState({ scale });
+        console.log(scale);
     }
 
     renderCarouselItem = ({item}) => (
@@ -54,7 +75,8 @@ export default class DetailInfo extends React.Component {
         this.setState({
             distributors,
             coordinates
-        })
+        });
+        this.setScale(coordinates);
     }
 
   render(){
@@ -68,8 +90,8 @@ export default class DetailInfo extends React.Component {
                 initialRegion={{
                 latitude: this.state.coordinates[0].latitude,
                 longitude: this.state.coordinates[0].longitude,
-                latitudeDelta: 0.05,
-                longitudeDelta: 0.05
+                latitudeDelta: this.state.scale,
+                longitudeDelta: this.state.scale
             }}>
                 {
                     this.state.distributors.map((distributor, index) => (
