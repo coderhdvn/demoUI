@@ -91,7 +91,7 @@ export default class ListBatches extends React.Component {
                                     <Text>{item.status}</Text>
                                 </View>
                                 <View style={styles.content}>
-                                    {this.state.isSentBatch? (<Text style={{fontWeight: "bold"}}>Ngày nhận: </Text> ): (<Text style={{fontWeight: "bold"}}>Ngày gởi: </Text> )}                         
+                                    {this.props.isSentBatch? (<Text style={{fontWeight: "bold"}}>Ngày gởi: </Text> ) : (<Text style={{fontWeight: "bold"}}>Ngày nhận: </Text> )}                         
                                     <Text style={{paddingLeft: '25%'}}>{item.dateCreated.slice(0,10)} {item.dateCreated.slice(11,19)}</Text>
                                 </View>
                             </View>                           

@@ -156,7 +156,8 @@ class UserInfo extends Component {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        image: user.image
+        image: user.image,
+        company: user.company.name
       }
       if (user.image) {
         this.getImage(user.image)
@@ -343,12 +344,11 @@ class UserInfo extends Component {
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
             <Input
-              label="Họ và tên"
               placeholder='Họ và tên'
               leftIcon={
                 <Icon
                   name='user'
-                  size={24}
+                  size={30}
                   color={BASIC_COLOR}
                 />
               }
@@ -363,7 +363,6 @@ class UserInfo extends Component {
             />
 
             <Input
-              label="Email"
               placeholder='Email'
               leftIcon={
                 <Icon
@@ -383,7 +382,6 @@ class UserInfo extends Component {
             />
 
             <Input
-              label="Số điện thoại"
               placeholder='Số điện thoại'
               leftIcon={
                 <Icon
@@ -401,6 +399,22 @@ class UserInfo extends Component {
               }}
               autoCapitalize="none"
             />
+
+            <Input
+              placeholder='Công ty'
+              leftIcon={
+                <Icon
+                  name='building'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.company}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              autoCapitalize="none"
+            />        
 
         {
           this.state.disabledChange

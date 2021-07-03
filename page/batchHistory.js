@@ -11,8 +11,8 @@ class BatchHistory extends React.Component {
     render(){
       return (   
         <Tab.Navigator>
-            <Tab.Screen name="Lô hàng gởi đi" component={SentBatch} />
             <Tab.Screen name="Lô hàng đã nhận" component={ReceivedBatch} />
+            <Tab.Screen name="Lô hàng đã gửi" component={SentBatch} />
         </Tab.Navigator>
         );
       }

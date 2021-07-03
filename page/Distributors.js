@@ -159,8 +159,8 @@ export default class Distributors extends React.Component {
                       <View>
                         <Button                        
                           title={item.branch.name}
-                          titleStyle={{color: BASIC_COLOR, fontSize: 20}}
-                          buttonStyle={{backgroundColor: 'white'}}
+                          titleStyle={{color: BASIC_COLOR, fontSize: 15}}
+                          buttonStyle={{backgroundColor: 'white', flexDirection: 'row'}}
                           onPress={() => {this.onPressDistributor(item.branch.company_id)}}
                         />
                         <View style={{flexDirection: 'row'}}>
@@ -279,7 +279,7 @@ export default class Distributors extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "gray"
+    backgroundColor: "#e7eaee"
   },
   contentView: {
     backgroundColor: "#fff",
@@ -314,8 +314,8 @@ const styles = StyleSheet.create({
     ]
   },
   title: {
-    color:"white", 
-    fontSize:18, 
+    color:"black", 
+    fontSize:15, 
     fontWeight: "100",
     width: "100%", 
     textAlign: "center", 

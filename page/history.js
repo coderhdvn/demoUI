@@ -50,8 +50,8 @@ export default class History extends React.Component {
           }
     }
 
-    componentDidMount = () => {
-        this.loadHistory();
+    componentDidMount = async () => {
+        await this.loadHistory();
     }
 
   render(){
@@ -77,7 +77,7 @@ export default class History extends React.Component {
                         <View style={styles.list}>
                             <View style={styles.viewText}>
                                 <Text style={styles.titleList}>{item.template.name}</Text>
-                                <Text>{new Date(item.date*1000).getDate()}/{new Date(item.date*1000).getMonth()}/{new Date(item.date*1000).getFullYear()}</Text>
+                                <Text>{new Date(item.date).getDate()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
                             </View>
                             <View>
                                 <Image 

@@ -147,17 +147,6 @@ class QrCodeCamera extends Component {
 
     OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
       let notification = notificationReceivedEvent.getNotification();
-
-      showMessage({
-        message: 'Thông báo',
-        type: 'info',
-        description: `${notification.title}: ${notification.body}`,
-        duration: 5000,
-        floating: true,
-        icon: {
-          icon: 'info', position: "right"
-        },
-      })
     });
 
   }
@@ -181,7 +170,6 @@ class QrCodeCamera extends Component {
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
                 <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', width: '100%', textAlign: 'center' }}>
-                Di chuyển vùng quét đến vị trí mã QR 
                 </Text>
               </View>
 
@@ -215,13 +203,13 @@ class QrCodeCamera extends Component {
                     <Icon
                       name="camera"
                       size={40}
-                      color={BASIC_COLOR}
+                      color='black'
                     />
                   }
-                  title='Nhấn để bật camera'
+                  title='Nhấn để mở camera'
                   type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 10}}
-                  buttonStyle={{borderColor: BASIC_COLOR}}
+                  titleStyle={{color: 'black', fontSize: 15, padding: 15}}
+                  buttonStyle={{borderColor: 'black'}}
                   onPress={() => this.setState({ scan: true })}
                 />
           </View>
@@ -229,15 +217,15 @@ class QrCodeCamera extends Component {
         }
         <View style={styles.listView}> 
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressSearchProduct()}>
-              <Icon name="search" style={styles.icon} size={40}></Icon>
+              <Icon name="search" style={styles.icon} size={30}></Icon>
               <Text style={styles.textIcon}>Tìm kiếm</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressBatch()}>
-              <Icon name="table" style={styles.icon} size={40}></Icon>
+              <Icon name="table" style={styles.icon} size={30}></Icon>
               <Text style={styles.textIcon}>Lô hàng</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressHistory()}>
-              <Icon name="history" style={styles.icon} size={40}></Icon>
+              <Icon name="history" style={styles.icon} size={30}></Icon>
               <Text style={styles.textIcon}>Lịch sử</Text>
             </TouchableOpacity>
         </View>
@@ -322,11 +310,11 @@ const styles = {
     width: 80,
     backgroundColor: "white",
     marginBottom: 40,
-    borderRadius: 10,
+    borderRadius: 8,
   },
   icon: {
     alignSelf: 'center',
-    color: BASIC_COLOR,
+    color: 'black',
   },
   listView: {
     flexDirection: 'row',
@@ -334,7 +322,7 @@ const styles = {
   },
   textIcon: {
     textAlign: 'center',
-    color: BASIC_COLOR
+    color: 'black'
   },
 };
 
