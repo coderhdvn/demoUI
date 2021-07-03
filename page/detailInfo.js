@@ -11,6 +11,7 @@ import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from 'react-native-flash-message';
 import axios from 'axios';
+
 export default class DetailInfo extends React.Component {
     
     state = {

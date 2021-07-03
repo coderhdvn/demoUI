@@ -78,7 +78,7 @@ class QrCodeCamera extends Component {
     console.log("productId", productId);
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
-        if (response.data == " ") {
+        if (response.data !== '') {
           this.saveHistory(productId);
           this.props.navigation.navigate("detail", {product: response.data});
         }
@@ -92,7 +92,7 @@ class QrCodeCamera extends Component {
         message: "Quét mã không thành công !",
         type: 'danger',
         description: "Mã QR không đúng. Hãy thử lại.",
-        duration: 5000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"
@@ -117,8 +117,9 @@ class QrCodeCamera extends Component {
     this.props.navigation.navigate("Search Product");
   }
 
-  pressGallery() {
-    console.log('gallery');
+  pressBatch() {
+    this.setState({ scan: false })
+    this.props.navigation.navigate('BatchHistory');
   }
 
   pressHistory() {
@@ -145,7 +146,6 @@ class QrCodeCamera extends Component {
     await this.updateOneSignalId(deviceState.userId);
 
     OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
-      console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
       let notification = notificationReceivedEvent.getNotification();
 
       showMessage({
@@ -232,9 +232,9 @@ class QrCodeCamera extends Component {
               <Icon name="search" style={styles.icon} size={40}></Icon>
               <Text style={styles.textIcon}>Tìm kiếm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressGallery()}>
-              <Icon name="image" style={styles.icon} size={40}></Icon>
-              <Text style={styles.textIcon}>Thư viện</Text>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressBatch()}>
+              <Icon name="table" style={styles.icon} size={40}></Icon>
+              <Text style={styles.textIcon}>Lô hàng</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressHistory()}>
               <Icon name="history" style={styles.icon} size={40}></Icon>
