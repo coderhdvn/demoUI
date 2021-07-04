@@ -118,7 +118,7 @@ export default class Login extends React.Component {
             containerStyle={{padding: 5}}
         />
       
-        <Button
+        {/* <Button
             icon={
               <Icon
                 name="google"
@@ -131,8 +131,8 @@ export default class Login extends React.Component {
             buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: 'none'}}
             onPress={() => this.props.navigation.navigate("LoginWithGoogle")}
             containerStyle={{padding: 5}}
-        />
-        <Text style={{color: 'white', alignSelf: 'center'}}>----- OR -----</Text>
+        /> */}
+        <Text style={{color: 'white', alignSelf: 'center', margin: 15}}>----- OR -----</Text>
         <Button
             icon={
               <Icon

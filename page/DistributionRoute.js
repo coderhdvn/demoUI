@@ -33,26 +33,6 @@ export default class DetailInfo extends React.Component {
         this._carousel.snapToItem(index)
     }
 
-    maxDistance = (coordinates) => {
-        let x0 = coordinates[0].latitude;
-        let y0 = coordinates[0].longitude;
-        let distances = [];
-        for (let i = 1; i<coordinates.length; i++) {
-            let x = coordinates[i].latitude;
-            let y = coordinates[i].longitude;
-            let distance = Math.sqrt(Math.pow((x-x0), 2) + Math.pow((y-y0), 2));
-            distances.push(distance);
-        }
-        return Math.max(...distances);
-    }
-
-    setScale = (coordinates) => {
-        let maxDistance = this.maxDistance(coordinates);
-        let scale = maxDistance * 0.1 / 0.036;
-        this.setState({ scale });
-        console.log(scale);
-    }
-
     renderCarouselItem = ({item}) => (
         <View style={styles.cardContainer}>
             <Text style={styles.cardTitle}>{item.branch.name}</Text>
@@ -77,7 +57,6 @@ export default class DetailInfo extends React.Component {
             distributors,
             coordinates
         });
-        this.setScale(coordinates);
     }
 
    
