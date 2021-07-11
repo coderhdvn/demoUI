@@ -60,8 +60,7 @@ export default class Batch extends React.Component {
 
     setBatch = async (batch) => {
 
-        const headers = await this.getHeader();
-
+      const headers = await this.getHeader();
       let image = await this.getImage(batch.template.imageUrl);
 
       this.setState({
@@ -133,7 +132,6 @@ export default class Batch extends React.Component {
            for (let i = 0; i < this.state.batch.products.length; i++) {
             listProducts.push(this.state.batch.products[i].id)
           }
-          console.log('list products new', listProducts);
           try{
             await API.post(`/logger/distributes/sendlog/${this.state.selectedCompany}/${this.state.selectedBranch}`, listProducts, {headers});
             showMessage({
@@ -145,6 +143,7 @@ export default class Batch extends React.Component {
                   icon: "success", position: "right"
                 },
               })
+              this.props.navigation.navigate('Scan')
            } catch (err) {
              console.error(err.message)
              showMessage({
@@ -158,6 +157,39 @@ export default class Batch extends React.Component {
               })
            }
            
+    }
+
+    onCanceledBatch = async() => {
+      const headers = await this.getHeader();
+        let batch = this.props.route.params.batch;
+        let payload = {
+            batchId: this.state.batch.id,
+            reciverId: batch.sender,
+            branchId: batch.products[0].branchId
+        }
+      
+        try{
+          await API.put(`/product/batch/canceled/${batch.id}`, null, {headers});
+          showMessage({
+            message: "Hủy đơn hàng thành công !",
+            type: "success",
+            duration: 3000,
+            floating: true,
+            icon: {
+              icon: "success", position: "right"
+            },
+          })
+          this.props.navigation.navigate('Scan')
+
+         } catch (err) {
+           console.error(err.message)
+       }
+
+        try{
+           await API.post(`/product/batch`, payload, {headers});
+          } catch (err) {
+            console.error(err.message)
+        }
     }
 
     componentDidMount = async()  => {
@@ -220,24 +252,44 @@ export default class Batch extends React.Component {
                       <Text>{this.state.batch.description}</Text>
 
                       </View>
-                  </View>    
-                  <Button 
-                        title="Chuyển tiếp lô hàng"
-                        icon={
-                          <Icon
-                            name="list-alt"
-                            size={25}
-                            color={'white'}
-                            style={{padding: 2}}
-                          />
-                        }
-                        titleStyle={{color: 'white', fontSize: 15, padding: 10}}
-                        buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10, marginHorizontal: 40}}
-                        onPress={() => {
-                            this.setState({isSend: true})
-                          }}
-                  />
+                  </View>   
+                  <Text style={{paddingLeft: 25}}>--------------------------------------------------------------------</Text>
+                  <View style={{flexDirection: "row", justifyContent: "space-between"}}>
+                      <Button 
+                            title=" Chuyển tiếp lô hàng"
+                            icon={
+                              <Icon
+                                name="list-alt"
+                                size={14}
+                                color={'white'}
+                                style={{padding: 2}}
+                              />
+                            }
+                            titleStyle={{color: 'white', fontSize: 12}}
+                            buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10}}
+                            onPress={() => {
+                                this.setState({isSend: true})
+                              }}
+                      />
+                      <Button 
+                            title="Từ chối nhận hàng"
+                            icon={
+                              <Icon
+                                name="trash"
+                                size={15}
+                                color={'white'}
+                                style={{padding: 2}}
+                              />
+                            }
+                            titleStyle={{color: 'white', fontSize: 12}}
+                            buttonStyle={{borderColor: 'white', backgroundColor: 'darkred', margin: 10, marginRight: 15}}
+                            onPress={() => {
+                                this.onCanceledBatch()
+                              }}
+                      />
 
+                    </View> 
+                  
                 {this.state.isSend ? (
                   <View >
                       <Text style={{fontWeight: 'bold', marginTop: 10}}>Chọn nơi nhận lô hàng:</Text>

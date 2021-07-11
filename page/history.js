@@ -74,18 +74,23 @@ export default class History extends React.Component {
                 keyExtractor={(item) => item.historyId}
                 renderItem={({item}) => {
                     return <TouchableOpacity onPress={() => this.onPressItem(item)}>
-                        <View style={styles.list}>
-                            <View style={styles.viewText}>
-                                <Text style={styles.titleList}>{item.template.name}</Text>
-                                <Text>{new Date(item.date).getDate()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
-                            </View>
+                        {item.template!==null?<View style={styles.list}>
                             <View>
-                                <Image 
-                                    style={styles.image}
-                                    source={{uri: item.template.imageUrl}}
-                                />
+                                <View style={styles.viewTitle}>
+                                    <Text>{item.template.name}</Text>
+                                </View>
+                                <Text>----------------------------------------------------------------------</Text>
+                                <View style={styles.viewItem}>
+                                    <Text>Ngày quét: </Text>
+                                    <Text>{new Date(item.date).getDate()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
+                                </View>
+                                <View style={styles.viewItem}>
+                                    <Text>Trạng thái: </Text>
+                                    <Text>{item.state!==null?"Đã mua":"Chưa mua"}</Text>
+                                </View>
                             </View>
-                        </View>
+                        
+                        </View>:""}
                     </TouchableOpacity>
                     
                 }}
@@ -145,8 +150,13 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    viewText: {
-        justifyContent: 'space-around'
+    viewItem: {
+        flexDirection: 'row',
+        justifyContent: 'space-between'   
+    },
+    viewTitle: {
+        flexDirection: 'row',
+        justifyContent: 'center'   
     },
     titleList: {
         fontSize: 20
