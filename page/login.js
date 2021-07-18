@@ -10,8 +10,8 @@ import { showMessage } from 'react-native-flash-message';
 
 export default class Login extends React.Component {
   state = {
-    name:"",
-    password:"",
+    name:"nhatlam",
+    password:"123456",
     disable:true,
     display: false
   }
@@ -29,8 +29,7 @@ export default class Login extends React.Component {
       showMessage({
         message: "Đăng nhập thành công !",
         type: "success",
-        description: `Đăng nhập thành công với tài khoản: ${input.username}`,
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: "success", position: "right"
@@ -40,8 +39,7 @@ export default class Login extends React.Component {
         showMessage({
           message: "Đăng nhập không thành công !",
           type: "danger",
-          description: "Tên đăng nhập hoặc mật khẩu không đúng",
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: "danger", position: "right"
@@ -66,8 +64,7 @@ export default class Login extends React.Component {
   render(){
     return (
       <View style={styles.container}>
-        <ImageBackground source={{uri: "https://i.pinimg.com/564x/a5/9c/bf/a59cbfbbcc2c5d232acbaaf011a453a7.jpg"}} style={styles.backgroundImage} >
-          <Image style={styles.logo} source={require('../images/LOGO.jpeg')} />  
+        <ImageBackground source={require('../images/bg_9.jpg')} style={styles.backgroundImage} >
           <View style={styles.contentView}>
           <Input
             placeholder='Tên đăng nhập'
@@ -120,21 +117,22 @@ export default class Login extends React.Component {
             onPress={this.onSubmit}
             containerStyle={{padding: 5}}
         />
-        <Button
+      
+        {/* <Button
             icon={
               <Icon
                 name="google"
                 size={30}
-                color="white"
+                color="darkred"
               />
             }
-            title='Đăng nhập với google'
-            titleStyle={{color: 'white', fontSize: 20, padding: 10}}
-            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: '#e31212'}}
+            title='Đăng nhập với Google'
+            titleStyle={{color: 'darkred', fontSize: 15, padding: 10, fontWeight: "500"}}
+            buttonStyle={{borderRadius: 50, borderColor: 'white', borderWidth: 1, backgroundColor: 'none'}}
             onPress={() => this.props.navigation.navigate("LoginWithGoogle")}
             containerStyle={{padding: 5}}
-        />
-        <Text style={{color: 'white', alignSelf: 'center'}}>----- OR -----</Text>
+        /> */}
+        <Text style={{color: 'white', alignSelf: 'center', margin: 15}}>----- OR -----</Text>
         <Button
             icon={
               <Icon
@@ -173,6 +171,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   contentView: {
+    marginTop: '25%',
+    paddingTop: '5%',
     width: '85%',
     backgroundColor: 'white',
     borderRadius: 10

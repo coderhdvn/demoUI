@@ -10,6 +10,8 @@ import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
 import { showMessage } from 'react-native-flash-message';
+import axios from 'axios';
+
 export default class DetailInfo extends React.Component {
     
     state = {
@@ -19,7 +21,9 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
-      visible: false
+      visible: false,
+      showMore: false,
+      countFeedbacks: 0
     }
 
     getHeader = async() => {
@@ -33,8 +37,27 @@ export default class DetailInfo extends React.Component {
       return headers
     }
 
+    getImage = async (imageName) => {
+      let headers = await this.getHeader();
+      try {
+        const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
+        return getUrl.data
+        // const response = await axios.create({baseURL: getUrl.data}).get("");
+        // let image = response.data.image;
+        // return image;
+      } catch (err) {
+        console.log("image not found")
+      }
+    }
+
     getRating = (rating) => {
       this.setState({rating});
+    }
+
+    getDay(timestamp) {
+      let date = new Date(timestamp);
+      let day = `${('0'+date.getDate()).slice(-2)}/${('0'+(date.getMonth()+1)).slice(-2)}/${date.getFullYear()}`;
+      return day;
     }
 
     onSaveReview = async() => {
@@ -62,7 +85,7 @@ export default class DetailInfo extends React.Component {
           message: "Đánh giá không thành công !",
           type: 'danger',
           description: "Bạn không thể đánh giá 0 sao",
-          duration: 5000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"
@@ -74,27 +97,25 @@ export default class DetailInfo extends React.Component {
     setProduct = async (product) => {
       const headers = await this.getHeader();
 
-          let expDate = (new Date(product.expDate)).toLocaleDateString();
-          let mfgDate = (new Date(product.mfgDate)).toLocaleDateString();
-          this.setState({
+      let image = await this.getImage(product.template.imageUrl);
+
+         this.setState({
             product: {
               productId: product.id,
               templateId: product.template.id,
               name: product.template.name,
-              expDate,
-              mfgDate,
+              expDate: this.getDay(product.expDate),
+              mfgDate: this.getDay(product.mfgDate),
               producerId: product.template.producerId,
               description: product.template.description,
-              image: product.template.imageUrl
+              image: image
             },
             visible: true
           });
   
           try{
             let response = await API.get(`/account/companies/${this.state.product.producerId}`, {headers});
-            console.log(response.data)
             let producer = response.data.name;
-            console.log(this.state.product.producerId)
             this.setState({product: {...this.state.product, producer}})
           } catch (err) {
             console.error(err.message)
@@ -104,10 +125,8 @@ export default class DetailInfo extends React.Component {
     setFeedbacks = async (templateId) => {
       const headers = await this.getHeader();
 
-      this.setState({reviews: []});
-
       try {
-        let response = await API.get(`/product/feedbacks/${templateId}`, {headers});
+        let response = await API.get(`/product/feedbacks/${templateId}/${this.state.countFeedbacks}/4`, {headers});
 
         let avg = response.data.average_rate;
         let total = response.data.num_feedbacks;
@@ -115,9 +134,20 @@ export default class DetailInfo extends React.Component {
 
         let feedbacks = response.data.feedbacks;
 
+        if (feedbacks.length === 4) {
+          feedbacks.pop();
+          this.setState({
+            showMore: true,
+            countFeedbacks: this.state.countFeedbacks + 3
+          })
+        } else {
+          this.setState({
+            showMore: false 
+          })
+        }
         if (feedbacks) {
           feedbacks.map(async feedback  => {
-            let date = (new Date(feedback.created_at)).toLocaleDateString();
+            let date = this.getDay(feedback.created_at);
 
             let review = {
               content: feedback.content,
@@ -154,86 +184,106 @@ export default class DetailInfo extends React.Component {
     }
 
   render(){
-
     return (
       <View style={styles.container}>
-        <View style={styles.shadow}>
-          <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
-        </View>
-        <View style={styles.titleView}>
-          <Text style={styles.title}>THÔNG TIN SẢN PHẨM</Text>
-        </View>
         <View style={styles.contentView}>
           { this.state.visible ? (
             <ScrollView style={styles.scrollView} showsVerticalScrollIndicator={false}>
-                <View style={{flexDirection: 'row'}}>
-                  <View style={{width: '40%', alignSelf: 'center'}}>
-                    <Image style={{resizeMode: 'contain', width: '100%', height: 300}} source={{uri: this.state.product.image}} />
-                  </View>
-                  <View style={{width: '60%', alignSelf: 'center'}}>
-                    <Wrap>                   
-                      <Text style={styles.textTitle}>Tên sản phẩm:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.name}</Text>
-                      <Text style={styles.textTitle}>Nhà sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.producer}</Text>
-
-                      <Text style={styles.textTitle}>Ngày sản xuất:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.mfgDate}</Text>
-
-                      <Text style={styles.textTitle}>Hạn sử dụng:</Text> 
-                      <Text style={styles.textContent}>{this.state.product.expDate}</Text>
-                    </Wrap>
-                  </View>
+                <View style={{backgroundColor: 'rgb(0, 0, 0)'}}>
+                    <Image style={{resizeMode: 'contain', width: '100%', height: 200}} source={{uri: this.state.product.image}} />
                 </View>
-                <Wrap>
+                  
+                <View style={{padding: 7}}>
+                <View style={{padding: 5}}>              
+                      <Text style={styles.textContent}>{this.state.product.name}</Text>
+
+                      <View style={{paddingTop: 5, paddingBottom: 5, flexDirection: 'row'}}>
+                        <View>
+                          <Rating
+                            rating={this.state.reviewSummary.avg}
+                            size={20}
+                            enableRating={false}
+                          />
+                        </View>
+                      </View>
+                      
+                      <View style={styles.content}>
+                        <Text style={{fontWeight: "bold"}}>Nhà sản xuất: </Text> 
+                        <Text>{this.state.product.producer}</Text> 
+                      </View>
+
+                      <View style={styles.content}>
+                        <Text style={{fontWeight: "bold"}}>Ngày sản xuất: </Text> 
+                        <Text>{this.state.product.mfgDate}</Text> 
+                      </View>
+
+                      <View style={styles.content}>
+                        <Text style={{fontWeight: "bold"}}>Hạn sử dụng: </Text> 
+                        <Text>{this.state.product.expDate}</Text> 
+                      </View>
+
+                      <Text style={{fontWeight: "bold"}}>Mô tả: </Text>
+                      <Text>{this.state.product.description}</Text>
+
+                  </View>    
+                 
+                  
                   <Button 
-                        title="Xem danh sách nhà phân phối"
-                        type="outline"
+                        title="Xem quá trình vận chuyển"
                         icon={
                           <Icon
                             name="list-alt"
                             size={25}
-                            color={BASIC_COLOR}
+                            color={'white'}
                             style={{padding: 2}}
                           />
                         }
-                        titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                        buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1}}
+                        titleStyle={{color: 'white', fontSize: 15, padding: 10}}
+                        buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10, marginHorizontal: 35}}
                         onPress={() => {
                             this.props.navigation.navigate("distributors", {productId: this.state.product.productId})
                           }}
                   />
-                </Wrap>
-                
-                  <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR}}>Mô tả</Text>
-                  <Text>{this.state.product.description}</Text>
-                
-              <View style={styles.cardSummary}>
-                <Text style={styles.textTitle}>Đánh giá sản phẩm</Text> 
-                <Text style={{fontSize: 40, fontWeight: 'bold'}}>{this.state.reviewSummary.avg}</Text>
-                <Rating
-                  rating={this.state.reviewSummary.avg}
-                  size={30}
-                  enableRating={false}
-                />
-                <Text>{this.state.reviewSummary.total} đánh giá</Text>
-                <Button
-                  icon={
-                    <Icon
-                      name="pencil"
-                      size={20}
-                      color={BASIC_COLOR}
-                    />
-                  }
-                  title='Thêm đánh giá'
-                  type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                  buttonStyle={{borderColor: 'white'}}
-                  onPress={() => this.setState({modalVisible: true})}
-                  containerStyle={{padding: 5}}
-                />
-              </View>
+                <Button 
+                        title="Xem dữ liệu trên smart contract"
+                        icon={
+                          <Icon
+                            name="ethereum"
+                            size={25}
+                            color={'white'}
+                            style={{padding: 2}}
+                          />
+                        }
+                        titleStyle={{color: 'white', fontSize: 15, padding: 10}}
+                        buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10, marginHorizontal: 35}}
+                        onPress={() => {
+                            this.props.navigation.navigate("Block", {id: this.state.product.productId})
+                          }}
+                  />
+              
+              
+              
               {
+              <View>
+                <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                  <Text style={{fontSize: 15, fontWeight: 'bold', padding: 5}}>Đánh giá:</Text>
+                  <Button
+                    icon={
+                      <Icon
+                        name="pencil"
+                        size={20}
+                        color={BASIC_COLOR}
+                      />
+                    }
+                    title='Thêm đánh giá'
+                    type='outline'
+                    titleStyle={{color: BASIC_COLOR, fontSize: 13, padding: 10}}
+                    buttonStyle={{borderColor: 'white'}}
+                    onPress={() => this.setState({modalVisible: true})}
+                  />
+                </View>
+
+                {
                 this.state.modalVisible &&
                 <View style={styles.modal}>
                   <Text style={{fontSize: 18, padding: 5, borderBottomWidth: 1, borderColor: BASIC_COLOR, marginBottom: 10}}>Đánh giá của bạn</Text>
@@ -269,43 +319,50 @@ export default class DetailInfo extends React.Component {
                   />
                 </View>
               }
-              { this.state.reviewSummary.total !== 0 &&
-              <View>
-                <Text style={{fontSize: 20, fontWeight: 'bold', padding: 5}}>Đánh giá</Text>
+                
                   {this.state.reviews.map((item, index) => {
                     return (
                       <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
                         <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
                           <Text style={{fontSize: 18, padding: 5}}>{item.customerName}</Text>
-                          <Text style={{fontSize: 13, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>
+                          <View style={{marginTop: 10}}>
+                            <Rating
+                              rating={item.rating}
+                              size={15}
+                              
+                          />  
+                          </View>                       
                         </View>
-                        <Rating
-                          rating={item.rating}
-                          size={25}
-                        />  
-                        <Text style={{padding: 5}}>{item.content}</Text>
+                        <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                          <Text style={{padding: 5}}>{item.content}</Text>
+                          <Text style={{fontSize: 13, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>      
+                        </View>
+                  
                       </View>
                     )
                     })
                   }
-
-                  <Button
-                    icon={
-                      <Icon
-                        name="caret-down"
-                        size={20}
-                        color={BASIC_COLOR}
-                      />
-                    }
-                    title='Xem thêm đánh giá'
-                    type='outline'
-                    titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
-                    buttonStyle={{borderColor: 'white'}}
-                    onPress={() => {}}
-                    containerStyle={{padding: 10}}
-                  />
+                  { this.state.showMore &&
+                    <Button
+                      icon={
+                        <Icon
+                          name="caret-down"
+                          size={20}
+                          color={BASIC_COLOR}
+                        />
+                      }
+                      title='Xem thêm đánh giá'
+                      type='outline'
+                      titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 10}}
+                      buttonStyle={{borderColor: 'white'}}
+                      onPress={() => {this.setFeedbacks(this.state.product.templateId)}}
+                      containerStyle={{padding: 10}}
+                    />
+                  }
+                  
               </View>
               }
+                </View>
             
             </ScrollView> ) : (
               <TouchableOpacity style={{flex: 1, justifyContent: 'center'}} 
@@ -329,58 +386,53 @@ export default class DetailInfo extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BASIC_COLOR,
+    backgroundColor: 'white',
 },
   titleView: {
-    alignSelf: 'center',
+    // elevation: 10,
+    // borderRadius: 5,
+    // marginTop: 10,
+    // marginBottom: 10,
+    // width: "80%",
+    // backgroundColor: 'white',
+    // alignSelf: 'center'
     backgroundColor: 'white',
-    shadowColor: '#000000',
-    shadowOffset: {
-      width: 0,
-      height: 5
-    },
-    shadowOpacity: 0.2,
-    elevation: 20,
-    borderRadius: 5,
-    marginTop: 20,
-    marginBottom: 27,
-    width: "85%"
+    borderBottomWidth: 1,
+    borderColor: BASIC_COLOR,
+    width: '90%',
+    alignSelf: 'center'
   },
-  shadow: {
-    backgroundColor: 'black',
-    opacity: 0.4,
-    borderRadius: 5,
-    position: 'absolute',
-    top: 27,
-    alignSelf: 'center',
-  },
+
   title: {
       color:"black", 
-      fontSize:22, 
+      fontSize: 22, 
       width: "100%", 
       textAlign: "center", 
       fontWeight: "300", 
       padding: 10,
-      fontStyle:'italic',
+      // fontStyle:'italic',
   },
-
+  content: {
+    flexDirection: "row", 
+    justifyContent: "space-between",
+    paddingBottom: 5,
+  },
   contentView: {
-    backgroundColor: "#fff",
-    borderTopRightRadius: 30,
+    backgroundColor: "white",
+    // borderTopRightRadius: 30,
     flex: 1,
   },
   scrollView: {
-    marginLeft: 10,
-    marginRight: 10,
     flex: 1
   },
   textTitle: {
     fontSize: 13,
-    fontStyle: 'italic',
+    marginBottom: 2
   },
   textContent: {
     fontSize: 18,
-    paddingBottom: 15
+    justifyContent: 'center',
+    alignItems: 'center'
   },
   cardSummary: {
     borderWidth:1, 

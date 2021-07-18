@@ -18,6 +18,9 @@ import Distributors from './Distributors';
 import LoginWithGoogle from './LoginWithGoogle';
 import SearchProduct from './SearchProduct';
 import Chat from './ChatService';
+import Batch from './batch';
+import BatchHistory from './batchHistory';
+import { Block } from './block';
 
 const Stack = createStackNavigator();
 
@@ -33,6 +36,7 @@ class Account extends React.Component {
                 <Stack.Screen name="notification" component={NotificationPage} />
                 <Stack.Screen name="ScanPage" component={ScanPage} />
                 <Stack.Screen name="detail" component={DetailInfo} />
+                <Stack.Screen name="batch" component={Batch} />
                 <Stack.Screen name="distributors" component={Distributors} />
                 <Stack.Screen name="map" component={GGMap} />
                 <Stack.Screen name="history" component={History} />
@@ -40,6 +44,8 @@ class Account extends React.Component {
                 <Stack.Screen name="LoginWithGoogle" component={LoginWithGoogle} />
                 <Stack.Screen name="Search Product" component={SearchProduct} />
                 <Stack.Screen name="Chat" component={Chat} />
+                <Stack.Screen name="BatchHistory" component={BatchHistory} />
+                <Stack.Screen name="Block" component={Block} />
             </Stack.Navigator>
         </NavigationContainer>
       )}

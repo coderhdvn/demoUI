@@ -73,7 +73,7 @@ export default class ChatService extends Component {
     async getMessageFromDB() {
         const headers = await this.getHeader();
         try {
-            const response = await axios.get(`http://192.168.1.8:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
+            const response = await axios.get(`http://192.168.1.15:8084/messages/${this.state.data.senderId}/${this.state.data.recipientId}`, {headers});
             console.log("response", response.data);
             let messages = response.data.map(item => {
                 let [time, day] = this.getDayTime(item.timestamp);
@@ -108,7 +108,7 @@ export default class ChatService extends Component {
 
     connect(){
         let props = this;
-        const socket = new SockJS('http://192.168.1.8:8084/ws');
+        const socket = new SockJS('http://192.168.1.15:8084/ws');
         let stompClient = Stomp.over(socket);
         stompClient.connect({}, function(frame) {
         console.log("Connected: " + frame);
@@ -154,7 +154,7 @@ export default class ChatService extends Component {
                 message: "Gửi tin nhắn không thành công!",
                 type: 'danger',
                 description: "Hãy kiểm tra lại kết nối mạng",
-                duration: 5000,
+                duration: 3000,
                 floating: true,
                 icon: {
                   icon: 'danger', position: "right"

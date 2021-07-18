@@ -1,18 +1,20 @@
 import React from 'react';
 import { StyleSheet, Text, View, Image } from 'react-native';
-import MapView, {Callout, Marker, Polyline, PROVIDER_GOOGLE} from 'react-native-maps';
+import MapView, {Callout, Marker, Polyline, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import Carousel from 'react-native-snap-carousel';
 import Icon from 'react-native-vector-icons/FontAwesome';
 import { Input, Button } from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
 import Draggable from 'react-native-draggable';
 import { Dimensions } from 'react-native';
+
 export default class DetailInfo extends React.Component {
     
     state = {
         distributors: [],
         coordinates: [],
-        markers: []
+        markers: [],
+        scale: 0
     }
 
     onCarouselItemChange = (index) => {
@@ -20,8 +22,8 @@ export default class DetailInfo extends React.Component {
         this._map.animateToRegion({
             latitude: location.branch.latitude,
             longitude: location.branch.longitude,
-            latitudeDelta: 0.005,
-            longitudeDelta: 0.005
+            latitudeDelta: this.state.scale/3,
+            longitudeDelta: this.state.scale/3
         });
 
         this.state.markers[index].showCallout()
@@ -54,8 +56,10 @@ export default class DetailInfo extends React.Component {
         this.setState({
             distributors,
             coordinates
-        })
+        });
     }
+
+   
 
   render(){
         return ( 
@@ -65,11 +69,12 @@ export default class DetailInfo extends React.Component {
                 provider={PROVIDER_GOOGLE}
                 ref={map => this._map = map}
                 style={styles.map}
+                onLayout={() => this._map.fitToCoordinates(this.state.coordinates, {animated: true })}
                 initialRegion={{
                 latitude: this.state.coordinates[0].latitude,
                 longitude: this.state.coordinates[0].longitude,
-                latitudeDelta: 0.005,
-                longitudeDelta: 0.005
+                latitudeDelta: this.state.scale,
+                longitudeDelta: this.state.scale
             }}>
                 {
                     this.state.distributors.map((distributor, index) => (
@@ -82,7 +87,9 @@ export default class DetailInfo extends React.Component {
                             <Callout>
                                 <Text>{distributor.branch.name}</Text>
                             </Callout>
+
                         </Marker>
+
                     ))
                 }
                 <Polyline 

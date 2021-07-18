@@ -52,7 +52,7 @@ export default class ResetPWD extends React.Component {
           message: "Lấy lại mật khẩu thành công!",
           type: "success",
           description: `Hãy kiểm tra tài khoản email: ${input.email} để xác nhận đổi mật khẩu`,
-          duration: 5000,
+          duration: 4000,
           floating: true,
           icon: {
             icon: "success", position: "right"
@@ -65,8 +65,7 @@ export default class ResetPWD extends React.Component {
         showMessage({
           message: "Lấy lại mật khẩu không thành công !",
           type: 'danger',
-          description: err.message,
-          duration: 5000,
+          duration: 4000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"

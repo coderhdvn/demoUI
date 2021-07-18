@@ -117,8 +117,7 @@ export default class SignUp extends React.Component {
         showMessage({
           message: "Đăng ký thành công !",
           type: "success",
-          description: `Đăng ký thành công với tài khoản: ${input.name}`,
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: "success", position: "right"
@@ -130,7 +129,7 @@ export default class SignUp extends React.Component {
           message: "Đăng ký không thành công !",
           type: 'danger',
           description: "Hãy kiểm tra lại kết nối mạng",
-          duration: 5000,
+          duration: 4000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"
@@ -142,7 +141,7 @@ export default class SignUp extends React.Component {
         message: "Đăng ký không thành công !",
         type: 'danger',
         description: "Hãy kiểm tra lại thông tin",
-        duration: 5000,
+        duration: 4000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"

@@ -30,7 +30,7 @@ class UserInfo extends Component {
     try {
       let imageName = image.fileName;
       let uri = image.uri;
-
+      
       const getUrl = await API.put(`/uploadserver/put_image/${imageName}`, null, {headers});
 
       await axios.create({baseURL: getUrl.data}).put("", {image: uri});
@@ -40,14 +40,14 @@ class UserInfo extends Component {
         infoChange: { ...this.state.infoChange, image: imageName },
         image: uri
       });
-      await this.changeInfo();
+      await this.saveAvatar(imageName);
 
     } catch (err) {
       showMessage({
         message: "Thay đổi ảnh đại diện không thành công!",
         type: 'danger',
         description: err.message,
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"
@@ -156,7 +156,8 @@ class UserInfo extends Component {
         name: user.name,
         email: user.email,
         phone: user.phone,
-        image: user.image
+        image: user.image,
+        company: user.company.name
       }
       if (user.image) {
         this.getImage(user.image)
@@ -178,6 +179,35 @@ class UserInfo extends Component {
       || info.display_name !== infoChange.display_name)
   }
 
+  saveAvatar = async (image) => {
+    let headers = await this.getHeader();
+    try {
+      await API.put(`account/users/avatar/${image}`, null, {headers});
+
+      showMessage({
+        message: "Thay đổi avatar thành công !",
+        type: "success",
+        duration: 3000,
+        floating: true,
+        icon: {
+          icon: "success", position: "right"
+        },
+      })
+    }
+    catch (err) {
+      showMessage({
+        message: "Thay đổi avatar không thành công !",
+        type: 'danger',
+        description: err.message,
+        duration: 3000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }
+  }
+
   changeInfo = async () => {
     let headers = await this.getHeader();
     if (this.checkEdit()) {
@@ -187,7 +217,6 @@ class UserInfo extends Component {
           displayName: user.display_name,
           email: user.email,
           phone: user.phone,
-          image: user.image,
           company: null,
         }
   
@@ -196,7 +225,7 @@ class UserInfo extends Component {
         showMessage({
           message: "Thay đổi thông tin thành công !",
           type: "success",
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: "success", position: "right"
@@ -213,7 +242,7 @@ class UserInfo extends Component {
           message: "Thay đổi thông tin không thành công !",
           type: 'danger',
           description: err.message,
-          duration: 4000,
+          duration: 3000,
           floating: true,
           icon: {
             icon: 'danger', position: "right"
@@ -225,7 +254,7 @@ class UserInfo extends Component {
         message: "Thay đổi thông tin không thành công !",
         type: 'warning',
         description: "Bạn chưa thay đổi thông tin nào.",
-        duration: 4000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'warning', position: "right"
@@ -311,29 +340,15 @@ class UserInfo extends Component {
             onPress={() => this.logout()}
           />
 
-          <Button
-            icon={
-              <Icon
-                name='lock'
-                size={20}
-                color={BASIC_COLOR}
-              />
-            }
-            title="Đổi mật khẩu"
-            type='outline'
-            titleStyle={{color: BASIC_COLOR, fontSize: 15, padding: 5}}
-            buttonStyle={{borderColor: 'white'}}
-            onPress={() => this.changePassword()}
-          />
+      
           
           <ScrollView style={styles.scroll} showsVerticalScrollIndicator={false}>
             <Input
-              label="Họ và tên"
               placeholder='Họ và tên'
               leftIcon={
                 <Icon
                   name='user'
-                  size={24}
+                  size={30}
                   color={BASIC_COLOR}
                 />
               }
@@ -348,7 +363,6 @@ class UserInfo extends Component {
             />
 
             <Input
-              label="Email"
               placeholder='Email'
               leftIcon={
                 <Icon
@@ -368,7 +382,6 @@ class UserInfo extends Component {
             />
 
             <Input
-              label="Số điện thoại"
               placeholder='Số điện thoại'
               leftIcon={
                 <Icon
@@ -386,6 +399,22 @@ class UserInfo extends Component {
               }}
               autoCapitalize="none"
             />
+
+            <Input
+              placeholder='Công ty'
+              leftIcon={
+                <Icon
+                  name='building'
+                  size={24}
+                  color={BASIC_COLOR}
+                />
+              }
+              disabled={this.state.disabledChange}
+              value={this.state.info.company}
+              errorStyle={{ color: 'red' }}
+              errorMessage={this.state.nameError}
+              autoCapitalize="none"
+            />        
 
         {
           this.state.disabledChange
@@ -470,14 +499,16 @@ const styles = StyleSheet.create({
   scroll: {
     width: "90%",
     marginBottom: 20,
+    marginTop: 25,
     paddingTop: 15
   },
 
   avatar: {
     position: 'absolute',
     top: 30,
-    // marginBottom: 10
+    marginBottom: 20
   },
+
   image: {
     height: 130,
     width: 130,

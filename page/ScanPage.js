@@ -20,7 +20,10 @@ const SCREEN_WIDTH = Dimensions.get("window").width;
 class QrCodeCamera extends Component {
   state = {
     scan: true,
-    location: null
+    location: {
+      latitude: 0,
+      longitude: 0
+    }
   }
 
   getHeader = async() => {
@@ -42,16 +45,16 @@ class QrCodeCamera extends Component {
         this.setState({ location: { latitude, longitude }})
       },
       error => {
-        showMessage({
-          message: "Không thể định vị vị trí của bạn !",
-          type: 'danger',
-          description: "Hãy chắc chắn rằng bạn đang bật định vị",
-          duration: 5000,
-          floating: true,
-          icon: {
-            icon: 'danger', position: "right"
-          },
-        })
+        // showMessage({
+        //   message: "Không thể định vị vị trí của bạn !",
+        //   type: 'danger',
+        //   description: "Hãy chắc chắn rằng bạn đang bật định vị",
+        //   duration: 5000,
+        //   floating: true,
+        //   icon: {
+        //     icon: 'danger', position: "right"
+        //   },
+        // })
       },
       { enableHighAccuracy: true, timeout: 20000, maximumAge: 1000 }
     )
@@ -64,7 +67,6 @@ class QrCodeCamera extends Component {
       longitude: this.state.location.longitude
     }
     let headers = await this.getHeader();
-
     const response = await API.post('/logger/consumes', body, {headers});
     console.log(response.data);
   }
@@ -72,22 +74,25 @@ class QrCodeCamera extends Component {
   onSuccess = async (e) => {
     let productId = e.data;
     this.setState({scan: false});
-    console.log(e);
     let headers = await this.getHeader();
-
+    console.log("productId", productId);
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
-        console.log(response)
-        if (response /*&& this.state.location !== null*/) {
-          this.props.navigation.navigate("detail", {product: response.data});
+        if (response.data !== '') {
           this.saveHistory(productId);
+          this.props.navigation.navigate("detail", {product: response.data});
+        }
+        else {
+          let batchId = productId
+          const batch = await API.get(`/product/batch/${batchId}`, {headers});
+          this.props.navigation.navigate("batch", {batch: batch.data});
         }
     } catch (err) {
       showMessage({
         message: "Quét mã không thành công !",
         type: 'danger',
         description: "Mã QR không đúng. Hãy thử lại.",
-        duration: 5000,
+        duration: 3000,
         floating: true,
         icon: {
           icon: 'danger', position: "right"
@@ -112,8 +117,9 @@ class QrCodeCamera extends Component {
     this.props.navigation.navigate("Search Product");
   }
 
-  pressGallery() {
-    console.log('gallery');
+  pressBatch() {
+    this.setState({ scan: false })
+    this.props.navigation.navigate('BatchHistory');
   }
 
   pressHistory() {
@@ -140,19 +146,7 @@ class QrCodeCamera extends Component {
     await this.updateOneSignalId(deviceState.userId);
 
     OneSignal.setNotificationWillShowInForegroundHandler(notificationReceivedEvent => {
-      console.log("OneSignal: notification will show in foreground:", notificationReceivedEvent);
       let notification = notificationReceivedEvent.getNotification();
-
-      showMessage({
-        message: 'Thông báo',
-        type: 'info',
-        description: `${notification.title}: ${notification.body}`,
-        duration: 5000,
-        floating: true,
-        icon: {
-          icon: 'info', position: "right"
-        },
-      })
     });
 
   }
@@ -175,8 +169,7 @@ class QrCodeCamera extends Component {
           customMarker={
             <View style={styles.rectangleContainer}>
               <View style={styles.topOverlay}>
-                <Text style={{ fontSize: 20, color: BASIC_COLOR, fontStyle: 'italic', backgroundColor: 'white', padding: 10, width: '70%', textAlign: 'center' }}>
-                  QR CODE SCANNER
+                <Text style={{fontSize: 15, color: "white", fontStyle: 'italic', width: '100%', textAlign: 'center' }}>
                 </Text>
               </View>
 
@@ -210,13 +203,13 @@ class QrCodeCamera extends Component {
                     <Icon
                       name="camera"
                       size={40}
-                      color={BASIC_COLOR}
+                      color='black'
                     />
                   }
-                  title='Nhấn để bật camera'
+                  title='Nhấn để mở camera'
                   type='outline'
-                  titleStyle={{color: BASIC_COLOR, fontSize: 20, padding: 10}}
-                  buttonStyle={{borderColor: 'white'}}
+                  titleStyle={{color: 'black', fontSize: 15, padding: 15}}
+                  buttonStyle={{borderColor: 'black'}}
                   onPress={() => this.setState({ scan: true })}
                 />
           </View>
@@ -224,15 +217,15 @@ class QrCodeCamera extends Component {
         }
         <View style={styles.listView}> 
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressSearchProduct()}>
-              <Icon name="search" style={styles.icon} size={40}></Icon>
+              <Icon name="search" style={styles.icon} size={30}></Icon>
               <Text style={styles.textIcon}>Tìm kiếm</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressGallery()}>
-              <Icon name="image" style={styles.icon} size={40}></Icon>
-              <Text style={styles.textIcon}>Thư viện</Text>
+            <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressBatch()}>
+              <Icon name="table" style={styles.icon} size={30}></Icon>
+              <Text style={styles.textIcon}>Lô hàng</Text>
             </TouchableOpacity>
             <TouchableOpacity style={styles.viewIcon} onPress={() => this.pressHistory()}>
-              <Icon name="history" style={styles.icon} size={40}></Icon>
+              <Icon name="history" style={styles.icon} size={30}></Icon>
               <Text style={styles.textIcon}>Lịch sử</Text>
             </TouchableOpacity>
         </View>
@@ -242,14 +235,14 @@ class QrCodeCamera extends Component {
   }
 }
 
-const overlayColor = "rgba(0,0,0,0.5)"; // this gives us a black color with a 50% transparency
+const overlayColor = "rgba(0,0,0,0.5)"; 
 
-const rectDimensions = SCREEN_WIDTH * 0.65; // this is equivalent to 255 from a 393 device width
-const rectBorderWidth = SCREEN_WIDTH * 0.005; // this is equivalent to 2 from a 393 device width
+const rectDimensions = SCREEN_WIDTH * 0.65; 
+const rectBorderWidth = SCREEN_WIDTH * 0.005; 
 const rectBorderColor = 'white';
 
-const scanBarWidth = SCREEN_WIDTH * 0.4; // this is equivalent to 180 from a 393 device width
-const scanBarHeight = SCREEN_WIDTH * 0.005; //this is equivalent to 1 from a 393 device width
+const scanBarWidth = SCREEN_WIDTH * 0.4; 
+const scanBarHeight = SCREEN_WIDTH * 0.005;
 const scanBarColor = BASIC_COLOR;
 
 const styles = {
@@ -277,7 +270,6 @@ const styles = {
     backgroundColor: overlayColor,
     justifyContent: "center",
     alignItems: "center",
-    marginBottom: -50
   },
 
   bottomOverlay: {
@@ -318,11 +310,11 @@ const styles = {
     width: 80,
     backgroundColor: "white",
     marginBottom: 40,
-    borderRadius: 10,
+    borderRadius: 8,
   },
   icon: {
     alignSelf: 'center',
-    color: BASIC_COLOR,
+    color: 'black',
   },
   listView: {
     flexDirection: 'row',
@@ -330,7 +322,7 @@ const styles = {
   },
   textIcon: {
     textAlign: 'center',
-    color: BASIC_COLOR
+    color: 'black'
   },
 };
 

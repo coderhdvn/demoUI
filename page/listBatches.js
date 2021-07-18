@@ -7,14 +7,14 @@ import API from '../api/API';
 import {TOKEN_KEY} from '../constants/Constant';
 import {getData} from '../storage/AsyncStorage';
 
-export default class History extends React.Component {
+export default class ListBatches extends React.Component {
     
     state = {
-        list: []
+        list: [],
+        isSentBatch: false,
     }
 
     onPressItem = (item) => {
-        this.props.navigation.navigate('detail', {product: item});
     }
 
     getHeader = async() => {
@@ -28,69 +28,74 @@ export default class History extends React.Component {
         return headers
     }
   
-    loadHistory = async () => {
+    loadHistory = async (isSentBatch) => {
         const headers = await this.getHeader();
+
+        let userInfo = {}
         try {
-            const response = await API.get(`/logger/consumes/customer`, {headers})
-            let loggers = response.data 
-            let products = []
-            loggers.forEach(async logger => {
-                const product = await API.get(`/product/products/` + logger.productId, {headers})
-                let item = product.data
-                item.historyId = logger.id
-                item.date = logger.createdAt
-                this.setState({
-                    list: [...this.state.list, item]
-                  })
-            });
-            return products
+            const profile = await API.get(`/account/users/profile`, {headers})
+            userInfo = profile.data
           } catch (err) {
             console.error(err.message);
             return []
           }
+
+        if(isSentBatch) {
+            try {
+                const response = await API.get(`/product/batch/sender/${userInfo.company.id}`, {headers})
+                this.setState({list: response.data})
+              } catch (err) {
+                console.error(err.message);
+                return []
+              }
+           
+        } else {
+            try {
+                const response = await API.get(`/product/batch/receiver/${userInfo.company.id}`, {headers})
+                this.setState({list: response.data})
+              } catch (err) {
+                console.error(err.message);
+                return []
+              }
+        }
+        
     }
 
-    componentDidMount = async () => {
-        await this.loadHistory();
+    componentDidMount = async() => {
+        this.loadHistory(this.props.isSentBatch);
     }
 
   render(){
     return (
       <View style={styles.container}>
-        <View style={styles.titleView}>
-            <View style={styles.shadow}>
-            </View>
-            <View style={styles.circle}>
-                <Text style={styles.title}>   Lịch sử</Text>
-            </View>
-            
-        </View>
-        
         <View style={styles.contentView}>
             <FlatList 
                 style={styles.listView}
                 data={this.state.list}
                 showsVerticalScrollIndicator={false}
-                keyExtractor={(item) => item.historyId}
+                keyExtractor={(item) => item.id}
                 renderItem={({item}) => {
                     return <TouchableOpacity onPress={() => this.onPressItem(item)}>
-                        {item.template!==null?<View style={styles.list}>
-                            <View>
-                                <View style={styles.viewTitle}>
-                                    <Text>{item.template.name}</Text>
+                        <View style={styles.list}>
+                            <View style={styles.viewText}>
+                                <View style={styles.content}>
+                                    <Text style={{fontWeight: "bold"}}>Tên lô hàng: </Text> 
+                                    <Text> {item.name}</Text>
                                 </View>
-                                <Text>----------------------------------------------------------------------</Text>
-                                <View style={styles.viewItem}>
-                                    <Text>Ngày quét: </Text>
-                                    <Text>{new Date(item.date).getDate()}/{new Date(item.date).getMonth()}/{new Date(item.date).getFullYear()}</Text>
+                                <View style={styles.content}>
+                                    <Text style={{fontWeight: "bold"}}>Số lượng hàng: </Text> 
+                                    <Text>{item.amount}</Text>
                                 </View>
-                                <View style={styles.viewItem}>
-                                    <Text>Trạng thái: </Text>
-                                    <Text>{item.state!==null?"Đã mua":"Chưa mua"}</Text>
+                                <View style={styles.content}>
+                                    <Text style={{fontWeight: "bold"}}>Trạng thái: </Text> 
+                                    <Text>{item.status}</Text>
                                 </View>
-                            </View>
-                        
-                        </View>:""}
+                                <View style={styles.content}>
+                                    {this.props.isSentBatch? (<Text style={{fontWeight: "bold"}}>Ngày gởi: </Text> ) : (<Text style={{fontWeight: "bold"}}>Ngày nhận: </Text> )}                         
+                                    <Text style={{paddingLeft: '25%'}}>{item.dateCreated.slice(0,10)} {item.dateCreated.slice(11,19)}</Text>
+                                </View>
+                            </View>                           
+                        </View>
                     </TouchableOpacity>
                     
                 }}
@@ -109,6 +114,10 @@ const styles = StyleSheet.create({
     contentView: {
         backgroundColor: "#fff",
         flex: 1,
+    },
+    content: {
+        flexDirection: "row", 
+        justifyContent: "space-between",
     },
     titleView: {
         height: "10%",
@@ -150,13 +159,8 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         justifyContent: 'space-between'
     },
-    viewItem: {
-        flexDirection: 'row',
-        justifyContent: 'space-between'   
-    },
-    viewTitle: {
-        flexDirection: 'row',
-        justifyContent: 'center'   
+    viewText: {
+        justifyContent: 'space-around'
     },
     titleList: {
         fontSize: 20

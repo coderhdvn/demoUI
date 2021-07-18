@@ -9,7 +9,7 @@ import { Dimensions } from 'react-native';
 import API from '../api/API';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
-import { Modal } from 'react-native';
+import axios from 'axios';
 
 export default class Distributors extends React.Component {
     
@@ -28,6 +28,19 @@ export default class Distributors extends React.Component {
       }
       
       return headers
+    }
+
+    getImage = async (imageName) => {
+      let headers = await this.getHeader();
+      try {
+        const getUrl = await API.get(`/uploadserver/get_image/${imageName}`, {headers});
+        return getUrl.data
+        // const response = await axios.create({baseURL: getUrl.data}).get("");
+        // let image = response.data.image;
+        // return image;
+      } catch (err) {
+        console.log("image not found");
+      }
     }
 
     getBranch = async (distributorId) => {
@@ -49,15 +62,26 @@ export default class Distributors extends React.Component {
       try {
         const response = await API.get(`/logger/distributes/${productId}/10/0`, {headers});
 
+
         let distributors = response.data;
+        distributors = distributors.sort((a,b)=>{
+          if (a['createdAt']>b['createdAt']) return 1;
+          if (a['createdAt']==b['createdAt']) return 0;
+          if (a['createdAt']<b['createdAt']) return -1;
+        });
 
         distributors.forEach(async item => {
 
-          let branch = await this.getBranch(item.distributorId);
+          let branch = await this.getBranch(item.branchId);
+
+
+          let image = await this.getImage(branch.image);
+
 
           let distributor = {
             id: item.id,
-            branch
+            branch: {...branch, image: image},
+            metadata: item
           }
           this.setState({
             distributors: [...this.state.distributors, distributor]
@@ -76,13 +100,16 @@ export default class Distributors extends React.Component {
       const headers = await this.getHeader();
       try {
         const response = await API.get(`/account/companies/${company_id}`, {headers});
+
+        let image = await this.getImage(response.data.image);
+
         let company = {
           id: response.data.id,
           name: response.data.name,
           email: response.data.email,
           phone: response.data.phone,
           detailAddress: response.data.detailAddress,
-          image: response.data.image,
+          image: image,
           website: response.data.website
         }
         this.setState({
@@ -116,12 +143,8 @@ export default class Distributors extends React.Component {
     return (
       <View style={styles.container}>
 
-        <View style={styles.shadow}>
-          <Text style={styles.title}>DANH SÁCH NHÀ PHÂN PHỐI</Text>
-        </View>
-        <View style={styles.titleView}>
-          <Text style={styles.title}>DANH SÁCH NHÀ PHÂN PHỐI</Text>
-        </View>
+        
+          <Text style={styles.title}>QUÁ TRÌNH VẬN CHUYỂN</Text>
 
         <View style={styles.contentView}>
           <FlatList
@@ -132,43 +155,29 @@ export default class Distributors extends React.Component {
             renderItem={({item}) => {
               return (
                   <View style={styles.listView}>
-                    <View>
-                      <Image
-                        source={{uri: item.branch.image}}
-                        style={styles.image}
-                      />
-                      <Button
-                          icon={
-                            <Icon
-                              name="building"
-                              size={17}
-                              color={BASIC_COLOR}
-                            />
-                          }
-                          title='Xem công ty'
-                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
-                          buttonStyle={{backgroundColor: 'white'}}
+                   
+                      <View>
+                        <Button                        
+                          title={item.branch.name}
+                          titleStyle={{color: BASIC_COLOR, fontSize: 15}}
+                          buttonStyle={{backgroundColor: 'white', flexDirection: 'row'}}
                           onPress={() => {this.onPressDistributor(item.branch.company_id)}}
-                      />
-                    </View>
-                      <View style={styles.textView}>
-                        <Text style={styles.textName}>{item.branch.name}</Text>
-                        <Text style={styles.textAddress}>{item.branch.address}</Text>
-                        {/* <Button
-                          icon={
-                            <Icon
-                              name="comments"
-                              size={20}
-                              color={BASIC_COLOR}
-                            />
-                          }
-                          title='Liên hệ với chúng tôi'
-                          titleStyle={{color: BASIC_COLOR, fontSize: 12, padding: 5}}
-                          buttonStyle={{backgroundColor: 'white'}}
-                          onPress={() => {this.onPressChat(item.branch)}}
-                      /> */}
+                        />
+                        <View style={{flexDirection: 'row'}}>
+                          <Text style={{paddingLeft: 5}}>Địa điểm: </Text>
+                          <Text style={{paddingLeft: 40}}>{item.branch.address}</Text>      
+                        </View>
+                        <View style={{flexDirection: 'row'}}>
+                          <Text style={{paddingLeft: 5}}>Thời gian:  </Text>
+                          <Text style={{paddingLeft: 32}}>{new Date(item.metadata.createdAt).getDate()}/{new Date(item.metadata.createdAt).getMonth()}/{new Date(item.metadata.createdAt).getFullYear()}
+                          </Text>      
+                        </View>
                         
                       </View>
+                        <Image
+                          source={{uri: item.branch.image}}
+                          style={styles.image}
+                        />
                     
                   </View>
               )}
@@ -270,11 +279,11 @@ export default class Distributors extends React.Component {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: BASIC_COLOR,
+    backgroundColor: "#e7eaee"
   },
   contentView: {
     backgroundColor: "#fff",
-    borderTopRightRadius: 30,
+    borderTopRightRadius: 20,
     flex: 1,
   },
   titleView: {
@@ -288,15 +297,15 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     elevation: 20,
     borderRadius: 5,
-    marginTop: 20,
-    marginBottom: 27
+    marginTop: 10,
+    marginBottom: 17
   },
   shadow: {
     backgroundColor: 'black',
     opacity: 0.4,
     borderRadius: 5,
     position: 'absolute',
-    top: 27,
+    top: 17,
     alignSelf: 'center',
     transform: [
       {
@@ -306,24 +315,28 @@ const styles = StyleSheet.create({
   },
   title: {
     color:"black", 
-    fontSize:20, 
+    fontSize:15, 
+    fontWeight: "100",
     width: "100%", 
     textAlign: "center", 
-    fontWeight: "300", 
     padding: 10,
   },
   textName: {
     fontSize: 20,
     textAlign: "center", 
     padding: 5,
-    fontWeight: 'bold'
+    marginTop: "5%"
   },
   textAddress: {
     fontSize: 15,
+    textAlign: "center",
+    marginBottom: "12%"
   },
   listView: {
     flexDirection: 'row',
     justifyContent: 'space-between',
+    borderBottomWidth: 1,
+    borderBottomColor: 'black',
     margin: 10,
   },
   image: {
@@ -341,11 +354,11 @@ const styles = StyleSheet.create({
     width: '80%'
   },
   textModalContent: {
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    paddingBottom: 10
+    alignSelf: 'flex-start',
+    padding: 10
   },
   textModalTitle: {
+    fontWeight: 'bold',
     borderTopWidth: 1,
     borderColor: BASIC_COLOR,
     paddingTop: 5,
