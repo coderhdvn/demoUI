@@ -245,17 +245,17 @@ export default class DetailInfo extends React.Component {
                           }}
                   />
                 <Button 
-                        title="Xem dữ liệu trên smart contract"
+                        title="Xem dữ liệu trên Blockchain"
                         icon={
                           <Icon
-                            name="ethereum"
+                            name="link"
                             size={25}
                             color={'white'}
                             style={{padding: 2}}
                           />
                         }
                         titleStyle={{color: 'white', fontSize: 15, padding: 10}}
-                        buttonStyle={{borderColor: 'white', backgroundColor: '#546dea', margin: 10, marginHorizontal: 35}}
+                        buttonStyle={{borderColor: 'white', backgroundColor: '#546d6a', margin: 10, marginHorizontal: 35}}
                         onPress={() => {
                             this.props.navigation.navigate("Block", {id: this.state.product.productId})
                           }}

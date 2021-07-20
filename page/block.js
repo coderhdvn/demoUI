@@ -57,10 +57,12 @@ export class Block extends React.Component {
   }
   
   render(){
-    if (this.obj == null) return (<Text>loading</Text>)
+    if (this.obj == null || this.obj.item == null) return (<Text style={{justifyContent: "center", alignItems: "center", fontSize: 20, padding: "10%", paddingTop: "50%"}}>Sản phẩm này chưa được đồng bộ lên Blockchain !!!</Text>)
     return(
       <View style={styles.container}>
-      <Text style={{fontWeight: "bold", fontSize: 20}}>Smart contract data</Text>
+      <Text style={{fontWeight: "bold", fontSize: 20, paddingLeft: "15%"}}>Dữ liệu trên Blockchain</Text>
+      <Text style={{fontStyle: "italic", fontSize: 14, marginBottom: 20, paddingLeft: "5%"}}>Đây là dữ liệu minh bạch và không bị sửa đổi </Text>
+      
       <SectionList
         sections={[
           {title: 'Block', data: [ "blockHash", "blockNumber", "from", "to"]},

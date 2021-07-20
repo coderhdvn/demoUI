@@ -77,7 +77,7 @@ export default class History extends React.Component {
                         {item.template!==null?<View style={styles.list}>
                             <View>
                                 <View style={styles.viewTitle}>
-                                    <Text>{item.template.name !== null ? item.template.name : ""}</Text>
+                                    <Text>{(item !== undefined && item.template !== undefined)? item.template.name : ""}</Text>
                                 </View>
                                 <Text>----------------------------------------------------------------------</Text>
                                 <View style={styles.viewItem}>
