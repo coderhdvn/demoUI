@@ -64,12 +64,13 @@ export default class Distributors extends React.Component {
 
 
         let distributors = response.data;
+
         distributors = distributors.sort((a,b)=>{
           if (a['createdAt']>b['createdAt']) return 1;
           if (a['createdAt']==b['createdAt']) return 0;
           if (a['createdAt']<b['createdAt']) return -1;
         });
-
+       
         distributors.forEach(async item => {
 
           let branch = await this.getBranch(item.branchId);

@@ -75,7 +75,6 @@ class QrCodeCamera extends Component {
     let productId = e.data;
     this.setState({scan: false});
     let headers = await this.getHeader();
-    console.log("productId", productId);
     try {
       const response = await API.get(`/product/products/${productId}`, {headers});
         if (response.data !== '') {
@@ -83,11 +82,16 @@ class QrCodeCamera extends Component {
           this.props.navigation.navigate("detail", {product: response.data});
         }
         else {
+
           let batchId = productId
+          const status = await API.post(`/product/batch/confirm/${batchId}`, {}, {headers})
+          console.log("status", status);
+
           const batch = await API.get(`/product/batch/${batchId}`, {headers});
           this.props.navigation.navigate("batch", {batch: batch.data});
         }
     } catch (err) {
+      console.log(err);
       showMessage({
         message: "Quét mã không thành công !",
         type: 'danger',

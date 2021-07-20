@@ -162,11 +162,6 @@ export default class Batch extends React.Component {
     onCanceledBatch = async() => {
       const headers = await this.getHeader();
         let batch = this.props.route.params.batch;
-        let payload = {
-            batchId: this.state.batch.id,
-            reciverId: batch.sender,
-            branchId: batch.products[0].branchId
-        }
       
         try{
           await API.put(`/product/batch/canceled/${batch.id}`, null, {headers});
@@ -185,11 +180,6 @@ export default class Batch extends React.Component {
            console.error(err.message)
        }
 
-        try{
-           await API.post(`/product/batch`, payload, {headers});
-          } catch (err) {
-            console.error(err.message)
-        }
     }
 
     componentDidMount = async()  => {
