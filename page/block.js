@@ -6,7 +6,8 @@ import {
   Text,
   TouchableHighlight,
   View,
-  SectionList
+  SectionList,
+  Image
 } from "react-native";
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY} from '../constants/Constant';
@@ -14,11 +15,10 @@ import API from "../api/API";
 
 const styles = StyleSheet.create({
   container: {
-   flex: 1,
-   paddingTop: 22,
     display: "flex",
     flexDirection: "column",
-    justifyContent: "flex-start"
+    justifyContent: "flex-start",
+    overflow: "scroll"
   },
   sectionHeader: {
     paddingTop: 2,
@@ -27,7 +27,7 @@ const styles = StyleSheet.create({
     paddingBottom: 2,
     fontSize: 14,
     fontWeight: 'bold',
-    backgroundColor: 'rgba(0,247,247,1.0)',
+    backgroundColor: "#5294ff",
   },
   item: {
     padding: 10,
@@ -55,39 +55,46 @@ export class Block extends React.Component {
     }
  
   }
+
+  check(x){
+    return x == true?"Sản phẩm này đã được tiêu thụ":"sản phẩm này chưa được tiêu thụ";
+  }
   
   render(){
-    if (this.obj == null || this.obj.item == null) return (<Text style={{justifyContent: "center", alignItems: "center", fontSize: 20, padding: "10%", paddingTop: "50%"}}>Sản phẩm này chưa được đồng bộ lên Blockchain !!!</Text>)
+    console.log(this.obj)
+    if (this.obj == null || this.obj.block == null || this.obj.event == null  ) return (<Text style={{justifyContent: "center", alignItems: "center", fontSize: 20, padding: "10%", paddingTop: "50%"}}>Sản phẩm này chưa được đồng bộ lên Blockchain !!!</Text>)
     return(
       <View style={styles.container}>
-      <Text style={{fontWeight: "bold", fontSize: 20, paddingLeft: "15%"}}>Dữ liệu trên Blockchain</Text>
+      <View style={{display: "flex", flexDirection: "row"}}>
+        <Image source={require('../images/eth.png')} style={{ width: 40, height: 40 }}/>
+        <Text style={{fontWeight: "bold", fontSize: 20, paddingLeft: "15%"}}>Dữ liệu trên Blockchain</Text>
+      </View>
       <Text style={{fontStyle: "italic", fontSize: 14, marginBottom: 20, paddingLeft: "5%"}}>Đây là dữ liệu minh bạch và không bị sửa đổi </Text>
-      
       <SectionList
         sections={[
-          {title: 'Block', data: [ "blockHash", "blockNumber", "from", "to"]},
-          //{title: 'Event', data: [ "blockHash", "blockNumber", "from", "to"]},
+          {title: 'Block', data: [ {name: "blockHash", sec: 1}, {name:"blockNumber", sec: 1}, {name:"from", sec: 1}, {name:"to", sec: 1}]},
+          {title: 'Event', data: [ 
+          {name:"check", sec: 2},
+          {name:"id", sec: 2}, {name:"branchid", sec: 2},
+           {name:"companyOwner", sec: 2}, {name:"companyProduce", sec: 2},
+           {name:"templateid", sec: 2}, {name:"mfgDate", sec: 2},
+           {name:"expDate", sec: 2}, 
+          ]},
         ]}
-        renderItem={({item}) => <View style={styles.item}>
-        <Text style={{fontWeight: "bold"}}>{item}:</Text>
-        <Text>{this.obj.block[item]}</Text></View>}
+        renderItem={({item}) => 
+        <View style={styles.item}>
+        <Text style={{fontWeight: "bold"}}>{item.name}:</Text>
+        <Text style={{fontSize: 10, color: item.name=="from"?"green": "black"}}>{
+        item.sec==1?this.obj.block[item.name]:item.name=="check"?this.check(this.obj.event[item.name]):this.obj.event[item.name]
+        }</Text></View>}
 
         renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
         keyExtractor={(item, index) => index}
       />
-      <SectionList
-        sections={[
-          {title: 'Event', data: [ "id", "branchid",  "companyOwner" , "companyProduce", "templateid", "mfgDate", "expDate", "check"]}]}
-        renderItem={({item}) => <View style={styles.item}>
-        <Text style={{fontWeight: "bold"}}>{item}:</Text>
-        <Text>{this.obj.event[item]==true?"true":this.obj.event[item]==false?"false":this.obj.event[item]}</Text></View>}
-        renderSectionHeader={({section}) => <Text style={styles.sectionHeader}>{section.title}</Text>}
-        keyExtractor={(item, index) => index}
-      />
+      
     </View>
     
     )
   }
 
 }
-    
