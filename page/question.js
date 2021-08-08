@@ -2,11 +2,15 @@ import React from "react";
 import { FlatList, View, ScrollView, Dimensions, Text, Button, Image, Pressable, StyleSheet, TouchableOpacity, ImageBackground, Alert } from "react-native";
 import MapView, {Callout, Marker, Polyline, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import Icon from 'react-native-ionicons'
+import Icon1 from 'react-native-vector-icons/FontAwesome';
 import QRCodeScanner from 'react-native-qrcode-scanner';
 import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY, ONESIGNAL_APP_ID} from '../constants/Constant';
 import API from '../api/API';
 import { Input, Button as Btn} from 'react-native-elements';
+import { BASIC_COLOR } from '../constants/Constant';
+import Rating from '../components/Rating';
+import { ScrollView } from "react-native-gesture-handler";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const blue = "#2196F3"
@@ -30,6 +34,7 @@ const styles = StyleSheet.create({
     elevation: 3,
     width: "50%",
     backgroundColor: '#aaa',
+    marginRight: 5
   }
 });
 
@@ -90,7 +95,19 @@ const getImage = async (imageName) => {
 }
 
 export class Question1 extends React.Component {
-  
+
+  state = {
+    product: {},
+    reviews: [],
+    reviewSummary : {},
+    rating: 0,
+    content: '',
+    modalVisible: false,
+    visible: true,
+    showMore: false,
+    countFeedbacks: 0
+  }
+
   name  = ""
   url = ""
   bean = null
@@ -108,6 +125,8 @@ export class Question1 extends React.Component {
     catch (err) {
       console.log(err)
     }
+    await this.setFeedbacks(this.props.route.params.product.template.id);
+
     this.url = await getImage(this.props.route.params.product.template.imageUrl);
 
     try {
@@ -126,33 +145,92 @@ export class Question1 extends React.Component {
       console.log(err)
     }
     this.forceUpdate();
+
+  }
+
+  getDay(timestamp) {
+    let date = new Date(timestamp);
+    let day = `${('0'+date.getDate()).slice(-2)}/${('0'+(date.getMonth()+1)).slice(-2)}/${date.getFullYear()}`;
+    return day;
+  }
+
+  setFeedbacks = async (templateId) => {
+    const headers = await getHeader();
+
+    try {
+      let response = await API.get(`/product/feedbacks/${templateId}/${this.state.countFeedbacks}/4`, {headers});
+      let avg = response.data.average_rate;
+      let total = response.data.num_feedbacks;
+      this.setState({reviewSummary: {avg, total}})
+
+      let feedbacks = response.data.feedbacks;
+
+      if (feedbacks.length === 4) {
+        feedbacks.pop();
+        this.setState({
+          showMore: true,
+          countFeedbacks: this.state.countFeedbacks + 3
+        })
+      } else {
+        this.setState({
+          showMore: false 
+        })
+      }
+      if (feedbacks) {
+        feedbacks.map(async feedback  => {
+          let date = this.getDay(feedback.created_at);
+
+          let review = {
+            content: feedback.content,
+            rating: feedback.rating,
+            created_at: feedback.created_at,
+            date
+          }
+          const customerId = feedback.customerId;
+
+          let response = await API.get(`/account/users/${customerId}`, {headers});
+          const customerName = response.data.name;
+          review = {...review, customerName};
+
+          this.setState({reviews: [...this.state.reviews, review].sort((a, b) => {return b.created_at - a.created_at})});
+        })
+      }
+    } catch (err) {
+      console.error(err.message);
+    }
   }
 
   selectColor(i){
     return this.tab == i? "#05fa53": "white"
   }
 
+  getRating = (rating) => {
+    console.log("rating nek", rating);
+    this.setState({rating});
+  }
+
   infor(){
-    return (<View style={{ width: "90%", borderRadius: 10, elevation: 2, padding: 20, flexDirection: "row",backgroundColor: "white"}}>
+    return (<View style={{ width: "90%", height: "43%", borderRadius: 10, elevation: 2, padding: 25, paddingLeft: 10, flexDirection: "row",backgroundColor: "white"}}>
    { //<Image style={{ width: 40, height: 40, borderRadius: 20 }} source={require('../images/pic4.jpg')} />
   }
     <View style={{marginLeft: 20}}>
-      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-        <Text style={{fontWeight: "bold"}}>NSX:</Text> 
+      <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 5}}>
+        <Text style={{fontWeight: "bold", marginRight: 4}}>Nhà sản xuất: </Text> 
         <Text style={{ textAlign: "right", overflow: "hidden"}}>{this.name}</Text>   
       </View>
-      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-        <Text style={{fontWeight: "bold"}}>ngày SX:</Text> 
+      <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 5}}>
+        <Text style={{fontWeight: "bold"}}>Ngày sản xuất:</Text> 
         <Text>{new Date(this.props.route.params.product.mfgDate).toLocaleDateString("en-US")}</Text>   
       </View>
-      <View style={{flexDirection: "row", justifyContent: "space-between"}}>
-        <Text style={{fontWeight: "bold"}}>hạn sử dụng:</Text> 
+      <View style={{flexDirection: "row", justifyContent: "space-between", marginBottom: 5}}>
+        <Text style={{fontWeight: "bold"}}>Hạn sử dụng:</Text> 
         <Text>{new Date(this.props.route.params.product.expDate).toLocaleDateString("en-US")}</Text>   
       </View>
       <View style={{flexDirection: "row", justifyContent: "space-between", width: 200}}>
         <Text style={{fontWeight: "bold"}}>Mô tả:</Text> 
-        <Text style={{height: 100}}>{this.props.route.params.product.template.description}</Text>   
       </View>
+      <Text style={{height: 100}}>{this.props.route.params.product.template.description}</Text>   
+
      
     </View>
   </View>)
@@ -195,42 +273,150 @@ export class Question1 extends React.Component {
       )
   }
 
+  onSaveReview = async() => {
+
+    const headers = await getHeader();
+    console.log("rating nek", this.state.rating);
+
+    if (this.state.rating !== 0) {
+      try {
+        let feedback = {
+          rating: this.state.rating,
+          content: this.state.content
+        }
+        let templateId = this.props.route.params.product.template.id;
+        const response = await API.post(`/product/feedbacks/${templateId}`, feedback, {headers});
+
+        this.setFeedbacks(templateId);
+
+        this.setState({modalVisible: false});
+
+      } catch (err) {
+        console.error("err nek", err.message)
+      }
+    } else {
+      showMessage({
+        message: "Đánh giá không thành công !",
+        type: 'danger',
+        description: "Bạn không thể đánh giá 0 sao",
+        duration: 3000,
+        floating: true,
+        icon: {
+          icon: 'danger', position: "right"
+        },
+      })
+    }
+  }
+
   feedBack(){
     return (
-      <View>
-        <View style={{ flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Btn
-            icon={
-              <Icon
-                name="add-circle"
-                size={20}
-                color={blue}
+      <ScrollView style={{ width: "90%", height: "43%", borderRadius: 10, elevation: 2, padding: 25, paddingLeft: 10, backgroundColor: "white"}}>
+          <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+            <Text style={{fontSize: 15, fontWeight: 'bold', padding: 5}}>Đánh giá:</Text>
+            <Button
+              icon={
+                <Icon1
+                  name="pencil"
+                  size={10}
+                  color={'white'}
+                />
+              }
+              title='Thêm đánh giá'
+              type='outline'
+              titleStyle={{color: 'white', fontSize: 10, padding: 10}}
+              buttonStyle={{borderColor: 'white'}}
+              onPress={() => this.setState({modalVisible: true})}
+            />
+          </View>
+
+          {
+          this.state.modalVisible &&
+          <View style={{alignItems: 'center',
+          borderTopWidth: 1,
+          borderColor: BASIC_COLOR,
+          padding: 10}}>
+             
+              <Input
+                placeholder='Nội dung...'
+                onChangeText={value => {
+                  this.setState({password: value})
+                }}
+                autoCapitalize="none"
+                inputStyle={{color: BASIC_COLOR}}
+                onChangeText={value => {this.setState({content: value})}}
               />
+               <Rating
+                  customStyle={{marginBottom: 20,
+                    flexDirection: 'row',}}
+                  size={30}
+                  enableRating={true}
+                  rating={this.state.rating}
+                  getRating={this.getRating}
+                /> 
+              <Button
+                title="Lưu đánh giá"
+                type="outline"
+                titleStyle={{color: BASIC_COLOR, fontSize: 10, padding: 10}}
+                buttonStyle={{borderRadius: 40, borderColor: BASIC_COLOR, borderWidth: 1, color: 'grey', backgroundColor: 'grey'}}
+                onPress={this.onSaveReview}
+                icon={
+                  <Icon
+                    name="save"
+                    size={20}
+                    color={BASIC_COLOR}
+                    style={{padding: 5}}
+                  />
+                }
+              />
+             
+          </View>
+        }
+          
+            {this.state.reviews.map((item, index) => {
+              return (
+                <View style={{borderColor: BASIC_COLOR, borderTopWidth: 1, padding: 5}} key={index}>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={{fontSize: 14, padding: 5}}>{item.customerName}</Text>
+                    <View style={{marginTop: 10}}>
+                      <Rating
+                        rating={item.rating}
+                        size={15}
+                        
+                    />  
+                    </View>                       
+                  </View>
+                  <View style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                    <Text style={{fontSize: 12, padding: 5}}>{item.content}</Text>
+                    <Text style={{fontSize: 12, fontStyle: 'italic', padding: 6, color:'gray'}}>{item.date}</Text>      
+                  </View>
+            
+                </View>
+              )
+              })
             }
-            title='Thêm đánh giá'
-            type='outline'
-          />
-        </View>
-      </View>)
+          
+            
+        </ScrollView>
+              
+      )
   }
 
   render(){
-    console.log(this.props.route.params.product.template.imageUrl);
     return (
       <View style={{ display: "flex", flexDirection: "column", justifyContent: "space-between", flex: 1, alignItems: "center", backgroundColor: "#eee" }}>
         <ImageBackground
           source={require('../images/gradient.png')}
           resizeMode="cover"
           style={{
-            backgroundColor: blue, height: 240, paddingTop: 10,
+            backgroundColor: blue, height: 250, paddingTop: 10,
             overflow: "hidden", borderBottomEndRadius: 0, borderBottomStartRadius: 0,
             paddingLeft: 0, paddingRight: 20, alignItems: "center",
             paddingRight: 0, shadowColor: "red", shadowOffset: { width: 0, height: 30, },
             shadowOpacity: 1.0, shadowRadius: 2.22, elevation: 10, paddingTop: 30, width: SCREEN_WIDTH
           }}>
           <Image source={{uri: this.url}}  style={{width: 100, height: 100, borderRadius: 70, borderColor: "#05fa53", borderWidth: 4, backgroundColor: "grey", margin: 10}}/>
-          <Text style={{ fontWeight: "bold", color: "white" }}>{this.props.route.params.product.template.name}</Text>
-          <View style={{ paddingTop: 10, flexDirection: "row", justifyContent: "space-between", width: SCREEN_WIDTH, paddingLeft: 20, paddingRight: 20, borderTopColor: "#146791", borderTopWidth: 1 }}>
+          <Text style={{ fontWeight: "bold", color: "white", size: 40}}>{this.props.route.params.product.template.name}</Text>
+          <View style={{ marginTop: 10, paddingTop: 10, flexDirection: "row", justifyContent: "space-between", width: SCREEN_WIDTH, paddingLeft: 20, paddingRight: 20, borderTopColor: "#146791", borderTopWidth: 1 }}>
             <View style={{alignItems: "center"}} onTouchEnd={()=>{this.tab = 0; this.forceUpdate()}}>
               <Icon name="information-circle-outline" color={this.selectColor(0)} size={15}/>
               <Text style={{ color: this.selectColor(0), fontSize: 12, width: 70, textAlign: "center" }}>Thông tin chung</Text>
@@ -248,10 +434,10 @@ export class Question1 extends React.Component {
         {this.tab == 0?this.infor(): this.tab == 1? this.transfer():this.feedBack()}
         
         <View style={{width: "90%", borderRadius: 10,padding: 20}}>
-          <Text style={{ fontWeight: "bold", textAlign: "center" }}>Có phải bạn vừa quét sản phẩm này???</Text>
+          <Text style={{ fontWeight: "bold", textAlign: "center", fontSize: 14, paddingBottom: 5}}>Có phải bạn vừa quét sản phẩm này ?</Text>
           <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
             <CustomButtonCancle style={styles.grayButton} title="Sai" touch={() => { this.props.navigation.navigate('FalseResult') }} />
-            <CustomButton style={styles.button} title="Đúng vậy" touch={() => { this.props.navigation.navigate('Question2', { id: this.props.route.params.product.branchId, bean: this.bean }) }} />
+            <CustomButton style={styles.button} title="Đúng" touch={() => { this.props.navigation.navigate('Question2', { id: this.props.route.params.product.branchId, bean: this.bean }) }} />
           </View>
         </View>
       </View>)

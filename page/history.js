@@ -14,7 +14,7 @@ export default class History extends React.Component {
     }
 
     onPressItem = (item) => {
-        this.props.navigation.navigate('detail', {product: item});
+        this.props.navigation.navigate("Question1", {product: item});
     }
 
     getHeader = async() => {
