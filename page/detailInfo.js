@@ -21,7 +21,7 @@ export default class DetailInfo extends React.Component {
       rating: 0,
       content: '',
       modalVisible: false,
-      visible: false,
+      visible: true,
       showMore: false,
       countFeedbacks: 0
     }
@@ -184,6 +184,7 @@ export default class DetailInfo extends React.Component {
     }
 
   render(){
+    console.log(this.props.route.params.product)
     return (
       <View style={styles.container}>
         <View style={styles.contentView}>
@@ -195,7 +196,7 @@ export default class DetailInfo extends React.Component {
                   
                 <View style={{padding: 7}}>
                 <View style={{padding: 5}}>              
-                      <Text style={styles.textContent}>{this.state.product.name}</Text>
+                      <Text style={styles.textContent}>{this.props.route.params.product.name}</Text>
 
                       <View style={{paddingTop: 5, paddingBottom: 5, flexDirection: 'row'}}>
                         <View>

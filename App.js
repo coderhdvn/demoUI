@@ -3,8 +3,9 @@ import Main from './page/main';
 import Account from './page/account';
 import {getData} from './storage/AsyncStorage';
 import {TOKEN_KEY} from './constants/Constant';
-import { ImageBackground } from 'react-native';
+import { ImageBackground, StatusBar } from 'react-native';
 import FlashMessage from 'react-native-flash-message';
+import { View } from 'native-base';
 // import OneSignal from 'react-native-onesignal';
 
 class App extends React.Component {
@@ -63,6 +64,7 @@ class App extends React.Component {
       else go to Main Screen */
     return (
       <>
+         <StatusBar translucent backgroundColor="transparent"/>
         <Account wasLogedIn = {this.state.isToken}/>
         <FlashMessage position='top' />
       </>

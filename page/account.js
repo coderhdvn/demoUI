@@ -21,6 +21,7 @@ import Chat from './ChatService';
 import Batch from './batch';
 import BatchHistory from './batchHistory';
 import { Block } from './block';
+import { FalseResult, Point, PrivateScan, Question1, Question2, Result } from './question';
 
 const Stack = createStackNavigator();
 
@@ -46,6 +47,12 @@ class Account extends React.Component {
                 <Stack.Screen name="Chat" component={Chat} />
                 <Stack.Screen name="BatchHistory" component={BatchHistory} />
                 <Stack.Screen name="Block" component={Block} />
+                <Stack.Screen name="Question1" component={Question1} />
+                <Stack.Screen name="Question2" component={Question2} />
+                <Stack.Screen name="PrivateScan" component={PrivateScan} />
+                <Stack.Screen name="Result" component={Result} />
+                <Stack.Screen name="FalseResult" component={FalseResult} />
+                <Stack.Screen name="Point" component={Point} />
             </Stack.Navigator>
         </NavigationContainer>
       )}

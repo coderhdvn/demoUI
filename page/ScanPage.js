@@ -79,7 +79,8 @@ class QrCodeCamera extends Component {
       const response = await API.get(`/product/products/${productId}`, {headers});
         if (response.data !== '') {
           this.saveHistory(productId);
-          this.props.navigation.navigate("detail", {product: response.data});
+          //this.props.navigation.navigate("detail", {product: response.data});
+          this.props.navigation.navigate("Question1", {product: response.data});
         }
         else {
 

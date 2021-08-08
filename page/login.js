@@ -10,7 +10,7 @@ import { showMessage } from 'react-native-flash-message';
 
 export default class Login extends React.Component {
   state = {
-    name:"nhatlam",
+    name:"admin",
     password:"123456",
     disable:true,
     display: false
