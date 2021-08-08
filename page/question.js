@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Dimensions, Text, Button, Image, Pressable, StyleSheet, TouchableOpacity, ImageBackground, Alert } from "react-native";
+import { FlatList, View, ScrollView, Dimensions, Text, Button, Image, Pressable, StyleSheet, TouchableOpacity, ImageBackground, Alert } from "react-native";
 import MapView, {Callout, Marker, Polyline, Polygon, PROVIDER_GOOGLE} from 'react-native-maps';
 import Icon from 'react-native-ionicons'
 import QRCodeScanner from 'react-native-qrcode-scanner';
@@ -7,7 +7,6 @@ import {getData} from '../storage/AsyncStorage';
 import {TOKEN_KEY, ONESIGNAL_APP_ID} from '../constants/Constant';
 import API from '../api/API';
 import { Input, Button as Btn} from 'react-native-elements';
-
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const blue = "#2196F3"
@@ -96,6 +95,8 @@ export class Question1 extends React.Component {
   url = ""
   bean = null
   tab = 0
+  logger = null
+  mapview = 0
   componentDidMount = async () => {
     let headers = await getHeader();
     try {
@@ -108,6 +109,22 @@ export class Question1 extends React.Component {
       console.log(err)
     }
     this.url = await getImage(this.props.route.params.product.template.imageUrl);
+
+    try {
+      const response = await API.get(`/logger/distributes/${this.props.route.params.product.id}/10/0`, {headers});
+      this.logger = response.data;
+      for (let i =0; i< response.data.length ; i++){
+        try {
+          const response2 = await API.get(`/account/branches/${response.data[i].branchId}`, {headers})
+          this.logger[i].branchObj = response2.data
+        } catch (err) {
+          console.error(err.message);
+        }
+      }
+    }
+    catch (err) {
+      console.log(err)
+    }
     this.forceUpdate();
   }
 
@@ -141,8 +158,41 @@ export class Question1 extends React.Component {
   </View>)
   }
 
+
   transfer(){
-    return (<Text>Transfer</Text>)
+    if (this.logger == null) return (<Text>loading</Text>)
+    console.log(this.logger)
+    return (
+      <View style={{height: 300, width: SCREEN_WIDTH, alignItems: "center"}}>
+        <View style={{flexDirection: "row", width: SCREEN_WIDTH, justifyContent: "space-around"}}>
+          <Text>lịch sử vận chuyển đơn hàng</Text>
+          <Icon onPress={() => { this.mapview = 0; this.forceUpdate() }} name="map" color="black" size={15}/>
+          <Icon onPress={() => { this.mapview = 1; this.forceUpdate() }} name="list" color="black" size={15}/>
+        </View>
+        {this.mapview ==0?
+        <ScrollView style={{ overflow: "scroll", width: "90%" }}>
+          {this.logger.map((i) => (
+            <View style={{ width: "90%", borderRadius: 10, elevation: 2, padding: 20, flexDirection: "row", backgroundColor: "white", marginBottom: 10 }}>
+              <View style={{flexDirection: "column"}}>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={{ fontWeight: "bold", marginRight: 10 }}>chi nhánh:</Text>
+                  <Text>{i.branchObj.name}</Text>
+                </View>
+                <View style={{ flexDirection: "row" }}>
+                  <Text style={{ fontWeight: "bold", marginRight: 10 }}>công ty:</Text>
+                  <Text>{i.distributorId}</Text>
+                </View>
+                <Text>time {new Date(i.createdAt).toLocaleDateString("en-US")}</Text>
+              </View>
+              <Image source={require('../images/gradient.png')}  style={{width: 70, height: 70, borderRadius: 70, borderColor: "#05fa53", borderWidth: 4, backgroundColor: "grey", margin: 10}}/>
+            </View>
+          ))}
+        </ScrollView>:<MapView style={{ width: "100%", height: 300 }}
+            initialRegion={{latitude: 0, longitude: 0,latitudeDelta: 1, longitudeDelta: 1,}}
+          />
+        }
+      </View>
+      )
   }
 
   feedBack(){
