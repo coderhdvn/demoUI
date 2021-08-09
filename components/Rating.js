@@ -93,7 +93,7 @@ export default class Rating extends React.Component {
         }
 
         return (
-            <View style={styles.container}>
+            <View style={this.props.customStyle ? this.props.customStyle : styles.container}>
                 {stars}
             </View>
         )
@@ -113,7 +113,7 @@ class Star extends React.Component {
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1,
+        flex: 0.1,
         flexDirection: 'row',
     }
 })
