@@ -166,8 +166,10 @@ export class Question1 extends React.Component {
       <View style={{height: 300, width: SCREEN_WIDTH, alignItems: "center"}}>
         <View style={{flexDirection: "row", width: SCREEN_WIDTH, justifyContent: "space-around"}}>
           <Text>lịch sử vận chuyển đơn hàng</Text>
-          <Icon onPress={() => { this.mapview = 0; this.forceUpdate() }} name="map" color="black" size={15}/>
-          <Icon onPress={() => { this.mapview = 1; this.forceUpdate() }} name="list" color="black" size={15}/>
+          <View style={{flexDirection: "row", borderWidth: 1, borderColor: "#ddd", width: 100, justifyContent: "space-around", borderRadius: 5}}>
+            <Icon onTouchEnd={() => { this.mapview = 0; this.forceUpdate() }} name="list" color={this.mapview==0?"#05fa53":"gray"} size={20}/>
+            <Icon onTouchEnd={() => { this.mapview = 1; this.forceUpdate() }} name="map" color={this.mapview==1?"#05fa53":"gray"} size={20}/>
+          </View>
         </View>
         {this.mapview ==0?
         <ScrollView style={{ overflow: "scroll", width: "90%" }}>
@@ -184,12 +186,22 @@ export class Question1 extends React.Component {
                 </View>
                 <Text>time {new Date(i.createdAt).toLocaleDateString("en-US")}</Text>
               </View>
-              <Image source={require('../images/gradient.png')}  style={{width: 70, height: 70, borderRadius: 70, borderColor: "#05fa53", borderWidth: 4, backgroundColor: "grey", margin: 10}}/>
+              <Image source={require('../images/gradient.png')}  style={{width: 70, height: 70, borderRadius: 70, backgroundColor: "grey", margin: 10}}/>
             </View>
           ))}
-        </ScrollView>:<MapView style={{ width: "100%", height: 300 }}
-            initialRegion={{latitude: 0, longitude: 0,latitudeDelta: 1, longitudeDelta: 1,}}
-          />
+        </ScrollView>:
+        <MapView style={{ width: "100%", height: 300 }}
+            initialRegion={{latitude: 0, longitude: 0,latitudeDelta: 1, longitudeDelta: 1,}}>
+                    <Marker
+                            key={1}
+                            coordinate={{latitude: 0, longitude: 0}}
+                        >
+                            <Callout>
+                                <Text>234</Text>
+                            </Callout>
+
+                        </Marker>
+        </MapView>
         }
       </View>
       )
@@ -312,7 +324,17 @@ export class Question2 extends React.Component {
               latitudeDelta: 0.0922,
               longitudeDelta: 0.0421,
             }}
-          />
+          >
+            <Marker
+              key={1}
+              coordinate={{ latitude: this.obj.latitude, longitude: this.obj.longitude }}
+            >
+              <Callout>
+                <Text>234</Text>
+              </Callout>
+
+            </Marker>
+          </MapView>
         </View>
         <View style={{
           width: "90%", borderRadius: 10,
