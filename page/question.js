@@ -10,7 +10,6 @@ import API from '../api/API';
 import { Input, Button as Btn} from 'react-native-elements';
 import { BASIC_COLOR } from '../constants/Constant';
 import Rating from '../components/Rating';
-import { ScrollView } from "react-native-gesture-handler";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const blue = "#2196F3"
@@ -140,11 +139,14 @@ export class Question1 extends React.Component {
           console.error(err.message);
         }
       }
+      for (let i =0; i< response.data.length ; i++){
+        this.logger[i].url =  await getImage(this.logger[i].branchObj.image)
+      }
+      this.forceUpdate();
     }
     catch (err) {
       console.log(err)
     }
-    this.forceUpdate();
 
   }
 
@@ -259,27 +261,27 @@ export class Question1 extends React.Component {
                   <Text>{i.branchObj.name}</Text>
                 </View>
                 <View style={{ flexDirection: "row" }}>
-                  <Text style={{ fontWeight: "bold", marginRight: 10 }}>công ty:</Text>
-                  <Text>{i.distributorId}</Text>
+                  <Text style={{ fontWeight: "bold", marginRight: 10 }}>thời gian:</Text>
+                  <Text>{new Date(i.createdAt).toLocaleDateString("en-US")}</Text>
                 </View>
-                <Text>time {new Date(i.createdAt).toLocaleDateString("en-US")}</Text>
               </View>
-              <Image source={require('../images/gradient.png')}  style={{width: 70, height: 70, borderRadius: 70, backgroundColor: "grey", margin: 10}}/>
+              <Image source={{ uri: i.url }} style={{ width: 70, height: 70, borderRadius: 70, backgroundColor: "grey", margin: 10 }} />
             </View>
           ))}
-        </ScrollView>:
-        <MapView style={{ width: "100%", height: 300 }}
-            initialRegion={{latitude: 0, longitude: 0,latitudeDelta: 1, longitudeDelta: 1,}}>
-                    <Marker
-                            key={1}
-                            coordinate={{latitude: 0, longitude: 0}}
-                        >
-                            <Callout>
-                                <Text>234</Text>
-                            </Callout>
-
-                        </Marker>
-        </MapView>
+          </ScrollView> :
+          <MapView style={{ width: "100%", height: 300 }}
+            initialRegion={{ latitude: this.logger[0].branchObj.latitude, longitude: this.logger[0].branchObj.longitude, latitudeDelta: 1, longitudeDelta: 1, }}>
+            {this.logger.map((i,index)=><Marker key={index}
+              coordinate={{ latitude: i.branchObj.latitude, longitude: i.branchObj.longitude }}/>)}
+             <Polyline 
+                    coordinates={[
+                      {latitude: this.logger[0].branchObj.latitude, longitude: this.logger[0].branchObj.longitude},
+                      {latitude: this.logger[1].branchObj.latitude, longitude: this.logger[1].branchObj.longitude},
+                  ]}
+                    strokeWidth={5}
+                    geodesic={false}
+                />
+          </MapView>
         }
       </View>
       )
@@ -406,8 +408,6 @@ export class Question1 extends React.Component {
               )
               })
             }
-          
-            
         </ScrollView>
               
       )
@@ -448,7 +448,7 @@ export class Question1 extends React.Component {
         <View style={{width: "90%", borderRadius: 10,padding: 20}}>
           <Text style={{ fontWeight: "bold", textAlign: "center", fontSize: 14, paddingBottom: 5}}>Có phải bạn vừa quét sản phẩm này ?</Text>
           <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-            <CustomButtonCancle style={styles.grayButton} title="Sai" touch={() => { this.props.navigation.navigate('FalseResult') }} />
+            <CustomButtonCancle style={styles.grayButton} title="Sai" touch={() => { this.props.navigation.navigate('FalseResult', { errorId: 2}) }} />
             <CustomButton style={styles.button} title="Đúng" touch={() => { this.props.navigation.navigate('Question2', { id: this.props.route.params.product.branchId, bean: this.bean }) }} />
           </View>
         </View>
@@ -459,12 +459,13 @@ export class Question1 extends React.Component {
 export class Question2 extends React.Component {
 
   obj = null
-
+  url = ""
   componentDidMount = async () => {
     let headers = await getHeader();
     try {
       const response = await API.get(`/account/branches/${this.props.route.params.id}`, {headers});
       this.obj = response.data;
+      this.url = await getImage(response.data.image)
       console.log(this.obj)
       this.forceUpdate()
     }
@@ -496,7 +497,7 @@ export class Question2 extends React.Component {
             <Text style={{ fontStyle: "italic", color: "white", textAlign: "left", fontSize: 13 }}>{this.obj.address}</Text>
             <Text style={{ fontStyle: "italic", color: "white", textAlign: "left", fontSize: 13 }}>công ty abc xyz</Text>
           </View>
-          <Image source={require('../images/eth.png')}  style={{width: 70, height: 70, borderRadius: 70, borderColor: "#05fa53", borderWidth: 4, backgroundColor: "grey", margin: 10}}/>
+          <Image source={{uri: this.url}}  style={{width: 70, height: 70, borderRadius: 70, borderColor: "#05fa53", borderWidth: 4, backgroundColor: "grey", margin: 10}}/>
         </ImageBackground>
         <View style={{
           width: "90%", borderRadius: 10,
@@ -515,9 +516,6 @@ export class Question2 extends React.Component {
               key={1}
               coordinate={{ latitude: this.obj.latitude, longitude: this.obj.longitude }}
             >
-              <Callout>
-                <Text>234</Text>
-              </Callout>
 
             </Marker>
           </MapView>
@@ -528,7 +526,7 @@ export class Question2 extends React.Component {
         }}>
           <Text style={{ fontWeight: "bold", textAlign: "center" }}>Có phải bạn đang mua hàng tại cửa hàng này?</Text>
           <View style={{ display: "flex", flexDirection: "row", justifyContent: "space-between" }}>
-            <CustomButtonCancle style={styles.grayButton} title="Sai" touch={() => { this.props.navigation.navigate('FalseResult') }} />
+            <CustomButtonCancle style={styles.grayButton} title="Sai" touch={() => { this.props.navigation.navigate('FalseResult', {errorId: 1}) }} />
             <CustomButton style={styles.button} title="Đúng vậy" touch={() => { this.props.navigation.navigate('Result', { bean: this.props.route.params.bean }) }} />
           </View>
         </View>
@@ -579,7 +577,6 @@ export class Result extends React.Component {
                <Icon name="arrow-round-back" color="black" onTouchEnd={()=>{this.s=0;this.forceUpdate()}}/>
               <Text>123</Text>
           </View>}
-          <Text onTouchEnd={()=>{this.props.navigation.navigate("detail", {product: this.props.route.params.bean})}}>Thông tin sản phẩm {">"}</Text>
         </View>
         <View>
         <CustomButton style={{...styles.button, width: "100%"}} touch={()=>{this.props.navigation.navigate("PrivateScan")}} title = "Quét mã private" />
@@ -591,6 +588,12 @@ export class Result extends React.Component {
 
 export class FalseResult extends React.Component {
   
+  errorList = [
+    "Sản phẩm này đã được tiêu thụ trước đó",
+    "Sản phẩm này không ở đúng địa điểm với hệ thống",
+    "Mã QR đã dán không đúng sản phẩm"
+  ] 
+
   renderListItem(content){
     return (
       <View style={{flexDirection:"row", justifyContent: "space-between"}}>
@@ -602,12 +605,12 @@ export class FalseResult extends React.Component {
   
   render(){
     return (
-    <View style={{alignItems: "center"}}>
+    <View style={{alignItems: "center", paddingTop: 50}}>
       <Image style={{width: 180, height: 180}} source={require('../images/warning.png')} />
       <Text style={{fontSize: 30}}>Hãy cẩn thận!!!</Text>
       <Text>chúng tôi nhận thấy sự bất thường</Text>
       <View style={{backgroundColor: "#ddd", padding: 10, margin: 10, width: "100%"}}>
-        {this.renderListItem("Kiểm tra chứng chỉ số")}
+        {this.renderListItem(this.errorList[this.props.route.params.errorId])}
       </View>
     </View>)
   }
@@ -638,9 +641,17 @@ export class PrivateScan extends React.Component {
 
 export class Point extends React.Component {
   render(){
-    return (<View>
-      <Text>+10</Text>
-      <Text>Tổng điểm: 100</Text>
+    return (<View style={{width: SCREEN_WIDTH, alignItems: "center", backgroundColor: "white", flex: 1, justifyContent: "space-around"}}>
+      <Image style={{width: 250, height: 180}} source={require('../images/congrat.jpg')} />
+      <View style={{borderColor: "#05fa53", borderWidth: 4, borderRadius: 100, width: 100, height: 100, alignItems: "center", justifyContent: "center"}}>
+        <Text>+10</Text>
+      </View>
+      <View style={{flexDirection: "row"}} 
+      onTouchEnd={()=>{this.props.navigation.navigate('Main')}}
+      >
+        <Icon name="home" />
+        <Text>về trang chủ</Text>
+      </View>
     </View>)
   }
 }
